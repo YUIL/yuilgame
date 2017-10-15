@@ -26,6 +26,9 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
@@ -91,7 +94,6 @@ public class RigidBodyTestScreen extends Screen2D{
 	boolean isLogin=false;
 	public RigidBodyTestScreen(MyGame game) {
 		super(game);
-		
 		GuiFactory guiFactory = new GuiFactory();
 		String guiXmlPath = "gui/RigidBodyTestScreen.xml";
 		guiFactory.setStage(stage, guiXmlPath);

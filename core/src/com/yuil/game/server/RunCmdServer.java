@@ -136,4 +136,10 @@ public class RunCmdServer implements MessageListener {
 		threadPool.execute(messageProcessor);
 	}
 
+	@Override
+	public void removeSession(long sessionId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -100,4 +100,10 @@ public class ClientSocket implements MessageListener {
 				listenner.recvMessage(session, data);
 			}
 	}
+
+	@Override
+	public void removeSession(long sessionId) {
+		// TODO Auto-generated method stub
+		
+	}
 }

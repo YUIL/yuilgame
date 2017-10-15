@@ -98,6 +98,8 @@ public class TestScreen2 extends Screen2D implements MessageListener{
 	long playerId;
 	BtObject playerObject;
 	int vinearVelocityX=10;
+	int vinearVelocityZ=30;
+	
 	
 	Sound sound=Gdx.audio.newSound(Gdx.files.internal("sound/bee.wav"));
 	
@@ -136,9 +138,9 @@ public class TestScreen2 extends Screen2D implements MessageListener{
 		final float width = Gdx.graphics.getWidth();
 		final float height = Gdx.graphics.getHeight();
 		if (width > height)
-			camera = new PerspectiveCamera(67f, 3f * width / height, 3f);
+			camera = new PerspectiveCamera(45, 3f * width / height, 3f);
 		else
-			camera = new PerspectiveCamera(67f, 3f, 3f * height / width);
+			camera = new PerspectiveCamera(45, 3f, 3f * height / width);
 		camera.far=200;
 		camera.position.set(10f, 10f, 10f);
 		camera.lookAt(0, 0, 0);
@@ -385,6 +387,32 @@ public class MyContactListener extends ContactListener {
 				aJustPressedAction();
 			}else{
 				dJustUppedAction();
+			}
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.W)) {
+			// game.getScreen().dispose();
+			keyboardStatus.setwJustPressed(true);
+			wJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.W)==false&& keyboardStatus.iswJustPressed()) {
+			keyboardStatus.setwJustPressed(false);
+			if(Gdx.input.isKeyPressed(Keys.S)){
+				sJustPressedAction();
+			}else{
+				wJustUppedAction();
+			}
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.S)) {
+			// game.getScreen().dispose();
+			keyboardStatus.setsJustPressed(true);
+			sJustPressedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.S)==false&& keyboardStatus.issJustPressed()) {
+			keyboardStatus.setsJustPressed(false);
+			if(Gdx.input.isKeyPressed(Keys.W)){
+				wJustPressedAction();
+			}else{
+				sJustUppedAction();
 			}
 		}
 		
@@ -692,27 +720,81 @@ public class MyContactListener extends ContactListener {
 	}
 	
 	protected void wJustPressedAction() {
-		spaceJustPressedAction();
+		//spaceJustPressedAction();
 //		if(btObject!=null){
 //			physicsWorld.updatePhysicsObject(tempMessage);
 //		}
+		if(playerId!=0&&playerObject!=null){
+
+			temp_update_liner_velocity_message.setX(NO_CHANGE);
+			temp_update_liner_velocity_message.setY(NO_CHANGE);
+			temp_update_liner_velocity_message.setZ(vinearVelocityZ*-1);
+			temp_update_liner_velocity_message.setId(playerObject.getId());
+			sendSingleMessage(temp_update_liner_velocity_message);
+
+			tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
+			tempVector3.z=vinearVelocityZ*-1;
+			playerObject.getRigidBody().setLinearVelocity(tempVector3);
+			
+		}
 	}
 
 	protected void wJustUppedAction() {
 		// TODO Auto-generated method stub
-		
+		if(playerId!=0&&playerObject!=null){
+			temp_update_liner_velocity_message.setX(NO_CHANGE);
+			temp_update_liner_velocity_message.setY(NO_CHANGE);
+			temp_update_liner_velocity_message.setZ(0);
+			temp_update_liner_velocity_message.setId(playerObject.getId());
+			sendSingleMessage(temp_update_liner_velocity_message);
+			
+
+			tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
+			tempVector3.z=0;
+			playerObject.getRigidBody().setLinearVelocity(tempVector3);
+		}
 	}
 	
 	protected void sJustPressedAction() {
 //		if(btObject!=null){
 //			physicsWorld.updatePhysicsObject(tempMessage);
 //		}
+		
+		if(playerId!=0&&playerObject!=null){
+
+			temp_update_liner_velocity_message.setX(NO_CHANGE);
+			temp_update_liner_velocity_message.setY(NO_CHANGE);
+			temp_update_liner_velocity_message.setZ(vinearVelocityZ);
+			temp_update_liner_velocity_message.setId(playerObject.getId());
+			sendSingleMessage(temp_update_liner_velocity_message);
+
+			tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
+			tempVector3.z=vinearVelocityZ;
+			playerObject.getRigidBody().setLinearVelocity(tempVector3);
+			
+		}
+	}
+	
+	protected void sJustUppedAction() {
+		// TODO Auto-generated method stub
+		if(playerId!=0&&playerObject!=null){
+			temp_update_liner_velocity_message.setX(NO_CHANGE);
+			temp_update_liner_velocity_message.setY(NO_CHANGE);
+			temp_update_liner_velocity_message.setZ(0);
+			temp_update_liner_velocity_message.setId(playerObject.getId());
+			sendSingleMessage(temp_update_liner_velocity_message);
+			
+
+			tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
+			tempVector3.z=0;
+			playerObject.getRigidBody().setLinearVelocity(tempVector3);
+		}
 	}
 	
 	protected void spaceJustPressedAction() {
 		if(playerId!=0&&playerObject!=null){
-			System.out.println("playerId:"+playerId);
-			System.out.println("ObjectId:"+playerObject.getId());
+			//System.out.println("playerId:"+playerId);
+			//System.out.println("ObjectId:"+playerObject.getId());
 			if(playerObject.getPosition().y<0.7f){
 				temp_update_liner_velocity_message.setX(NO_CHANGE);
 				temp_update_liner_velocity_message.setY(10);
@@ -968,6 +1050,12 @@ public class MyContactListener extends ContactListener {
 	void hideGameOver(){
 		Label console=stage.getRoot().findActor("console");
 		console.setPosition(-300, 200);
+	}
+
+	@Override
+	public void removeSession(long sessionId) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

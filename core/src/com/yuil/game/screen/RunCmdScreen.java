@@ -269,4 +269,10 @@ public class RunCmdScreen extends Screen2D implements MessageListener {
 		});
 
 	}
+
+	@Override
+	public void removeSession(long sessionId) {
+		// TODO Auto-generated method stub
+		
+	}
 }
