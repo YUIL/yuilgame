@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -22,8 +23,10 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -212,7 +215,6 @@ public class MyContactListener extends ContactListener {
 	@Override
 	public void render(float delta) {
 		checkKeyBoardStatus();
-		
 		while(!createObstacleQueue.isEmpty()){
 			S2C_ADD_OBSTACLE message=createObstacleQueue.poll();
 			C2S_UPDATE_BTOBJECT_MOTIONSTATE c2s_UPDATE_BTOBJECT_MOTIONSTATE_message=new C2S_UPDATE_BTOBJECT_MOTIONSTATE();
@@ -353,6 +355,36 @@ public class MyContactListener extends ContactListener {
 		messageHandlerMap.get(typeOrdinal).handle(data);
 	}
 	void checkKeyBoardStatus(){
+		
+		if(Gdx.input.isButtonPressed(Buttons.LEFT)){
+			if(!keyboardStatus.isMouseLeftJustPressed()){
+				mouseLeftJustPressedAction();
+				keyboardStatus.setMouseLeftJustPressed(true);
+			}
+		}else if(keyboardStatus.isMouseLeftJustPressed()){
+			mouseLeftJustUppedAction();
+			keyboardStatus.setMouseLeftJustPressed(false);
+		}
+		
+		if(Gdx.input.isButtonPressed(Buttons.RIGHT)){
+			if(!keyboardStatus.isMouseRightJustPressed()){
+				mouseRightJustPressedAction();
+				keyboardStatus.setMouseRightJustPressed(true);
+			}
+		}else if(keyboardStatus.isMouseRightJustPressed()){
+			mouseRightJustUppedAction();
+			keyboardStatus.setMouseRightJustPressed(false);
+		}
+		
+		if(Gdx.input.isButtonPressed(Buttons.MIDDLE)){
+			if(!keyboardStatus.isMouseMiddleJustPressed()){
+				mouseMiddleJustPressedAction();
+				keyboardStatus.setMouseMiddleJustPressed(true);
+			}
+		}else if(keyboardStatus.isMouseMiddleJustPressed()){
+			mouseMiddleJustUppedAction();
+			keyboardStatus.setMouseMiddleJustPressed(false);
+		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
 			keyboardStatus.setqJustPressed(true);
@@ -796,6 +828,7 @@ public class MyContactListener extends ContactListener {
 			//System.out.println("playerId:"+playerId);
 			//System.out.println("ObjectId:"+playerObject.getId());
 			if(playerObject.getPosition().y<0.7f){
+				System.out.println("juijkj:"+playerObject.getId());
 				temp_update_liner_velocity_message.setX(NO_CHANGE);
 				temp_update_liner_velocity_message.setY(10);
 				temp_update_liner_velocity_message.setZ(NO_CHANGE);
@@ -825,8 +858,44 @@ public class MyContactListener extends ContactListener {
 		
 	}
 	
-	
+	protected void mouseLeftJustPressedAction() {
+		System.out.println("hjkhjk:"+getObject(Gdx.input.getX(), Gdx.input.getY()));
+	}
 
+	protected void mouseLeftJustUppedAction() {
+		// TODO Auto-generated method stub
+		
+	}
+	public void mouseRightJustPressedAction() {
+		
+	}
+	public void mouseRightJustUppedAction() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void mouseMiddleJustPressedAction() {
+		
+	}
+	public void mouseMiddleJustUppedAction() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+    public long getObject (int screenX, int screenY) {
+        Ray ray = camera.getPickRay(screenX, screenY);
+        Vector3 position = new Vector3();
+
+        long result = -1;
+		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
+			physicsObject.getTransform().getTranslation(position);
+            if (Intersector.intersectRaySphere(ray, position, 0.5f, null)) {
+                result = physicsObject.getId();
+            }
+        }
+        return result;
+    }
+	
 	void setupActorInput(){
 		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {

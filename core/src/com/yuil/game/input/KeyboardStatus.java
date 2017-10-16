@@ -46,7 +46,9 @@ public class KeyboardStatus {
 	
 	
 	
-	
+	boolean mouseLeftJustPressed;
+	boolean mouseRightJustPressed;
+	boolean mouseMiddleJustPressed;
 	
 	
 	
@@ -284,6 +286,26 @@ public class KeyboardStatus {
 	public void setButtonDPressed(boolean buttonDPressed) {
 		this.buttonDPressed = buttonDPressed;
 	}
+	public boolean isMouseLeftJustPressed() {
+		return mouseLeftJustPressed;
+	}
+	public void setMouseLeftJustPressed(boolean mouseLeftJustPressed) {
+		this.mouseLeftJustPressed = mouseLeftJustPressed;
+	}
+	public boolean isMouseRightJustPressed() {
+		return mouseRightJustPressed;
+	}
+	public void setMouseRightJustPressed(boolean mouseRightJustPressed) {
+		this.mouseRightJustPressed = mouseRightJustPressed;
+	}
+	public boolean isMouseMiddleJustPressed() {
+		return mouseMiddleJustPressed;
+	}
+	public void setMouseMiddleJustPressed(boolean mouseMiddleJustPressed) {
+		this.mouseMiddleJustPressed = mouseMiddleJustPressed;
+	}
 
+	
+	
 }
 
