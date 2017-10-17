@@ -859,7 +859,21 @@ public class MyContactListener extends ContactListener {
 	}
 	
 	protected void mouseLeftJustPressedAction() {
-		System.out.println("hjkhjk:"+getObject(Gdx.input.getX(), Gdx.input.getY()));
+		long id=getObject(Gdx.input.getX(), Gdx.input.getY());
+		System.out.println("hjkhjk:"+id);
+
+		if(id!=-1){
+				temp_update_liner_velocity_message.setX(NO_CHANGE);
+				temp_update_liner_velocity_message.setY(10);
+				temp_update_liner_velocity_message.setZ(NO_CHANGE);
+				temp_update_liner_velocity_message.setId(id);
+				sendSingleMessage(temp_update_liner_velocity_message);
+				
+
+				//tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
+				//tempVector3.y=10;
+				//playerObject.getRigidBody().setLinearVelocity(tempVector3);
+		}
 	}
 
 	protected void mouseLeftJustUppedAction() {
@@ -889,7 +903,7 @@ public class MyContactListener extends ContactListener {
         long result = -1;
 		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
 			physicsObject.getTransform().getTranslation(position);
-            if (Intersector.intersectRaySphere(ray, position, 0.5f, null)) {
+            if (Intersector.intersectRaySphere(ray, position, 3f, null)) {
                 result = physicsObject.getId();
             }
         }
@@ -939,6 +953,7 @@ public class MyContactListener extends ContactListener {
 		stage.getRoot().findActor("W").addListener(new ActorInputListenner() {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				System.out.println("uiuuS");
 				wJustPressedAction() ;
 			}
 		});
