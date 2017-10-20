@@ -899,12 +899,20 @@ public class MyContactListener extends ContactListener {
     public long getObject (int screenX, int screenY) {
         Ray ray = camera.getPickRay(screenX, screenY);
         Vector3 position = new Vector3();
-
+        float dst=0;
+        float dst2=Float.MAX_VALUE;
         long result = -1;
 		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
+			
 			physicsObject.getTransform().getTranslation(position);
-            if (Intersector.intersectRaySphere(ray, position, 3f, null)) {
-                result = physicsObject.getId();
+            dst=position.dst2(camera.position);
+			if (Intersector.intersectRaySphere(ray, position, 3f, null)) {
+				if (((GameObjectTypeAttribute)(((BtObject)physicsObject).Attributes.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() ==GameObjectType.OBSTACLE.ordinal()) {
+				if(dst<dst2){
+					dst2=dst;
+	                result = physicsObject.getId();
+				}
+				}
             }
         }
         return result;

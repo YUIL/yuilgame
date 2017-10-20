@@ -17,5 +17,6 @@ public abstract class PhysicsObject {
 	public abstract Matrix4 getTransform();
 	public abstract Vector3 getPosition();
 	public abstract void setPosition(Vector3 position);
-
+	public abstract Object getUserData() ;
+	public abstract void setUserData(Object userData) ;
 }
