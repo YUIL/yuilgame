@@ -256,7 +256,7 @@ public class DeviceInputHandler {
 			inputDeviceStatus.setzJustPressed(true);
 			deviceInputListener.zJustPressedAction();
 		}else if (Gdx.input.isKeyPressed(Keys.Z)==false&& inputDeviceStatus.iszJustPressed()) {
-			inputDeviceStatus.setsJustPressed(false);
+			inputDeviceStatus.setzJustPressed(false);
 			deviceInputListener.zJustUppedAction();
 		}
 		

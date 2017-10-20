@@ -45,6 +45,8 @@ import com.yuil.game.entity.physics.BtObjectFactory;
 import com.yuil.game.entity.physics.BtObjectSpawner;
 import com.yuil.game.entity.physics.BtWorld;
 import com.yuil.game.entity.physics.PhysicsWorldBuilder;
+import com.yuil.game.input.DeviceInputHandler;
+import com.yuil.game.input.DeviceInputListener;
 import com.yuil.game.net.MessageListener;
 import com.yuil.game.net.NetSocket;
 import com.yuil.game.net.Session;
@@ -100,8 +102,9 @@ public class BtTestServer2 implements MessageListener {
 
 	BtObjectSpawner obstacleBallSpawner;
 
+	
 	public class MyContactListener extends ContactListener {
-		Vector3 v3 = new Vector3();
+				Vector3 v3 = new Vector3();
 		REMOVE_BTOBJECT remove_BTOBJECT_message = new REMOVE_BTOBJECT();
 
 		@Override
@@ -217,6 +220,7 @@ public class BtTestServer2 implements MessageListener {
 	public BtTestServer2() {
 		physicsWorld.addPhysicsObject(physicsWorldBuilder.createDefaultGround());
 
+		
 		contactListener = new MyContactListener();
 
 		try {
@@ -671,4 +675,5 @@ public class BtTestServer2 implements MessageListener {
 		// TODO Auto-generated method stub
 		removeSessionQueue.add(sessionId);
 	}
+	
 }
