@@ -61,7 +61,7 @@ import com.yuil.game.entity.physics.RenderableBtObject;
 import com.yuil.game.gui.GuiFactory;
 import com.yuil.game.input.ActorInputListenner;
 import com.yuil.game.input.InputManager;
-import com.yuil.game.input.KeyboardStatus;
+import com.yuil.game.input.InputDeviceStatus;
 
 public class RigidBodyTestScreen extends Screen2D{
 	
@@ -74,7 +74,7 @@ public class RigidBodyTestScreen extends Screen2D{
 	ContactListener contactListener;
 	Environment lights;
 	
-	KeyboardStatus keyboardStatus=new KeyboardStatus();
+	InputDeviceStatus inputDeviceStatus=new InputDeviceStatus();
 	
 	RenderableBtObject testBtObject;
 	
@@ -221,17 +221,17 @@ public class RigidBodyTestScreen extends Screen2D{
 		
 		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
 			
-		}else if (Gdx.input.isKeyPressed(Keys.Q)==false&& keyboardStatus.isqJustPressed()) {
-			keyboardStatus.setqJustPressed(false);
+		}else if (Gdx.input.isKeyPressed(Keys.Q)==false&& inputDeviceStatus.isqJustPressed()) {
+			inputDeviceStatus.setqJustPressed(false);
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.A)) {
 			// game.getScreen().dispose();
-			keyboardStatus.setaJustPressed(true);
+			inputDeviceStatus.setaJustPressed(true);
 			aJustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.A)==false&& keyboardStatus.isaJustPressed()) {
-			keyboardStatus.setaJustPressed(false);
+		}else if (Gdx.input.isKeyPressed(Keys.A)==false&& inputDeviceStatus.isaJustPressed()) {
+			inputDeviceStatus.setaJustPressed(false);
 			if(Gdx.input.isKeyPressed(Keys.D)){
 				dJustPressedAction();
 			}else{
@@ -240,10 +240,10 @@ public class RigidBodyTestScreen extends Screen2D{
 		}
 		if (Gdx.input.isKeyJustPressed(Keys.D)) {
 			// game.getScreen().dispose();
-			keyboardStatus.setdJustPressed(true);
+			inputDeviceStatus.setdJustPressed(true);
 			dJustPressedAction();
-		}else if (Gdx.input.isKeyPressed(Keys.D)==false&& keyboardStatus.isdJustPressed()) {
-			keyboardStatus.setdJustPressed(false);
+		}else if (Gdx.input.isKeyPressed(Keys.D)==false&& inputDeviceStatus.isdJustPressed()) {
+			inputDeviceStatus.setdJustPressed(false);
 			if(Gdx.input.isKeyPressed(Keys.A)){
 				aJustPressedAction();
 			}else{
@@ -253,21 +253,21 @@ public class RigidBodyTestScreen extends Screen2D{
 		
 		if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
 			// game.getScreen().dispose();
-			keyboardStatus.setSpaceJustPressed(true);
+			inputDeviceStatus.setSpaceJustPressed(true);
 			spaceJustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.SPACE)==false&& keyboardStatus.isdJustPressed()) {
-			keyboardStatus.setSpaceJustPressed(false);
+		}else if (Gdx.input.isKeyPressed(Keys.SPACE)==false&& inputDeviceStatus.isdJustPressed()) {
+			inputDeviceStatus.setSpaceJustPressed(false);
 			spaceJustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_1)) {
 			// game.getScreen().dispose();
-			keyboardStatus.setNum1JustPressed(true);
+			inputDeviceStatus.setNum1JustPressed(true);
 			
 			sound.play(1,(0.5f+(1.5f* random.nextFloat())), 0);
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_1)==false&& keyboardStatus.isNum1JustPressed()) {
-			keyboardStatus.setNum1JustPressed(false);
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_1)==false&& inputDeviceStatus.isNum1JustPressed()) {
+			inputDeviceStatus.setNum1JustPressed(false);
 		}
 		
 		

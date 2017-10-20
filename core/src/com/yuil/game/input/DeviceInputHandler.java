@@ -5,480 +5,359 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 
 public class DeviceInputHandler {
-	public KeyboardStatus keyboardStatus;
+	public InputDeviceStatus inputDeviceStatus;
 	public DeviceInputListener deviceInputListener;
-	public DeviceInputHandler(KeyboardStatus keyboardStatus,DeviceInputListener deviceInputListener){
-		this.keyboardStatus=keyboardStatus;
+	public DeviceInputHandler(InputDeviceStatus inputDeviceStatus,DeviceInputListener deviceInputListener){
+		this.inputDeviceStatus=inputDeviceStatus;
 		this.deviceInputListener=deviceInputListener;
 	}
 	public void checkDeviceInput(){
 		
 		if(Gdx.input.isButtonPressed(Buttons.LEFT)){
-			if(!keyboardStatus.isMouseLeftJustPressed()){
+			if(!inputDeviceStatus.isMouseLeftJustPressed()){
+				inputDeviceStatus.setMouseLeftJustPressed(true);
 				deviceInputListener.mouseLeftJustPressedAction();
-				keyboardStatus.setMouseLeftJustPressed(true);
 			}
-		}else if(keyboardStatus.isMouseLeftJustPressed()){
+		}else if(inputDeviceStatus.isMouseLeftJustPressed()){
+			inputDeviceStatus.setMouseLeftJustPressed(false);
 			deviceInputListener.mouseLeftJustUppedAction();
-			keyboardStatus.setMouseLeftJustPressed(false);
 		}
 		
 		if(Gdx.input.isButtonPressed(Buttons.RIGHT)){
-			if(!keyboardStatus.isMouseRightJustPressed()){
+			if(!inputDeviceStatus.isMouseRightJustPressed()){
+				inputDeviceStatus.setMouseRightJustPressed(true);
 				deviceInputListener.mouseRightJustPressedAction();
-				keyboardStatus.setMouseRightJustPressed(true);
 			}
-		}else if(keyboardStatus.isMouseRightJustPressed()){
+		}else if(inputDeviceStatus.isMouseRightJustPressed()){
+			inputDeviceStatus.setMouseRightJustPressed(false);
 			deviceInputListener.mouseRightJustUppedAction();
-			keyboardStatus.setMouseRightJustPressed(false);
 		}
 		
 		if(Gdx.input.isButtonPressed(Buttons.MIDDLE)){
-			if(!keyboardStatus.isMouseMiddleJustPressed()){
+			if(!inputDeviceStatus.isMouseMiddleJustPressed()){
+				inputDeviceStatus.setMouseMiddleJustPressed(true);
 				deviceInputListener.mouseMiddleJustPressedAction();
-				keyboardStatus.setMouseMiddleJustPressed(true);
 			}
-		}else if(keyboardStatus.isMouseMiddleJustPressed()){
+		}else if(inputDeviceStatus.isMouseMiddleJustPressed()){
+			inputDeviceStatus.setMouseMiddleJustPressed(false);
 			deviceInputListener.mouseMiddleJustUppedAction();
-			keyboardStatus.setMouseMiddleJustPressed(false);
 		}
 		
-		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
-			keyboardStatus.setqJustPressed(true);
-		}else if (Gdx.input.isKeyPressed(Keys.Q)==false&& keyboardStatus.isqJustPressed()) {
-			keyboardStatus.setqJustPressed(false);
-		}
+
 		
 		if (Gdx.input.isKeyJustPressed(Keys.A)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setaJustPressed(true);
+			inputDeviceStatus.setaJustPressed(true);
 			deviceInputListener.aJustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.A)==false&& keyboardStatus.isaJustPressed()) {
-			keyboardStatus.setaJustPressed(false);
-			if(Gdx.input.isKeyPressed(Keys.D)){
-				dJustPressedAction();
-			}else{
-				aJustUppedAction();
-			}
-		}
-		if (Gdx.input.isKeyJustPressed(Keys.D)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setdJustPressed(true);
-			dJustPressedAction();
-		}else if (Gdx.input.isKeyPressed(Keys.D)==false&& keyboardStatus.isdJustPressed()) {
-			keyboardStatus.setdJustPressed(false);
-			if(Gdx.input.isKeyPressed(Keys.A)){
-				aJustPressedAction();
-			}else{
-				dJustUppedAction();
-			}
+		}else if (Gdx.input.isKeyPressed(Keys.A)==false&& inputDeviceStatus.isaJustPressed()) {
+			inputDeviceStatus.setaJustPressed(false);
+			deviceInputListener.aJustUppedAction();
 		}
 		
-		if (Gdx.input.isKeyJustPressed(Keys.W)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setwJustPressed(true);
-			wJustPressedAction();
+		if (Gdx.input.isKeyJustPressed(Keys.B)) {
+			inputDeviceStatus.setbJustPressed(true);
+			deviceInputListener.bJustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.W)==false&& keyboardStatus.iswJustPressed()) {
-			keyboardStatus.setwJustPressed(false);
-			if(Gdx.input.isKeyPressed(Keys.S)){
-				sJustPressedAction();
-			}else{
-				wJustUppedAction();
-			}
+		}else if (Gdx.input.isKeyPressed(Keys.B)==false&& inputDeviceStatus.isbJustPressed()) {
+			inputDeviceStatus.setbJustPressed(false);
+			deviceInputListener.bJustUppedAction();
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.C)) {
+			inputDeviceStatus.setcJustPressed(true);
+			deviceInputListener.cJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.C)==false&& inputDeviceStatus.iscJustPressed()) {
+			inputDeviceStatus.setcJustPressed(false);
+			deviceInputListener.cJustUppedAction();
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.D)) {
+			inputDeviceStatus.setdJustPressed(true);
+			deviceInputListener.dJustPressedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.D)==false&& inputDeviceStatus.isdJustPressed()) {
+			inputDeviceStatus.setdJustPressed(false);
+			deviceInputListener.dJustUppedAction();
+		
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.E)) {
+			inputDeviceStatus.seteJustPressed(true);
+			deviceInputListener.eJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.E)==false&& inputDeviceStatus.iseJustPressed()) {
+			inputDeviceStatus.seteJustPressed(false);
+			deviceInputListener.eJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.F)) {
+			inputDeviceStatus.setfJustPressed(true);
+			deviceInputListener.fJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.F)==false&& inputDeviceStatus.isfJustPressed()) {
+			inputDeviceStatus.setfJustPressed(false);
+			deviceInputListener.fJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.G)) {
+			inputDeviceStatus.setgJustPressed(true);
+			deviceInputListener.gJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.G)==false&& inputDeviceStatus.isgJustPressed()) {
+			inputDeviceStatus.setgJustPressed(false);
+			deviceInputListener.gJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.H)) {
+			inputDeviceStatus.sethJustPressed(true);
+			deviceInputListener.hJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.H)==false&& inputDeviceStatus.ishJustPressed()) {
+			inputDeviceStatus.sethJustPressed(false);
+			deviceInputListener.hJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.I)) {
+			inputDeviceStatus.setiJustPressed(true);
+			deviceInputListener.iJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.I)==false&& inputDeviceStatus.isiJustPressed()) {
+			inputDeviceStatus.setiJustPressed(false);
+			deviceInputListener.iJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.J)) {
+			inputDeviceStatus.setjJustPressed(true);
+			deviceInputListener.jJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.J)==false&& inputDeviceStatus.isjJustPressed()) {
+			inputDeviceStatus.setjJustPressed(false);
+			deviceInputListener.jJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.K)) {
+			inputDeviceStatus.setkJustPressed(true);
+			deviceInputListener.kJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.K)==false&& inputDeviceStatus.iskJustPressed()) {
+			inputDeviceStatus.setkJustPressed(false);
+			deviceInputListener.kJustUppedAction();
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.L)) {
+			inputDeviceStatus.setlJustPressed(true);
+			deviceInputListener.lJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.L)==false&& inputDeviceStatus.islJustPressed()) {
+			inputDeviceStatus.setlJustPressed(false);
+			deviceInputListener.lJustUppedAction();
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.M)) {
+			inputDeviceStatus.setmJustPressed(true);
+			deviceInputListener.mJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.M)==false&& inputDeviceStatus.ismJustPressed()) {
+			inputDeviceStatus.setmJustPressed(false);
+			deviceInputListener.mJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.N)) {
+			inputDeviceStatus.setnJustPressed(true);
+			deviceInputListener.nJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.N)==false&& inputDeviceStatus.isnJustPressed()) {
+			inputDeviceStatus.setnJustPressed(false);
+			deviceInputListener.nJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.O)) {
+			inputDeviceStatus.setoJustPressed(true);
+			deviceInputListener.oJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.O)==false&& inputDeviceStatus.isoJustPressed()) {
+			inputDeviceStatus.setoJustPressed(false);
+			deviceInputListener.oJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.P)) {
+			inputDeviceStatus.setpJustPressed(true);
+			deviceInputListener.pJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.P)==false&& inputDeviceStatus.ispJustPressed()) {
+			inputDeviceStatus.setpJustPressed(false);
+			deviceInputListener.pJustUppedAction();
+		}
+	
+		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
+			inputDeviceStatus.setqJustPressed(true);
+			deviceInputListener.qJustPressedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.Q)==false&& inputDeviceStatus.isqJustPressed()) {
+			inputDeviceStatus.setqJustPressed(false);
+			deviceInputListener.qJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.R)) {
+			inputDeviceStatus.setrJustPressed(true);
+			deviceInputListener.rJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.R)==false&& inputDeviceStatus.isrJustPressed()) {
+			inputDeviceStatus.setrJustPressed(false);
+			deviceInputListener.rJustUppedAction();
 		}
 		if (Gdx.input.isKeyJustPressed(Keys.S)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setsJustPressed(true);
-			sJustPressedAction();
-		}else if (Gdx.input.isKeyPressed(Keys.S)==false&& keyboardStatus.issJustPressed()) {
-			keyboardStatus.setsJustPressed(false);
-			if(Gdx.input.isKeyPressed(Keys.W)){
-				wJustPressedAction();
-			}else{
-				sJustUppedAction();
-			}
+			inputDeviceStatus.setsJustPressed(true);
+			deviceInputListener.sJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.S)==false&& inputDeviceStatus.issJustPressed()) {
+			inputDeviceStatus.setsJustPressed(false);
+			deviceInputListener.sJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.T)) {
+			inputDeviceStatus.settJustPressed(true);
+			deviceInputListener.tJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.T)==false&& inputDeviceStatus.istJustPressed()) {
+			inputDeviceStatus.settJustPressed(false);
+			deviceInputListener.tJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.U)) {
+			inputDeviceStatus.setuJustPressed(true);
+			deviceInputListener.uJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.U)==false&& inputDeviceStatus.isuJustPressed()) {
+			inputDeviceStatus.setuJustPressed(false);
+			deviceInputListener.uJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.V)) {
+			inputDeviceStatus.setvJustPressed(true);
+			deviceInputListener.vJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.V)==false&& inputDeviceStatus.isvJustPressed()) {
+			inputDeviceStatus.setvJustPressed(false);
+			deviceInputListener.vJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.W)) {
+			inputDeviceStatus.setwJustPressed(true);
+			deviceInputListener.wJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.W)==false&& inputDeviceStatus.iswJustPressed()) {
+			inputDeviceStatus.setwJustPressed(false);
+			deviceInputListener.wJustUppedAction();
+		}
+		if (Gdx.input.isKeyJustPressed(Keys.X)) {
+			inputDeviceStatus.setxJustPressed(true);
+			deviceInputListener.xJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.X)==false&& inputDeviceStatus.isxJustPressed()) {
+			inputDeviceStatus.setxJustPressed(false);
+			deviceInputListener.xJustUppedAction();
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.Y)) {
+			inputDeviceStatus.setyJustPressed(true);
+			deviceInputListener.yJustPressedAction();
+
+		}else if (Gdx.input.isKeyPressed(Keys.Y)==false&& inputDeviceStatus.isyJustPressed()) {
+			inputDeviceStatus.setyJustPressed(false);
+			deviceInputListener.yJustUppedAction();
+		}
+		
+		if (Gdx.input.isKeyJustPressed(Keys.Z)) {
+			inputDeviceStatus.setzJustPressed(true);
+			deviceInputListener.zJustPressedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.Z)==false&& inputDeviceStatus.iszJustPressed()) {
+			inputDeviceStatus.setsJustPressed(false);
+			deviceInputListener.zJustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setSpaceJustPressed(true);
-			spaceJustPressedAction();
+			inputDeviceStatus.setSpaceJustPressed(true);
+			deviceInputListener.spaceJustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.SPACE)==false&& keyboardStatus.isSpaceJustPressed()) {
-			keyboardStatus.setSpaceJustPressed(false);
-			spaceJustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.SPACE)==false&& inputDeviceStatus.isSpaceJustPressed()) {
+			inputDeviceStatus.setSpaceJustPressed(false);
+			deviceInputListener.spaceJustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_0)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum0JustPressed(true);
-			Num0JustPressedAction();
+			inputDeviceStatus.setNum0JustPressed(true);
+			deviceInputListener.Num0JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_0)==false&& keyboardStatus.isNum0JustPressed()) {
-			keyboardStatus.setNum0JustPressed(false);
-			Num0JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_0)==false&& inputDeviceStatus.isNum0JustPressed()) {
+			inputDeviceStatus.setNum0JustPressed(false);
+			deviceInputListener.Num0JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_1)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum1JustPressed(true);
-			Num1JustPressedAction();
+			inputDeviceStatus.setNum1JustPressed(true);
+			deviceInputListener.Num1JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_1)==false&& keyboardStatus.isNum1JustPressed()) {
-			keyboardStatus.setNum1JustPressed(false);
-			Num1JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_1)==false&& inputDeviceStatus.isNum1JustPressed()) {
+			inputDeviceStatus.setNum1JustPressed(false);
+			deviceInputListener.Num1JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_2)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum2JustPressed(true);
-			Num2JustPressedAction();
+			inputDeviceStatus.setNum2JustPressed(true);
+			deviceInputListener.Num2JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_2)==false&& keyboardStatus.isNum2JustPressed()) {
-			keyboardStatus.setNum2JustPressed(false);
-			Num2JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_2)==false&& inputDeviceStatus.isNum2JustPressed()) {
+			inputDeviceStatus.setNum2JustPressed(false);
+			deviceInputListener.Num2JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_3)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum3JustPressed(true);
-			Num3JustPressedAction();
+			inputDeviceStatus.setNum3JustPressed(true);
+			deviceInputListener.Num3JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_3)==false&& keyboardStatus.isNum3JustPressed()) {
-			keyboardStatus.setNum3JustPressed(false);
-			Num3JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_3)==false&& inputDeviceStatus.isNum3JustPressed()) {
+			inputDeviceStatus.setNum3JustPressed(false);
+			deviceInputListener.Num3JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_4)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum4JustPressed(true);
-			Num4JustPressedAction();
+			inputDeviceStatus.setNum4JustPressed(true);
+			deviceInputListener.Num4JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_4)==false&& keyboardStatus.isNum4JustPressed()) {
-			keyboardStatus.setNum4JustPressed(false);
-			Num4JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_4)==false&& inputDeviceStatus.isNum4JustPressed()) {
+			inputDeviceStatus.setNum4JustPressed(false);
+			deviceInputListener.Num4JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_5)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum5JustPressed(true);
-			Num5JustPressedAction();
+			inputDeviceStatus.setNum5JustPressed(true);
+			deviceInputListener.Num5JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_5)==false&& keyboardStatus.isNum5JustPressed()) {
-			keyboardStatus.setNum5JustPressed(false);
-			Num5JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_5)==false&& inputDeviceStatus.isNum5JustPressed()) {
+			inputDeviceStatus.setNum5JustPressed(false);
+			deviceInputListener.Num5JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_6)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum6JustPressed(true);
-			Num6JustPressedAction();
+			inputDeviceStatus.setNum6JustPressed(true);
+			deviceInputListener.Num6JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_6)==false&& keyboardStatus.isNum6JustPressed()) {
-			keyboardStatus.setNum6JustPressed(false);
-			Num6JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_6)==false&& inputDeviceStatus.isNum6JustPressed()) {
+			inputDeviceStatus.setNum6JustPressed(false);
+			deviceInputListener.Num6JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_7)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum7JustPressed(true);
-			Num7JustPressedAction();
+			inputDeviceStatus.setNum7JustPressed(true);
+			deviceInputListener.Num7JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_7)==false&& keyboardStatus.isNum7JustPressed()) {
-			keyboardStatus.setNum7JustPressed(false);
-			Num7JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_7)==false&& inputDeviceStatus.isNum7JustPressed()) {
+			inputDeviceStatus.setNum7JustPressed(false);
+			deviceInputListener.Num7JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_8)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum8JustPressed(true);
-			Num8JustPressedAction();
+			inputDeviceStatus.setNum8JustPressed(true);
+			deviceInputListener.Num8JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_8)==false&& keyboardStatus.isNum8JustPressed()) {
-			keyboardStatus.setNum8JustPressed(false);
-			Num8JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_8)==false&& inputDeviceStatus.isNum8JustPressed()) {
+			inputDeviceStatus.setNum8JustPressed(false);
+			deviceInputListener.Num8JustUppedAction();
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Keys.NUM_9)) {
-			// game.getScreen().dispose();
-			keyboardStatus.setNum9JustPressed(true);
-			Num9JustPressedAction();
+			inputDeviceStatus.setNum9JustPressed(true);
+			deviceInputListener.Num9JustPressedAction();
 
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_9)==false&& keyboardStatus.isNum9JustPressed()) {
-			keyboardStatus.setNum9JustPressed(false);
-			Num9JustUppedAction();
+		}else if (Gdx.input.isKeyPressed(Keys.NUM_9)==false&& inputDeviceStatus.isNum9JustPressed()) {
+			inputDeviceStatus.setNum9JustPressed(false);
+			deviceInputListener.Num9JustUppedAction();
 		}
 		
 	}
-	
-	public void Num9JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num9JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num8JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num8JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num7JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num7JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num6JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num6JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num5JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num5JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num4JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num4JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num3JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num3JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num2JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num2JustPressedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num1JustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void Num1JustPressedAction() {
-	}
-
-	public void Num0JustUppedAction() {
-	}
-
-	public void Num0JustPressedAction() {
-	}
-
-	
-	public void aJustPressedAction() {
-	}
-	public void aJustUppedAction() {
-	}
-	
-	public void bJustPressedAction() {
-	}
-	public void bJustUppedAction() {
-	}
-	
-	public void cJustPressedAction() {
-	}
-	public void cJustUppedAction() {
-	}
-	
-	public void dJustPressedAction() {
-	}
-	public void dJustUppedAction() {
-	}
-	
-	public void eJustPressedAction() {
-	}
-	public void eJustUppedAction() {
-	}
-	
-	public void fJustPressedAction() {
-	}
-	public void fJustUppedAction() {
-	}
-	
-	public void gJustPressedAction() {
-	}
-	public void gJustUppedAction() {
-	}
-	
-	public void hJustPressedAction() {
-	}
-	public void hJustUppedAction() {
-	}
-	
-	public void iJustPressedAction() {
-	}
-	public void iJustUppedAction() {
-	}
-	
-	public void jJustPressedAction() {
-	}
-	public void jJustUppedAction() {
-	}
-	
-	public void kJustPressedAction() {
-	}
-	public void kJustUppedAction() {
-	}
-	
-	public void lJustPressedAction() {
-	}
-	public void lJustUppedAction() {
-	}
-	
-	public void mJustPressedAction() {
-	}
-	public void mJustUppedAction() {
-	}
-	
-	public void nJustPressedAction() {
-	}
-	public void nJustUppedAction() {
-	}
-	
-	public void oJustPressedAction() {
-	}
-	public void oJustUppedAction() {
-	}
-	
-	public void pJustPressedAction() {
-	}
-	public void pJustUppedAction() {
-	}
-	
-	public void qJustPressedAction() {
-	}
-	public void qJustUppedAction() {
-	}
-	
-	public void rJustPressedAction() {
-	}
-	public void rJustUppedAction() {
-	}
-	
-	public void sJustPressedAction() {
-	}
-	public void sJustUppedAction() {
-	}
-	
-	public void tJustPressedAction() {
-	}
-	public void tJustUppedAction() {
-	}
-	
-	public void uJustPressedAction() {
-	}
-	public void uJustUppedAction() {
-	}
-	
-	public void vJustPressedAction() {
-	}
-	public void vJustUppedAction() {
-	}
-	
-	public void wJustPressedAction() {
-	}
-	public void wJustUppedAction() {
-	}
-	
-	public void xJustPressedAction() {
-	}
-	public void xJustUppedAction() {
-	}
-	
-	public void yJustPressedAction() {
-	}
-	public void yJustUppedAction() {
-	}
-	
-	public void zJustPressedAction() {
-	}
-	public void zJustUppedAction() {
-	}
-	
-	
-	
-	public void spaceJustPressedAction() {
-	}
-
-	public void spaceJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void delJustPressedAction() {
-		
-	}
-
-	public void delJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void mouseLeftJustPressedAction() {
-		
-	}
-	public void mouseLeftJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void mouseRightJustPressedAction() {
-		
-	}
-	public void mouseRightJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void mouseMiddleJustPressedAction() {
-		
-	}
-	public void mouseMiddleJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

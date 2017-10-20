@@ -1,6 +1,6 @@
 package com.yuil.game.input;
 
-public class KeyboardStatus {
+public class InputDeviceStatus {
 	boolean aJustPressed;
 	boolean bJustPressed;
 	boolean cJustPressed;
