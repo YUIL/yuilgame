@@ -4,10 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 
-public class DeviceInputHandler {
+public class InputDeviceControler {
 	public InputDeviceStatus inputDeviceStatus;
-	public DeviceInputListener deviceInputListener;
-	public DeviceInputHandler(InputDeviceStatus inputDeviceStatus,DeviceInputListener deviceInputListener){
+	public InputDeviceListener deviceInputListener;
+	public InputDeviceControler(InputDeviceStatus inputDeviceStatus,InputDeviceListener deviceInputListener){
 		this.inputDeviceStatus=inputDeviceStatus;
 		this.deviceInputListener=deviceInputListener;
 	}

@@ -44,7 +44,9 @@ import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.yuil.game.MyGame;
+import com.yuil.game.entity.attribute.Attribute;
 import com.yuil.game.entity.attribute.AttributeType;
 import com.yuil.game.entity.attribute.GameObjectTypeAttribute;
 import com.yuil.game.entity.attribute.HealthPoint;
@@ -60,6 +62,8 @@ import com.yuil.game.entity.physics.PhysicsWorldBuilder;
 import com.yuil.game.entity.physics.RenderableBtObject;
 import com.yuil.game.gui.GuiFactory;
 import com.yuil.game.input.ActorInputListenner;
+import com.yuil.game.input.InputDeviceControler;
+import com.yuil.game.input.InputDeviceListener;
 import com.yuil.game.input.InputManager;
 import com.yuil.game.input.InputDeviceStatus;
 
@@ -68,6 +72,9 @@ public class RigidBodyTestScreen extends Screen2D{
 	boolean turnLeft=true;
 	long nextTurnTime=0;
 	
+	public HashMap<String, Object> tempVariable=new HashMap<String, Object>();
+
+	
 	ModelBuilder modelBuilder = new ModelBuilder();
 	PhysicsWorldBuilder physicsWorldBuilder;
 	PhysicsWorld physicsWorld;
@@ -75,11 +82,13 @@ public class RigidBodyTestScreen extends Screen2D{
 	Environment lights;
 	
 	InputDeviceStatus inputDeviceStatus=new InputDeviceStatus();
-	
+
+	InputDeviceControler inputControler=new InputDeviceControler(inputDeviceStatus, createInputDeviceListener());
 	RenderableBtObject testBtObject;
 	
 	public PerspectiveCamera camera;
 	CameraInputController camController;
+	
 
 	ModelBatch modelBatch=new ModelBatch();
 	
@@ -131,8 +140,7 @@ public class RigidBodyTestScreen extends Screen2D{
 
 	@Override
 	public void render(float delta) {
-		checkKeyBoardStatus();
-		
+		inputControler.checkDeviceInput();
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -217,91 +225,36 @@ public class RigidBodyTestScreen extends Screen2D{
 		}
 		
 	}
-	void checkKeyBoardStatus(){
-		
-		if (Gdx.input.isKeyJustPressed(Keys.Q)) {
-			
-		}else if (Gdx.input.isKeyPressed(Keys.Q)==false&& inputDeviceStatus.isqJustPressed()) {
-			inputDeviceStatus.setqJustPressed(false);
-		}
-		
-		if (Gdx.input.isKeyJustPressed(Keys.A)) {
-			// game.getScreen().dispose();
-			inputDeviceStatus.setaJustPressed(true);
-			aJustPressedAction();
-
-		}else if (Gdx.input.isKeyPressed(Keys.A)==false&& inputDeviceStatus.isaJustPressed()) {
-			inputDeviceStatus.setaJustPressed(false);
-			if(Gdx.input.isKeyPressed(Keys.D)){
-				dJustPressedAction();
-			}else{
-				aJustUppedAction();
-			}
-		}
-		if (Gdx.input.isKeyJustPressed(Keys.D)) {
-			// game.getScreen().dispose();
-			inputDeviceStatus.setdJustPressed(true);
-			dJustPressedAction();
-		}else if (Gdx.input.isKeyPressed(Keys.D)==false&& inputDeviceStatus.isdJustPressed()) {
-			inputDeviceStatus.setdJustPressed(false);
-			if(Gdx.input.isKeyPressed(Keys.A)){
-				aJustPressedAction();
-			}else{
-				dJustUppedAction();
-			}
-		}
-		
-		if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-			// game.getScreen().dispose();
-			inputDeviceStatus.setSpaceJustPressed(true);
-			spaceJustPressedAction();
-
-		}else if (Gdx.input.isKeyPressed(Keys.SPACE)==false&& inputDeviceStatus.isdJustPressed()) {
-			inputDeviceStatus.setSpaceJustPressed(false);
-			spaceJustUppedAction();
-		}
-		
-		if (Gdx.input.isKeyJustPressed(Keys.NUM_1)) {
-			// game.getScreen().dispose();
-			inputDeviceStatus.setNum1JustPressed(true);
-			
-			sound.play(1,(0.5f+(1.5f* random.nextFloat())), 0);
-		}else if (Gdx.input.isKeyPressed(Keys.NUM_1)==false&& inputDeviceStatus.isNum1JustPressed()) {
-			inputDeviceStatus.setNum1JustPressed(false);
-		}
-		
-		
-	}
 	void setupActorInput(){
 		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				aJustUppedAction();
+				inputControler.deviceInputListener.aJustUppedAction();
 			}
 
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				aJustPressedAction();
+				inputControler.deviceInputListener.aJustPressedAction();
 				return true;
 			}
 		});
 		stage.getRoot().findActor("D").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				dJustUppedAction();
+				inputControler.deviceInputListener.dJustUppedAction();
 			}
 
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				dJustPressedAction();
+				inputControler.deviceInputListener.dJustPressedAction();
 				return true;
 			}
 		});
 		stage.getRoot().findActor("Z").addListener(new ActorInputListenner() {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				zJustPressedAction();
+				inputControler.deviceInputListener.zJustPressedAction();
 			}
 		});
 		stage.getRoot().findActor("X").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				delJustPressedAction();
+				inputControler.deviceInputListener.delJustPressedAction();
 			}
 		});
 		stage.getRoot().findActor("G").addListener(new ActorInputListenner() {
@@ -315,14 +268,14 @@ public class RigidBodyTestScreen extends Screen2D{
 		stage.getRoot().findActor("W").addListener(new ActorInputListenner() {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				wJustPressedAction() ;
+				inputControler.deviceInputListener.wJustPressedAction() ;
 			}
 		});
 		
 		stage.getRoot().findActor("S").addListener(new ActorInputListenner() {
 
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				sJustPressedAction() ;
+				inputControler.deviceInputListener.sJustPressedAction() ;
 			}
 		});
 
@@ -331,86 +284,6 @@ public class RigidBodyTestScreen extends Screen2D{
 			}
 		});	
 	}
-
-	protected void zJustPressedAction() {
-		//testBtObject=physicsWorldBuilder.createObstacleRenderableBall(1, 1, new Vector3(0,0,0),new Color(0f,1f,0f,1f));
-		if(testBtObject==null){
-
-			testBtObject=createTestObject();
-
-			
-			//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal()));
-
-			//testBtObject.getRigidBody().getWorldTransform(tempMatrix4);
-			//tempMatrix4.scale(5, 5, 5);
-			//testBtObject.getRigidBody().setWorldTransform(tempMatrix4);
-			System.out.println(testBtObject.getRigidBody().getWorldTransform());
-			physicsWorld.addPhysicsObject(testBtObject);
-			//((BtWorld)physicsWorld).getCollisionWorld().getDebugDrawer();
-			//testBtObject.getRigidBody().setLinearVelocity(new Vector3(0,0,2));
-
-		}else{
-			BtObject bo=createTestObject();
-			//bo.getRigidBody().setIgnoreCollisionCheck(testBtObject.getRigidBody(), true);
-			physicsWorld.addPhysicsObject(bo);
-		}
-	}
-
-	protected void dJustPressedAction() {
-		//ColorAttribute ca=ColorAttribute.createDiffuse(new Color(0f, 0f, 0f, 1));
-		ColorAttribute ca=(ColorAttribute)(((RenderableBtObject)testBtObject).getInstance().nodes.get(0).parts.get(0).material.get(ColorAttribute.Diffuse));
-		ca.color.set(0, 0, 0, 1);
-	//System.out.println(material.size());
-	}
-
-	protected void dJustUppedAction() {
-	}
-
-	protected void aJustPressedAction() {
-		testBtObject.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(0.5f,0.5f,0.5f));
-		testBtObject.getRigidBody().translate(tempVector3.set(0,10,0));
-	}
-
-	protected void aJustUppedAction() {
-	}
-	
-	protected void wJustPressedAction() {
-		spaceJustPressedAction();
-	}
-
-	protected void wJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	protected void sJustPressedAction() {
-//		if(btObject!=null){
-//			physicsWorld.updatePhysicsObject(tempMessage);
-//		}
-	}
-	
-	protected void spaceJustPressedAction() {
-		tempVector3.set(testBtObject.getRigidBody().getLinearVelocity());
-		tempVector3.y=10;
-		tempVector3.z=2;
-		testBtObject.getRigidBody().setLinearVelocity(tempVector3);
-		
-	}
-
-	protected void spaceJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	protected void delJustPressedAction() {
-		
-	}
-
-	protected void delJustUppedAction() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public void updatePhysicsObject(BtObject btObject,UPDATE_BTOBJECT_MOTIONSTATE message){
 		//btMotionState tempMotionState =new btMotionState();
 	
@@ -468,8 +341,8 @@ public class RigidBodyTestScreen extends Screen2D{
 		//testObject.getRigidBody().setContactCallbackFlag(0);
 		//testObject.getRigidBody().setContactCallbackFilter(0);
 		
-		btPairCachingGhostObject ghostObject=new btPairCachingGhostObject();
-		ghostObject.setCollisionShape(new btSphereShape(9));
+		btGhostObject ghostObject=new btGhostObject();
+		ghostObject.setCollisionShape(new btSphereShape(3));
 		ghostObject.userData=testObject;
 		((BtWorld)physicsWorld).getCollisionWorld().addCollisionObject(ghostObject);
 		
@@ -478,4 +351,506 @@ public class RigidBodyTestScreen extends Screen2D{
 		return testObject;
 	}
 	
+	InputDeviceListener createInputDeviceListener(){
+		return new InputDeviceListener() {
+			
+			@Override
+			public void zJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void zJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void yJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void yJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void xJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void xJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void wJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void wJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void vJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void vJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void uJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void uJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void tJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void tJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void spaceJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void spaceJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void sJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void sJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void rJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void rJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void qJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void qJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void pJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void pJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void oJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void oJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void nJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void nJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseRightJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseRightJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseMiddleJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseMiddleJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseLeftJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseLeftJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void lJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void lJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void kJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void kJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void jJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void jJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void iJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void iJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void hJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void hJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void gJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void gJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void fJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void fJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void eJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void eJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void delJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void delJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void cJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void cJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void bJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void bJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void aJustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void aJustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num9JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num9JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num8JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num8JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num7JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num7JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num6JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num6JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num5JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num5JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num4JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num4JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num3JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num3JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num2JustUppedAction() {
+				// TODO Auto-generated method stub
+				camController.autoUpdate=true;
+				camController.forwardTarget=true;
+				camController.scrollTarget=true;
+				
+			}
+			
+			@Override
+			public void Num2JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num1JustUppedAction() {
+				// TODO Auto-generated method stub
+				System.out.println(camera.position);
+				System.out.println(camController.autoUpdate);
+
+
+			}
+			
+			@Override
+			public void Num1JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num0JustUppedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void Num0JustPressedAction() {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+	}
 }

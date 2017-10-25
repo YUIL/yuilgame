@@ -1,6 +1,6 @@
 package com.yuil.game.input;
 
-public interface DeviceInputListener {
+public interface InputDeviceListener {
 	public void Num9JustUppedAction();
 
 	public void Num9JustPressedAction();

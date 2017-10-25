@@ -50,8 +50,8 @@ import com.yuil.game.entity.physics.PhysicsWorldBuilder;
 import com.yuil.game.entity.physics.RenderableBtObject;
 import com.yuil.game.gui.GuiFactory;
 import com.yuil.game.input.ActorInputListenner;
-import com.yuil.game.input.DeviceInputHandler;
-import com.yuil.game.input.DeviceInputListener;
+import com.yuil.game.input.InputDeviceControler;
+import com.yuil.game.input.InputDeviceListener;
 import com.yuil.game.input.InputManager;
 import com.yuil.game.input.InputDeviceStatus;
 import com.yuil.game.net.MessageListener;
@@ -89,7 +89,7 @@ public class TestScreen2 extends Screen2D implements MessageListener{
 
 	
 	InputDeviceStatus inputDeviceStatus=new InputDeviceStatus();
-	DeviceInputHandler deviceInputHandler;
+	InputDeviceControler deviceInputHandler;
 
 	public PerspectiveCamera camera;
 	CameraInputController camController;
@@ -120,7 +120,7 @@ public class TestScreen2 extends Screen2D implements MessageListener{
 	boolean isLogin=false;
 	public TestScreen2(MyGame game) {
 		super(game);
-		deviceInputHandler=new DeviceInputHandler(inputDeviceStatus, createDeviceInputListener());
+		deviceInputHandler=new InputDeviceControler(inputDeviceStatus, createDeviceInputListener());
 
 		clientSocket=new ClientSocket(9092,"127.0.0.1",9091,this);
 
@@ -1156,8 +1156,8 @@ public class MyContactListener extends ContactListener {
 		
 	}
 
-	public DeviceInputListener createDeviceInputListener(){
-		return new DeviceInputListener() {
+	public InputDeviceListener createDeviceInputListener(){
+		return new InputDeviceListener() {
 			
 			@Override
 			public void zJustUppedAction() {
