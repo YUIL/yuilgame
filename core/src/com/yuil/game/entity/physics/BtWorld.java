@@ -10,13 +10,18 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.SWIGTYPE_p_f_r_btBroadphasePair_r_btCollisionDispatcher_r_q_const__btDispatcherInfo__void;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
+import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
+import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
+import com.badlogic.gdx.physics.bullet.collision.btConvexShape;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
+import com.badlogic.gdx.physics.bullet.collision.btPairCachingGhostObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.utils.Disposable;
 import com.yuil.game.entity.message.APPLY_FORCE;
@@ -89,29 +94,36 @@ public class BtWorld extends PhysicsWorld implements Disposable{
 	
 	public BtWorld() {
 		super();
-		initBtWorld(this.gravity);
+		initBtWorld(this.gravity,new btDbvtBroadphase());
 	}
 	
 	public BtWorld(Vector3 gravity) {
 		super();
-		initBtWorld(gravity);
+		initBtWorld(gravity,new btDbvtBroadphase());
 	}
 	
-	private void initBtWorld(Vector3 gravity){
-		Bullet.init();
+	public BtWorld(Vector3 gravity,btBroadphaseInterface broadphase) {
+		super();
+		initBtWorld(gravity,broadphase);
+
+	}
+
+	private void initBtWorld(Vector3 gravity,btBroadphaseInterface broadphase){
 		// Create the bullet world
 		collisionConfiguration = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfiguration);
 		
-		broadphase = new btDbvtBroadphase();
+		this.broadphase = broadphase;
 		solver = new btSequentialImpulseConstraintSolver();
 		collisionWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 		collisionWorld.setGravity(gravity);
 		this.physicsObjects=new ConcurrentHashMap<Long, BtObject>();
 	}
 	
+	
 	public void update(float delta){
 
+		
 		for (BtObject btObject : physicsObjects.values()) {
 			//System.out.println(btObject.rigidBody.getWorldTransform());
 			btObject.update(delta);

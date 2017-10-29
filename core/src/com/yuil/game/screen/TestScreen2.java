@@ -27,6 +27,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -120,6 +121,7 @@ public class TestScreen2 extends Screen2D implements MessageListener{
 	boolean isLogin=false;
 	public TestScreen2(MyGame game) {
 		super(game);
+		Bullet.init();
 		deviceInputHandler=new InputDeviceControler(inputDeviceStatus, createDeviceInputListener());
 
 		clientSocket=new ClientSocket(9092,"127.0.0.1",9091,this);
