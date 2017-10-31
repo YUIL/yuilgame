@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody.btRigidBodyConstructionInfo;
+import com.badlogic.gdx.physics.bullet.linearmath.LinearMathJNI;
 import com.badlogic.gdx.physics.bullet.linearmath.btDefaultMotionState;
 import com.yuil.game.entity.attribute.AttributeType;
 import com.yuil.game.entity.attribute.GameObjectTypeAttribute;
@@ -110,7 +111,11 @@ public class BtObjectFactory {
 		collisionShape.calculateLocalInertia(mass, inertia);
 		btRigidBodyConstructionInfo rigidBodyConstructionInfo = new btRigidBodyConstructionInfo(mass, null,
 				collisionShape, inertia);
-		btDefaultMotionState motionState = new btDefaultMotionState();
+		btDefaultMotionState motionState = new btDefaultMotionState(){
+			  public void setWorldTransform(Matrix4 worldTrans) {
+				  super.setWorldTransform(worldTrans);
+			  }
+		};
 		motionState.setWorldTransform(new Matrix4(new Vector3(x, y, z), new Quaternion(), new Vector3(1,1,1)));
 		btRigidBody rigidBody = new btRigidBody(rigidBodyConstructionInfo);
 		rigidBody.setMotionState(motionState);

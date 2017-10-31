@@ -373,6 +373,7 @@ public class RigidBodyTestScreen extends Screen2D {
 				Usage.Position | Usage.Normal);
 		btSphereShape collisionShape = new btSphereShape(0.5f);
 		testObject = physicsWorldBuilder.btObjectFactory.createRenderableBtObject(model, collisionShape, 1, 0, 10, 0);
+		//testObject.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		testObject.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(1f, 1f, 1f));
 		testObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
@@ -404,11 +405,13 @@ public class RigidBodyTestScreen extends Screen2D {
 		
 
 		ghostObject.setCollisionShape(ghostShape);
-		ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
-		
+		ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+
 		physicsWorld.getCollisionWorld().addCollisionObject(ghostObject, 
 				(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,
-				(short)(btBroadphaseProxy.CollisionFilterGroups.CharacterFilter));
+				(short)((btBroadphaseProxy.CollisionFilterGroups.DefaultFilter)|btBroadphaseProxy.CollisionFilterGroups.StaticFilter));
+
+		
 		physicsWorld.getCollisionWorld().addAction(characterController);
 
 	}
@@ -451,10 +454,10 @@ public class RigidBodyTestScreen extends Screen2D {
 				btPairCachingGhostObject ghostObject=(btPairCachingGhostObject)(testVariables.get("ghostObject"));
 				Vector3 tempv3=new Vector3();
 				ghostObject.getWorldTransform().getTranslation(tempv3);
-				System.out.println(characterController.canJump());
+				System.out.println("canjump:"+characterController.canJump());
 				System.out.println("v3.y:"+Vector3.Y);
-
-				System.out.println(tempv3);
+				System.out.println("OverlappingNum:"+ghostObject.getNumOverlappingObjects());
+				System.out.println("position:"+tempv3);
 			}
 
 			@Override
@@ -504,7 +507,7 @@ public class RigidBodyTestScreen extends Screen2D {
 			@Override
 			public void vJustPressedAction() {
 				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override
