@@ -28,10 +28,12 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.CollisionJNI;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btAxisSweep3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
@@ -55,6 +57,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.yuil.game.MyGame;
 import com.yuil.game.entity.attribute.Attribute;
 import com.yuil.game.entity.attribute.AttributeType;
+import com.yuil.game.entity.attribute.DamagePoint;
 import com.yuil.game.entity.attribute.GameObjectTypeAttribute;
 import com.yuil.game.entity.attribute.HealthPoint;
 import com.yuil.game.entity.gameobject.GameObjectType;
@@ -103,6 +106,8 @@ public class RigidBodyTestScreen extends Screen2D {
 
 	Matrix4 tempMatrix4 = new Matrix4();
 	Vector3 tempVector3 = new Vector3();
+    Vector3 bulletPosition =new Vector3();
+
 	UPDATE_BTOBJECT_MOTIONSTATE temp_update_rigidbody_message;
 	UPDATE_LINEAR_VELOCITY temp_update_liner_velocity_message = new UPDATE_LINEAR_VELOCITY();
 	boolean isLogin = false;
@@ -131,7 +136,6 @@ public class RigidBodyTestScreen extends Screen2D {
 		// ((BtWorld)physicsWorld).getCollisionWorld().getPairCache().setOverlapFilterCallback(myFilterCallback);
 
 		contactListener = new MyContactListener();
-
 		// Set up the camera
 		final float width = Gdx.graphics.getWidth();
 		final float height = Gdx.graphics.getHeight();
@@ -200,7 +204,6 @@ public class RigidBodyTestScreen extends Screen2D {
 	}
 
 	public class MyContactListener extends ContactListener {
-
 		@Override
 		public void onContactStarted(btCollisionObject colObj0, btCollisionObject colObj1) {
 			 System.out.println("onContactStarted");
@@ -208,28 +211,34 @@ public class RigidBodyTestScreen extends Screen2D {
 				BtObject btObject0 = (BtObject) (((btRigidBody) colObj0).userData);
 				BtObject btObject1 = (BtObject) (((btRigidBody) colObj1).userData);
 
-				GameObjectTypeAttribute gameObjectType0 = (GameObjectTypeAttribute) (btObject0.Attributes
-						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
-				GameObjectTypeAttribute gameObjectType1 = (GameObjectTypeAttribute) (btObject1.Attributes
-						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
-				// System.out.println(gameObjectType0);
-				// System.out.println(gameObjectType1);
+				int type0=GameObjectTypeAttribute.getGameObjectType(btObject0);
+				int type1=GameObjectTypeAttribute.getGameObjectType(btObject1);
 
-				if (gameObjectType0.getGameObjectType() == GameObjectType.PLAYER.ordinal()
-						&& gameObjectType1.getGameObjectType() == GameObjectType.PLAYER.ordinal()) {
+				if (type0 == GameObjectType.PLAYER.ordinal() && type1== GameObjectType.PLAYER.ordinal()) {
 					System.out.println("ppp");
+				}else if(type0==GameObjectType.PLAYER.ordinal()&& type1==GameObjectType.BULLET.ordinal()){
+					HealthPoint hp=((HealthPoint)(btObject0.Attributes.get(AttributeType.HEALTH_POINT.ordinal())));
+					DamagePoint dp=((DamagePoint)(btObject1.Attributes.get(AttributeType.DAMAGE_POINT.ordinal())));
+					hp.setHealthPoint(hp.getHealthPoint()-dp.getDamagePoint());
+					if (hp.getHealthPoint()<=0){
+						physicsWorld.removePhysicsObject(btObject0);
+					}
+					physicsWorld.removePhysicsObject(btObject1);
+				}else if(type0==GameObjectType.BULLET.ordinal()&& type1==GameObjectType.PLAYER.ordinal()){
+					HealthPoint hp=((HealthPoint)(btObject1.Attributes.get(AttributeType.HEALTH_POINT.ordinal())));
+					DamagePoint dp=((DamagePoint)(btObject0.Attributes.get(AttributeType.DAMAGE_POINT.ordinal())));
+					hp.setHealthPoint(hp.getHealthPoint()-dp.getDamagePoint());
+					if (hp.getHealthPoint()<=0){
+						physicsWorld.removePhysicsObject(btObject1);
+					}
+					physicsWorld.removePhysicsObject(btObject0);
 				}
 			}
 		}
-
+	
 		@Override
-		public void onContactEnded(int userValue0, boolean match0, int userValue1, boolean match1) {
-			if (match0) {
-				// collision object 0 (userValue0) matches
-			}
-			if (match1) {
-				// collision object 1 (userValue1) matches
-			}
+		public void onContactEnded(btCollisionObject colObj0, btCollisionObject colObj1) {
+		
 			System.out.println("onContactEnded()");
 		}
 	}
@@ -377,6 +386,8 @@ public class RigidBodyTestScreen extends Screen2D {
 		testObject.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(1f, 1f, 1f));
 		testObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
+		testObject.Attributes.put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(100));
+
 		// testObject.getRigidBody().setContactCallbackFlag(0);
 		// testObject.getRigidBody().setContactCallbackFilter(0);
 /*
@@ -390,7 +401,26 @@ public class RigidBodyTestScreen extends Screen2D {
 		return testObject;
 	}
 	
-	
+	RenderableBtObject createBullet() {
+		System.out.println("createBullet");
+		RenderableBtObject bullet;
+
+		Model model = modelBuilder.createSphere(1, 1, 1, 10, 10,
+				new Material(ColorAttribute.createDiffuse(new Color(0.1f, 0.1f, 0.1f, 1)),
+						ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
+				Usage.Position | Usage.Normal);
+		btSphereShape collisionShape = new btSphereShape(0.5f);
+		bullet = physicsWorldBuilder.btObjectFactory.createRenderableBtObject(model, collisionShape, 1, 0, 10, 0);
+		//testObject.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+		bullet.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(1f, 1f, 1f));
+		bullet.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.BULLET.ordinal()));
+		bullet.Attributes.put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(20));
+		
+		bullet.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+		
+		return bullet;
+	}
 	void characterControllerTest(){
 	
 		
@@ -621,8 +651,20 @@ public class RigidBodyTestScreen extends Screen2D {
 			@Override
 			public void mouseRightJustUppedAction() {
 				// TODO Auto-generated method stub
-
-			}
+		        Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+		        tempVector3=ray.direction;
+		        
+		        BtObject bullet=createBullet();
+		        
+		        
+		        bullet.getRigidBody().getWorldTransform(tempMatrix4);
+		        tempMatrix4.setTranslation(camera.position);
+		        bullet.getTransform().getTranslation(bulletPosition);
+		        bullet.getRigidBody().setWorldTransform(tempMatrix4);
+		        bullet.getRigidBody().applyForce(tempVector3.scl(5000),bulletPosition);
+		        
+		        physicsWorld.addPhysicsObject(bullet);		
+		    }
 
 			@Override
 			public void mouseRightJustPressedAction() {
@@ -802,6 +844,9 @@ public class RigidBodyTestScreen extends Screen2D {
 			public void bJustUppedAction() {
 				// TODO Auto-generated method stub
 
+				BtObject bullet=createBullet();
+				//bo.getRigidBody().setIgnoreCollisionCheck(testBtObject.getRigidBody(), true);
+				physicsWorld.addPhysicsObject(bullet);
 			}
 
 			@Override

@@ -1,5 +1,7 @@
 package com.yuil.game.entity.attribute;
 
+import com.yuil.game.entity.physics.BtObject;
+
 public class GameObjectTypeAttribute implements Attribute {
 	public final Integer type=AttributeType.GMAE_OBJECT_TYPE.ordinal();
 	public int gameObjectType;
@@ -27,4 +29,13 @@ public class GameObjectTypeAttribute implements Attribute {
 		return 0;
 	}
 	
+	public static int getGameObjectType(BtObject btObject){
+		GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (btObject.Attributes
+				.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
+		if (gameObjectType!=null){
+			return gameObjectType.getGameObjectType();
+		}else{
+			return -1;
+		}
+	}
 }
