@@ -61,7 +61,7 @@ public class LoginScreen extends Screen2D {
 					int pointer, int button) {
 				//(MyGdxGame)game).openId;
 				//MyGame.openId=((TextArea) stage.getRoot().findActor("userName")).getText();
-				game.setScreen(new RigidBodyTestScreen(game));
+				game.setScreen(new BulletEngineTestScreen(game));
 				
 			}
 		});

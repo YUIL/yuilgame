@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.CollisionJNI;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -65,7 +66,7 @@ public class BtTestServer2 implements MessageListener {
 	final float NO_CHANGE = 1008611;
 	NetSocket netSocket;
 	BroadCastor broadCastor;
-	BtWorld physicsWorld = new BtWorld();
+	BtWorld physicsWorld;
 	PhysicsWorldBuilder physicsWorldBuilder = new PhysicsWorldBuilder(false);
 	volatile Thread gameWorldThread;
 
@@ -218,6 +219,8 @@ public class BtTestServer2 implements MessageListener {
 	}
 
 	public BtTestServer2() {
+		Bullet.init();
+		physicsWorld = new BtWorld();
 		physicsWorld.addPhysicsObject(physicsWorldBuilder.createDefaultGround());
 
 		

@@ -77,7 +77,7 @@ import com.yuil.game.input.InputDeviceListener;
 import com.yuil.game.input.InputManager;
 import com.yuil.game.input.InputDeviceStatus;
 
-public class RigidBodyTestScreen extends Screen2D {
+public class BulletEngineTestScreen extends Screen2D {
 
 	boolean turnLeft = true;
 	long nextTurnTime = 0;
@@ -114,7 +114,7 @@ public class RigidBodyTestScreen extends Screen2D {
 
 	btGhostPairCallback ghostPairCallback;
 	
-	public RigidBodyTestScreen(MyGame game) {
+	public BulletEngineTestScreen(MyGame game) {
 		super(game);
 		
 		Bullet.init();
@@ -240,6 +240,20 @@ public class RigidBodyTestScreen extends Screen2D {
 		public void onContactEnded(btCollisionObject colObj0, btCollisionObject colObj1) {
 		
 			System.out.println("onContactEnded()");
+			
+			if (colObj0 instanceof btRigidBody && colObj1 instanceof btRigidBody) {
+				BtObject btObject0 = (BtObject) (((btRigidBody) colObj0).userData);
+				BtObject btObject1 = (BtObject) (((btRigidBody) colObj1).userData);
+
+				int type0=GameObjectTypeAttribute.getGameObjectType(btObject0);
+				int type1=GameObjectTypeAttribute.getGameObjectType(btObject1);
+
+				if (type0 == GameObjectType.PLAYER.ordinal() && type1== GameObjectType.PLAYER.ordinal()) {
+					btObject0.getRigidBody().activate();
+					btObject1.getRigidBody().activate();
+			
+				}
+			}
 		}
 	}
 
@@ -843,10 +857,6 @@ public class RigidBodyTestScreen extends Screen2D {
 			@Override
 			public void bJustUppedAction() {
 				// TODO Auto-generated method stub
-
-				BtObject bullet=createBullet();
-				//bo.getRigidBody().setIgnoreCollisionCheck(testBtObject.getRigidBody(), true);
-				physicsWorld.addPhysicsObject(bullet);
 			}
 
 			@Override
@@ -954,9 +964,6 @@ public class RigidBodyTestScreen extends Screen2D {
 			@Override
 			public void Num2JustUppedAction() {
 				// TODO Auto-generated method stub
-				camController.autoUpdate = true;
-				camController.forwardTarget = true;
-				camController.scrollTarget = true;
 
 			}
 
@@ -969,9 +976,7 @@ public class RigidBodyTestScreen extends Screen2D {
 			@Override
 			public void Num1JustUppedAction() {
 				// TODO Auto-generated method stub
-				System.out.println(camera.position);
-				System.out.println(camController.autoUpdate);
-
+				
 			}
 
 			@Override

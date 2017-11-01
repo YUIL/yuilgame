@@ -64,7 +64,7 @@ import com.yuil.game.net.message.MessageType;
 import com.yuil.game.net.message.MessageUtil;
 import com.yuil.game.net.message.SINGLE_MESSAGE;
 import com.yuil.game.net.udp.ClientSocket;
-import com.yuil.game.screen.RigidBodyTestScreen.MyContactListener;
+import com.yuil.game.screen.BulletEngineTestScreen.MyContactListener;
 import com.yuil.game.util.Log;
 
 import io.netty.buffer.ByteBuf;
