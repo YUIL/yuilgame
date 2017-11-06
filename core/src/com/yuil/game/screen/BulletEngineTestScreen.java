@@ -569,7 +569,9 @@ public class BulletEngineTestScreen extends Screen2D {
 			@Override
 			public void tJustUppedAction() {
 				// TODO Auto-generated method stub
-
+				Vector3 v3=new Vector3(1,1,1);
+				v3.rotate(180f, 0, 1, 0);
+				System.out.println(v3);
 			}
 
 			@Override
@@ -665,17 +667,19 @@ public class BulletEngineTestScreen extends Screen2D {
 			@Override
 			public void mouseRightJustUppedAction() {
 				// TODO Auto-generated method stub
-		        Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+		       // Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+				tempVector3.set(camera.position);
+				//tempVector3.y=testBtObject.getPosition().y;
+				 Ray ray = new Ray(camera.position, testBtObject.getPosition().sub(tempVector3).nor());
 		        tempVector3=ray.direction;
 		        
 		        BtObject bullet=createBullet();
 		        
-		        
 		        bullet.getRigidBody().getWorldTransform(tempMatrix4);
-		        tempMatrix4.setTranslation(camera.position);
+		        tempMatrix4.setTranslation(testBtObject.getPosition().x,testBtObject.getPosition().y,testBtObject.getPosition().z-2);
 		        bullet.getTransform().getTranslation(bulletPosition);
 		        bullet.getRigidBody().setWorldTransform(tempMatrix4);
-		        bullet.getRigidBody().applyForce(tempVector3.scl(5000),bulletPosition);
+		        bullet.getRigidBody().applyForce(tempVector3.scl(1000),bulletPosition);
 		        
 		        physicsWorld.addPhysicsObject(bullet);		
 		    }
