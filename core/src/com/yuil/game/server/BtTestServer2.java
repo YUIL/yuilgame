@@ -157,9 +157,10 @@ public class BtTestServer2 implements MessageListener {
 							removeBtObjectQueue.add(btObject1);
 
 						}
-						updateBtObjectMotionStateBroadCastQueue.add(btObject0);
 					}
 				}
+				updateBtObjectMotionStateBroadCastQueue.add(btObject0);
+				updateBtObjectMotionStateBroadCastQueue.add(btObject1);
 
 				handleBtObject(btObject0);
 				handleBtObject(btObject1);
@@ -183,8 +184,8 @@ public class BtTestServer2 implements MessageListener {
 			if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
 				// System.out.println(((OwnerPlayerId)(btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()))).getPlayerId());
 				contactPlayerQueue.add(btObject);
-				v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
-				btObject.getRigidBody().setLinearVelocity(v3);
+				//v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
+			//	btObject.getRigidBody().setLinearVelocity(v3);
 			}
 		}
 
@@ -250,11 +251,15 @@ public class BtTestServer2 implements MessageListener {
 
 		int interval = 17;// 更新间隔
 		long nextUpdateTime = 0;// 下次更新的时间
+		long lastUpdateTime = 0;// 下次更新的时间
+		long thisUpdateTime = 0;// 下次更新的时间
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			nextUpdateTime = System.currentTimeMillis();
+			lastUpdateTime = nextUpdateTime;
+
 			while (true) {
 				if (System.currentTimeMillis() >= nextUpdateTime) {// 更新世界
 					while(!removeSessionQueue.isEmpty()){
@@ -346,7 +351,9 @@ public class BtTestServer2 implements MessageListener {
 						 * }
 						 */
 					nextUpdateTime += interval;
-					physicsWorld.update(interval / 1000f);// 更新物理世界
+					thisUpdateTime=System.currentTimeMillis();
+					physicsWorld.update((thisUpdateTime-lastUpdateTime )/ 1000f);// 更新物理世界
+					lastUpdateTime = thisUpdateTime;
 
 					// 向连接的客户端发送btObjectMotionstate同步消息
 					for (int i = 0; i < updateBtObjectMotionStateBroadCastQueue.size(); i++) {

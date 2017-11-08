@@ -203,8 +203,8 @@ public class MyContactListener extends ContactListener {
 		}
 		void handleBtObject(BtObject btObject){
 			if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
-				v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
-				btObject.getRigidBody().setLinearVelocity(v3);
+				//v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
+				//btObject.getRigidBody().setLinearVelocity(v3);
 			}
 		}
 		
@@ -291,7 +291,7 @@ public class MyContactListener extends ContactListener {
 
 		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
 			ModelInstance modelInstance=((RenderableBtObject)physicsObject).getInstance();
-			((BtObject)physicsObject).getRigidBody().getWorldTransform(modelInstance.transform);
+			((BtObject)physicsObject).getRigidBody().getMotionState().getWorldTransform(modelInstance.transform);
 
 			GameObjectTypeAttribute gameObjectType=(GameObjectTypeAttribute)(((BtObject)physicsObject).Attributes.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 /*

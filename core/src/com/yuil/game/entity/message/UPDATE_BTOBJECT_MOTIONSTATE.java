@@ -2,6 +2,7 @@ package com.yuil.game.entity.message;
 
 import java.util.Arrays;
 
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.yuil.game.entity.physics.BtObject;
 import com.yuil.game.net.message.Message;
@@ -11,7 +12,7 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class UPDATE_BTOBJECT_MOTIONSTATE implements Message {
 	public final int type = EntityMessageType.UPDATE_BTOBJECT_MOTIONSTATE.ordinal();
-
+	private Matrix4 tm4=new Matrix4();
 	long id;
 
 	public long getId() {
@@ -47,7 +48,8 @@ public class UPDATE_BTOBJECT_MOTIONSTATE implements Message {
 		if(rigidBody==null){
 			System.out.println("!@#!@#!@#!@#!@#");
 		}
-		float[] val = rigidBody.getWorldTransform().val;
+		rigidBody.getMotionState().getWorldTransform(tm4);
+		float[] val = tm4.val;
 		for (int i = 0; i < transformVal.length; i++) {
 			transformVal[i] = val[i];
 		}

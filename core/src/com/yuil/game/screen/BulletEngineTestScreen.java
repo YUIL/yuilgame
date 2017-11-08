@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.naming.ldap.ExtendedRequest;
 import javax.print.attribute.TextSyntax;
 
 import com.badlogic.gdx.Gdx;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -51,6 +53,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btCharacterControllerInterface;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.physics.bullet.linearmath.btDefaultMotionState;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -526,6 +529,14 @@ public class BulletEngineTestScreen extends Screen2D {
 					//testBtObject.getRigidBody().setWorldTransform(tempMatrix4);
 					System.out.println(testBtObject.getRigidBody().getWorldTransform());
 					physicsWorld.addPhysicsObject(testBtObject);
+					testBtObject.getRigidBody().setMotionState(new btDefaultMotionState(){
+						  public void setWorldTransform(Matrix4 worldTrans) {
+							  System.out.println("setWorldTransform");
+							  super.setWorldTransform(worldTrans);
+						  }
+					});
+					testBtObject.getRigidBody().setWorldTransform(new Matrix4(new Vector3(0, 10, 0), new Quaternion(), new Vector3(1,1,1)));
+
 					//((BtWorld)physicsWorld).getCollisionWorld().getDebugDrawer();
 					//testBtObject.getRigidBody().setLinearVelocity(new Vector3(0,0,2));
 
@@ -717,7 +728,7 @@ public class BulletEngineTestScreen extends Screen2D {
 			@Override
 			public void mJustUppedAction() {
 				// TODO Auto-generated method stub
-
+				testBtObject.getRigidBody().getMotionState().setWorldTransform(new Matrix4(new Vector3(0, 10, 0), new Quaternion(), new Vector3(1,1,1)));
 			}
 
 			@Override

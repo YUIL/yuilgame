@@ -462,11 +462,6 @@ public class VollyServer implements MessageListener {
 						if (message.getZ() != NO_CHANGE) {
 							v3.z = message.getZ();
 						}
-						// System.out.println("btId:"+btObject.getId());
-						// System.out.println("v3:"+v3);
-						// System.out.println("position:"+btObject.getPosition());
-						// btObject.getRigidBody().applyForce(tempVector3,
-						// btObject.getPosition());
 						if (!btObject.getRigidBody().isActive()) {
 							btObject.getRigidBody().activate();
 						}

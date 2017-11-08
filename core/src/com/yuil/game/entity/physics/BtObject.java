@@ -20,7 +20,8 @@ public class BtObject extends PhysicsObject implements Disposable{
 	public HashMap<Integer, Attribute> Attributes=new HashMap<Integer, Attribute>();
 	public short group=1;
 	public short mask=(short) 65535;
-	
+	private Matrix4 tm4=new Matrix4();
+
 	private Vector3 position=new Vector3();
 
 	public BtObject() {
@@ -47,7 +48,8 @@ public class BtObject extends PhysicsObject implements Disposable{
 	
 	
 	public Vector3 getPosition() {
-		return this.rigidBody.getWorldTransform().getTranslation(position);
+		rigidBody.getMotionState().getWorldTransform(tm4);
+		return tm4.getTranslation(position);
 	}
 
 	public void setPosition(Vector3 position) {
