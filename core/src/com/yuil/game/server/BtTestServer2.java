@@ -128,7 +128,6 @@ public class BtTestServer2 implements MessageListener {
 				if (gameObjectType0 != null && gameObjectType1 != null) {
 					if (gameObjectType0.getGameObjectType() == GameObjectType.PLAYER.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()) {
-						btObject0.getRigidBody().setIgnoreCollisionCheck(btObject1.getRigidBody(), true);
 						HealthPoint healthPoint = ((HealthPoint) (btObject0.Attributes
 								.get(AttributeType.HEALTH_POINT.ordinal())));
 						int demage = (int) Math
@@ -140,11 +139,9 @@ public class BtTestServer2 implements MessageListener {
 							removeBtObjectQueue.add(btObject0);
 
 						}
-						// contactPlayerQueue.add(btObject0);
 						removeBtObjectQueue.add(btObject1);
 					} else if (gameObjectType0.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.PLAYER.ordinal()) {
-						btObject0.getRigidBody().setIgnoreCollisionCheck(btObject1.getRigidBody(), true);
 
 						HealthPoint healthPoint = ((HealthPoint) (btObject1.Attributes
 								.get(AttributeType.HEALTH_POINT.ordinal())));

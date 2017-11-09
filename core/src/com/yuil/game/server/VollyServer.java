@@ -126,7 +126,6 @@ public class VollyServer implements MessageListener {
 				if (gameObjectType0 != null && gameObjectType1 != null) {
 					if (gameObjectType0.getGameObjectType() == GameObjectType.PLAYER.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()) {
-						btObject0.getRigidBody().setIgnoreCollisionCheck(btObject1.getRigidBody(), true);
 						HealthPoint healthPoint = ((HealthPoint) (btObject0.Attributes
 								.get(AttributeType.HEALTH_POINT.ordinal())));
 						int demage = (int) Math
@@ -138,12 +137,9 @@ public class VollyServer implements MessageListener {
 							removeBtObjectQueue.add(btObject0);
 
 						}
-						// contactPlayerQueue.add(btObject0);
 						removeBtObjectQueue.add(btObject1);
 					} else if (gameObjectType0.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.PLAYER.ordinal()) {
-						btObject0.getRigidBody().setIgnoreCollisionCheck(btObject1.getRigidBody(), true);
-
 						HealthPoint healthPoint = ((HealthPoint) (btObject1.Attributes
 								.get(AttributeType.HEALTH_POINT.ordinal())));
 						int demage = (int) Math
@@ -161,18 +157,6 @@ public class VollyServer implements MessageListener {
 
 				handleBtObject(btObject0);
 				handleBtObject(btObject1);
-
-				/*
-				 * if(gameObjectType != null){
-				 * if(gameObjectType.getGameObjectType()==com.yuil.game.entity.
-				 * gameobject.GameObjectType.OBSTACLE.ordinal()){
-				 * System.out.println("asdasds");
-				 * physicsWorld.removePhysicsObject(btObject);
-				 * remove_BTOBJECT_message.setId(btObject.getId());
-				 * broadCastor.broadCast_SINGLE_MESSAGE(remove_BTOBJECT_message,
-				 * false); } }
-				 */
-
 			}
 
 		}
@@ -232,13 +216,14 @@ public class VollyServer implements MessageListener {
 		netSocket.setMessageListener(this);
 		broadCastor = new BroadCastor(netSocket);
 		messageProcessor = new MessageProcessor();
-
+		
+		gameWorldThread = new Thread(new WorldLogic());
+		
 		initConfig();
 	}
 
 	public void start() {
 		Log.println("start");
-		gameWorldThread = new Thread(new WorldLogic());
 		gameWorldThread.start();
 		netSocket.start();
 	}
@@ -296,52 +281,11 @@ public class VollyServer implements MessageListener {
 							// 检查障碍物位置,超过边界则删除
 							if (tempVector3.z > -45) {
 								physicsWorld.removePhysicsObject(btObject);
-								// remove_BTOBJECT_message.setId(btObject.getId());
-								// broadCastor.broadCast_SINGLE_MESSAGE(remove_BTOBJECT_message,
-								// false);
 							}
 						} else if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
-							// 检查playerObjects位置，超过边界返回起始点
-							// System.out.println(btObject.getPosition()+"
-							// Z:"+tempVector3.z);
-							// System.out.println("velo:"+btObject.getRigidBody().getLinearVelocity());
-							/*
-							 * if (tempVector3.z < -199) {
-							 * btObject.getRigidBody().getWorldTransform(
-							 * tempMatrix4);
-							 * tempMatrix4.setTranslation(btObject.getPosition()
-							 * .x, btObject.getPosition().y, -20);
-							 * btObject.getRigidBody().setWorldTransform(
-							 * tempMatrix4); BtTestServer2.
-							 * updateBtObjectMotionStateBroadCastQueue.add(
-							 * btObject); }
-							 */
-							/*
-							 * btObject.getRigidBody().getWorldTransform().
-							 * getTranslation(tempVector3); if
-							 * (tempVector3.z>-50) {
-							 * tempVector3.set(btObject.getRigidBody().
-							 * getLinearVelocity()); tempVector3.z = -5; }else{
-							 * btObject.getRigidBody().getWorldTransform(
-							 * tempMatrix4);
-							 * tempMatrix4.setTranslation(btObject.getPosition()
-							 * .x, btObject.getPosition().y, -50);
-							 * btObject.getRigidBody().setWorldTransform(
-							 * tempMatrix4);
-							 * tempVector3.set(btObject.getRigidBody().
-							 * getLinearVelocity()); tempVector3.z = 0; }
-							 * btObject.getRigidBody().setLinearVelocity(
-							 * tempVector3);
-							 * updateBtObjectMotionStateBroadCastQueue.add(
-							 * btObject);
-							 */
 						}
-					} /*
-						 * while(!contactPlayerQueue.isEmpty()){ BtObject
-						 * btObject=contactPlayerQueue.poll();
-						 * 
-						 * }
-						 */
+					} 
+					
 					nextUpdateTime += interval;
 					physicsWorld.update(interval / 1000f);// 更新物理世界
 
@@ -569,22 +513,6 @@ public class VollyServer implements MessageListener {
 
 	}
 
-	/*
-	 * public void updatePhysicsObject(BtObject
-	 * btObject,UPDATE_BTOBJECT_MOTIONSTATE message){
-	 * tempMatrix4.set(message.getTransformVal());
-	 * btObject.getRigidBody().setWorldTransform(tempMatrix4);
-	 * 
-	 * tempVector3.x=message.getLinearVelocityX();
-	 * tempVector3.y=message.getLinearVelocityY();
-	 * tempVector3.z=message.getLinearVelocityZ();
-	 * btObject.getRigidBody().setLinearVelocity(tempVector3);
-	 * 
-	 * tempVector3.x=message.getAngularVelocityX();
-	 * tempVector3.y=message.getAngularVelocityY();
-	 * tempVector3.z=message.getAngularVelocityZ();
-	 * btObject.getRigidBody().setAngularVelocity(tempVector3); }
-	 */
 
 	void initConfig() {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
