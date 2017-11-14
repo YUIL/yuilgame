@@ -69,7 +69,7 @@ import com.yuil.game.util.Log;
 
 import io.netty.buffer.ByteBuf;
 
-public class VolleyScreen extends Screen2D implements MessageListener{
+public class VolleyballScreen extends Screen2D implements MessageListener{
 	
 	
 	Queue<S2C_ADD_OBSTACLE> createObstacleQueue =new  ConcurrentLinkedQueue<S2C_ADD_OBSTACLE>();
@@ -119,7 +119,7 @@ public class VolleyScreen extends Screen2D implements MessageListener{
 	
 	
 	boolean isLogin=false;
-	public VolleyScreen(MyGame game) {
+	public VolleyballScreen(MyGame game) {
 		super(game);
 		Bullet.init();
 		deviceInputHandler=new InputDeviceControler(inputDeviceStatus, createDeviceInputListener());
@@ -130,7 +130,7 @@ public class VolleyScreen extends Screen2D implements MessageListener{
 		initMessageHandle();
 		
 		GuiFactory guiFactory = new GuiFactory();
-		String guiXmlPath = "gui/TestScreen2.xml";
+		String guiXmlPath = "gui/VolleyballScreen.xml";
 		guiFactory.setStage(stage, guiXmlPath);
 
 		lights = new Environment();

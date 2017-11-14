@@ -9,10 +9,13 @@ import com.yuil.game.MyGame;
 import com.yuil.game.gui.GuiFactory;
 import com.yuil.game.input.ActorInputListenner;
 import com.yuil.game.input.InputManager;
+import com.yuil.game.util.Encryptor;
 public class LoginScreen extends Screen2D {
 
 	public LoginScreen(MyGame game) {
 		super(game);
+		Encryptor encryptor=new Encryptor();
+		encryptor.test("aAaAa");
 		// TODO Auto-generated constructor stub
 		GuiFactory guiFactory = new GuiFactory();
 		String guiXmlPath = "gui/Login.xml";
@@ -62,6 +65,17 @@ public class LoginScreen extends Screen2D {
 				//(MyGdxGame)game).openId;
 				//MyGame.openId=((TextArea) stage.getRoot().findActor("userName")).getText();
 				game.setScreen(new BulletEngineTestScreen(game));
+				
+			}
+		});
+		
+		stage.getRoot().findActor("Volleyball").addListener(new ActorInputListenner() {
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				//(MyGdxGame)game).openId;
+				//MyGame.openId=((TextArea) stage.getRoot().findActor("userName")).getText();
+				game.setScreen(new VolleyballScreen(game));
 				
 			}
 		});

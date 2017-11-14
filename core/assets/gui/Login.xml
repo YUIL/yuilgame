@@ -16,5 +16,10 @@
         <y>100</y>
         <skin name="default"></skin>
     </actor>
-        
+    
+    <actor id="6" type="textButton" name="Volleyball" text="Vollyball">
+        <x>300</x>
+        <y>100</y>
+        <skin name="default"></skin>
+    </actor>
 </stage>

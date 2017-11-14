@@ -41,6 +41,7 @@ import com.yuil.game.entity.attribute.HealthPoint;
 import com.yuil.game.entity.attribute.OwnerPlayerId;
 import com.yuil.game.entity.gameobject.GameObjectType;
 import com.yuil.game.entity.message.*;
+import com.yuil.game.entity.message.action.VollyBallAction;
 import com.yuil.game.entity.physics.BtObject;
 import com.yuil.game.entity.physics.BtObjectFactory;
 import com.yuil.game.entity.physics.BtObjectSpawner;
@@ -62,7 +63,7 @@ import com.yuil.game.util.Log;
 
 import io.netty.buffer.ByteBuf;
 
-public class VollyServer implements MessageListener {
+public class VollyballServer implements MessageListener {
 	final float NO_CHANGE = 1008611;
 	NetSocket netSocket;
 	BroadCastor broadCastor;
@@ -195,11 +196,11 @@ public class VollyServer implements MessageListener {
 	}
 
 	public static void main(String[] args) {
-		VollyServer btTestServer = new VollyServer();
+		VollyballServer btTestServer = new VollyballServer();
 		btTestServer.start();
 	}
 
-	public VollyServer() {
+	public VollyballServer() {
 		Bullet.init();
 		physicsWorld = new BtWorld();
 		physicsWorld.addPhysicsObject(physicsWorldBuilder.createDefaultGround());
@@ -411,7 +412,7 @@ public class VollyServer implements MessageListener {
 						}
 
 						btObject.getRigidBody().setLinearVelocity(v3);
-						VollyServer.updateBtObjectMotionStateBroadCastQueue.add(btObject);
+						VollyballServer.updateBtObjectMotionStateBroadCastQueue.add(btObject);
 
 					}
 				}
@@ -442,6 +443,9 @@ public class VollyServer implements MessageListener {
 				@Override
 				public void handle(ByteBuf src) {
 					message.set(src);
+					if(message.getActionId()==VollyBallAction.MATCH_GAME.ordinal()){
+						System.out.println("match_game");
+					}
 					System.out.println(message.toString());
 					// netSocket.send(SINGLE_MESSAGE.get(message.get().array()),
 					// session, false);
