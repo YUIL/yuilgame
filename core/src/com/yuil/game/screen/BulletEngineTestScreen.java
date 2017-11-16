@@ -468,7 +468,7 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void zJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 				btCharacterControllerInterface characterController=(btCharacterControllerInterface)(testVariables.get("characterController"));
 				characterController.jump(Vector3.Y.scl(100));
 				
@@ -476,26 +476,26 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void zJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void yJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 				characterControllerTest();
 
 			}
 
 			@Override
 			public void yJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void xJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 				btCharacterControllerInterface characterController=(btCharacterControllerInterface)(testVariables.get("characterController"));
 
 				btPairCachingGhostObject ghostObject=(btPairCachingGhostObject)(testVariables.get("ghostObject"));
@@ -509,13 +509,13 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void xJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void wJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 				//testBtObject=physicsWorldBuilder.createObstacleRenderableBall(1, 1, new Vector3(0,0,0),new Color(0f,1f,0f,1f));
 				if(testBtObject==null){
 
@@ -549,37 +549,37 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void wJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void vJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void vJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 				
 			}
 
 			@Override
 			public void uJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void uJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void tJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 				Vector3 v3=new Vector3(1,1,1);
 				v3.rotate(180f, 0, 1, 0);
 				System.out.println(v3);
@@ -587,97 +587,97 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void tJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void spaceJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void spaceJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void sJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void sJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void rJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void rJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void qJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void qJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void pJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void pJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void oJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void oJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void nJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void nJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void mouseRightJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 		       // Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
 				tempVector3.set(camera.position);
 				//tempVector3.y=testBtObject.getPosition().y;
@@ -697,318 +697,318 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void mouseRightJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void mouseMiddleJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void mouseMiddleJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void mouseLeftJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void mouseLeftJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void mJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 				testBtObject.getRigidBody().getMotionState().setWorldTransform(new Matrix4(new Vector3(0, 10, 0), new Quaternion(), new Vector3(1,1,1)));
 			}
 
 			@Override
 			public void mJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void lJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void lJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void kJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void kJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void jJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void jJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void iJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void iJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void hJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void hJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void gJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void gJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void fJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void fJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void eJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void eJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void delJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void delJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void dJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void dJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void cJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void cJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void bJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 			}
 
 			@Override
 			public void bJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void aJustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void aJustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num9JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num9JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num8JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num8JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num7JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num7JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num6JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num6JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num5JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num5JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num4JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num4JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num3JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num3JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num2JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num2JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num1JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 				
 			}
 
 			@Override
 			public void Num1JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num0JustUppedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 
 			@Override
 			public void Num0JustPressedAction() {
-				// TODO Auto-generated method stub
+				
 
 			}
 		};

@@ -81,6 +81,9 @@ public class VollyballServer implements MessageListener {
 	
 	
 	Map<Long,Player> playerMap=new HashMap<Long,Player>();
+	Map<Long,MultiplayRoom> multiplayRoomMap=new HashMap<Long,MultiplayRoom>();
+
+	
 	public static Queue<Long> removeSessionQueue = new ConcurrentLinkedDeque<Long>();
 
 	//List<Player> playerList = new ArrayList<Player>();
@@ -444,7 +447,7 @@ public class VollyballServer implements MessageListener {
 				public void handle(ByteBuf src) {
 					message.set(src);
 					if(message.getActionId()==VollyBallAction.MATCH_GAME.ordinal()){
-						System.out.println("match_game");
+						System.out.println("MATCH_GAME");
 					}
 					System.out.println(message.toString());
 					// netSocket.send(SINGLE_MESSAGE.get(message.get().array()),
@@ -603,4 +606,11 @@ public class VollyballServer implements MessageListener {
 		removeSessionQueue.add(sessionId);
 	}
 	
+	
+	public void matchGame(Session session){
+		Player player=playerMap.get(session.getId());
+		if(player!=null){
+			//TODO match game
+		}
+	}
 }

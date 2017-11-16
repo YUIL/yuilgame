@@ -34,6 +34,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.yuil.game.MyGame;
 import com.yuil.game.entity.attribute.AttributeType;
 import com.yuil.game.entity.attribute.DamagePoint;
@@ -42,6 +43,7 @@ import com.yuil.game.entity.attribute.HealthPoint;
 import com.yuil.game.entity.attribute.OwnerPlayerId;
 import com.yuil.game.entity.gameobject.GameObjectType;
 import com.yuil.game.entity.message.*;
+import com.yuil.game.entity.message.action.VollyBallAction;
 import com.yuil.game.entity.physics.BtObject;
 import com.yuil.game.entity.physics.BtObjectFactory;
 import com.yuil.game.entity.physics.BtWorld;
@@ -985,6 +987,20 @@ public class MyContactListener extends ContactListener {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 			}
 		});	
+		
+		stage.getRoot().findActor("doAction").addListener(new ActorInputListenner() {
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				
+				temp_do_action_messge.setActionId(Long.parseLong(((TextArea) stage.getRoot().findActor("actionId")).getText()));
+				sendSingleMessage(temp_do_action_messge);
+				
+			}
+
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				
+				return true;
+			}
+		});
 	}
 	
 	void sendSingleMessage(Message message){
@@ -1654,5 +1670,7 @@ public class MyContactListener extends ContactListener {
 			}
 		};
 	}
+	
+
 }
 
