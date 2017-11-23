@@ -1,10 +1,15 @@
 package com.yuil.game.server;
 
+import java.util.HashMap;
+
+import com.yuil.game.entity.attribute.Attribute;
+
 public class Player {
 	long id;
 	long btObjectId;
 	long sessionId;
-	
+	public HashMap<String, Object> Attributes=new HashMap<String, Object>();
+
 	
 	public Player() {
 		super();
@@ -33,6 +38,12 @@ public class Player {
 	}
 	public void setSessionId(long sessionId) {
 		this.sessionId = sessionId;
+	}
+	public HashMap<String, Object> getAttributes() {
+		return Attributes;
+	}
+	public void setAttributes(HashMap<String, Object> attributes) {
+		Attributes = attributes;
 	}
 	
 	

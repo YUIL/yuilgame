@@ -63,7 +63,7 @@ import com.yuil.game.util.Log;
 
 import io.netty.buffer.ByteBuf;
 
-public class VollyballServer implements MessageListener {
+public class VolleyballServer implements MessageListener {
 	final float NO_CHANGE = 1008611;
 	NetSocket netSocket;
 	BroadCastor broadCastor;
@@ -82,7 +82,7 @@ public class VollyballServer implements MessageListener {
 	
 	Map<Long,Player> playerMap=new HashMap<Long,Player>();
 	Map<Long,MultiplayRoom> multiplayRoomMap=new HashMap<Long,MultiplayRoom>();
-
+	
 	
 	public static Queue<Long> removeSessionQueue = new ConcurrentLinkedDeque<Long>();
 
@@ -105,6 +105,46 @@ public class VollyballServer implements MessageListener {
 	public static Queue<BtObject> removeBtObjectQueue = new ConcurrentLinkedDeque<BtObject>();
 	BtObjectSpawner obstacleBallSpawner;
 
+	List<VolleyballCourt> volleyballCourts=new ArrayList<VolleyballServer.VolleyballCourt>();
+	public static Queue<VolleyballCourt> readyVolleyballCourtQueue = new ConcurrentLinkedDeque<VolleyballCourt>();
+
+	public class VolleyballCourt{
+		Player player1=null;
+		Player player2=null;
+		boolean ready1=false;
+		boolean ready2=false;
+		
+		boolean started=false;
+		public int addPlayer(Player player){
+			if (player1==null){
+				player1=player;
+				return 1;
+			}else if (player2==null){
+				player2=player;
+				return 2;
+			}else{
+				return 0;
+			}
+		}
+		
+		public void ready(Long playerId){
+			if(player1!=null){
+				if(player1.getId()==playerId){
+					ready1=true;
+				}
+			}else if(player2!=null){
+				if(player2.getId()==playerId){
+					ready1=true;
+				}
+			}
+			if (ready1&&ready2){
+				start();
+			}
+		}
+		public void start(){
+			readyVolleyballCourtQueue.add(this);
+		}
+	}
 	
 	public class MyContactListener extends ContactListener {
 				Vector3 v3 = new Vector3();
@@ -199,11 +239,11 @@ public class VollyballServer implements MessageListener {
 	}
 
 	public static void main(String[] args) {
-		VollyballServer btTestServer = new VollyballServer();
+		VolleyballServer btTestServer = new VolleyballServer();
 		btTestServer.start();
 	}
 
-	public VollyballServer() {
+	public VolleyballServer() {
 		Bullet.init();
 		physicsWorld = new BtWorld();
 		physicsWorld.addPhysicsObject(physicsWorldBuilder.createDefaultGround());
@@ -415,7 +455,7 @@ public class VollyballServer implements MessageListener {
 						}
 
 						btObject.getRigidBody().setLinearVelocity(v3);
-						VollyballServer.updateBtObjectMotionStateBroadCastQueue.add(btObject);
+						VolleyballServer.updateBtObjectMotionStateBroadCastQueue.add(btObject);
 
 					}
 				}
@@ -448,6 +488,7 @@ public class VollyballServer implements MessageListener {
 					message.set(src);
 					if(message.getActionId()==VollyBallAction.MATCH_GAME.ordinal()){
 						System.out.println("MATCH_GAME");
+						matchGame(session);
 					}
 					System.out.println(message.toString());
 					// netSocket.send(SINGLE_MESSAGE.get(message.get().array()),
@@ -611,6 +652,20 @@ public class VollyballServer implements MessageListener {
 		Player player=playerMap.get(session.getId());
 		if(player!=null){
 			//TODO match game
+			int addPlayerResult = 0;
+			for (Iterator iterator = volleyballCourts.iterator(); iterator.hasNext();) {
+				VolleyballCourt volleyballCourt = (VolleyballCourt) iterator.next();
+				addPlayerResult=volleyballCourt.addPlayer(player);
+				if(addPlayerResult!=0){
+					break;
+				}
+			}
+			
+			if(addPlayerResult==0){
+				VolleyballCourt vc=new VolleyballCourt();
+				vc.addPlayer(player);
+				volleyballCourts.add(vc);
+			}
 		}
 	}
 }
