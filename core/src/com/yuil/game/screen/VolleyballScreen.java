@@ -1207,7 +1207,17 @@ public class MyContactListener extends ContactListener {
 			@Override
 			public void xJustUppedAction() {
 				// TODO Auto-generated method stub
-				
+				for(int y=1;y<10;y++){
+					for(int z=0;z<10;z++){
+						for(int x=0;x<10;x++){
+
+							RenderableBtObject rb= physicsWorldBuilder.btObjectFactory.createRenderableCube(1f,1f,new Vector3(x,y,z),new Color(1, 55, 55, 55));
+							rb.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+
+							physicsWorld.addPhysicsObject(rb);
+						}
+					}
+				}
 			}
 			
 			@Override

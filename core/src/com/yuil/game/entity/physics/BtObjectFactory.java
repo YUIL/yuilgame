@@ -189,9 +189,12 @@ public class BtObjectFactory {
 	public RenderableBtObject createRenderableCube(float sideLength,float mass,Vector3 position,Color color){
 		
 	
+		Model boxModel=modelBuilder.createBox(sideLength, sideLength, sideLength, new Material(ColorAttribute.createDiffuse(color),
+				ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
+		Usage.Position | Usage.Normal);
 
-		btCollisionShape collisionShape = new btBoxShape(tempVector.set(1, 1, 1));
-		RenderableBtObject renderableBtObject=createRenderableBtObject(defaultBoxModel, collisionShape, mass, position.x,position.y, position.z);
+		btCollisionShape collisionShape = new btBoxShape(tempVector.set(0.5f, 0.5f, 0.5f));
+		RenderableBtObject renderableBtObject=createRenderableBtObject(boxModel, collisionShape, mass, position.x,position.y, position.z);
 		renderableBtObject.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(sideLength,sideLength,sideLength));
 
 		return  renderableBtObject;
