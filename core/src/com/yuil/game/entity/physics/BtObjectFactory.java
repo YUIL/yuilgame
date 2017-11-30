@@ -185,4 +185,22 @@ public class BtObjectFactory {
 		initBtObject(btObject,collisionShape, mass, position.x,position.y, position.z);
 		return btObject;
 	}
+	
+	public RenderableBtObject createRenderableCube(float sideLength,float mass,Vector3 position,Color color){
+		
+	
+
+		btCollisionShape collisionShape = new btBoxShape(tempVector.set(1, 1, 1));
+		RenderableBtObject renderableBtObject=createRenderableBtObject(defaultBoxModel, collisionShape, mass, position.x,position.y, position.z);
+		renderableBtObject.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(sideLength,sideLength,sideLength));
+
+		return  renderableBtObject;
+	}
+	public BtObject createCube(float sideLength,float mass,Vector3 position){
+		BtObject btObject=new BtObject();
+		btCollisionShape collisionShape = new btBoxShape(tempVector.set(1, 1, 1));
+		collisionShape.setLocalScaling(new Vector3(sideLength,sideLength,sideLength));
+		initBtObject(btObject,collisionShape, mass, position.x,position.y, position.z);
+		return btObject;
+	}
 }

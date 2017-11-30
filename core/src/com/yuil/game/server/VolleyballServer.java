@@ -59,6 +59,7 @@ import com.yuil.game.net.message.MessageType;
 import com.yuil.game.net.message.MessageUtil;
 import com.yuil.game.net.message.SINGLE_MESSAGE;
 import com.yuil.game.net.udp.UdpSocket;
+import com.yuil.game.server.VolleyballServer.VolleyballCourt;
 import com.yuil.game.util.Log;
 
 import io.netty.buffer.ByteBuf;
@@ -105,16 +106,24 @@ public class VolleyballServer implements MessageListener {
 	public static Queue<BtObject> removeBtObjectQueue = new ConcurrentLinkedDeque<BtObject>();
 	BtObjectSpawner obstacleBallSpawner;
 
-	List<VolleyballCourt> volleyballCourts=new ArrayList<VolleyballServer.VolleyballCourt>();
+	Map<Long,VolleyballCourt> volleyballCourtMap=new HashMap<Long, VolleyballServer.VolleyballCourt>();
 	public static Queue<VolleyballCourt> readyVolleyballCourtQueue = new ConcurrentLinkedDeque<VolleyballCourt>();
 
 	public class VolleyballCourt{
+		long id;
 		Player player1=null;
 		Player player2=null;
 		boolean ready1=false;
 		boolean ready2=false;
 		
 		boolean started=false;
+		
+		
+		public VolleyballCourt(long id) {
+			super();
+			this.id = id;
+		}
+
 		public int addPlayer(Player player){
 			if (player1==null){
 				player1=player;
@@ -144,6 +153,56 @@ public class VolleyballServer implements MessageListener {
 		public void start(){
 			readyVolleyballCourtQueue.add(this);
 		}
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
+
+		public Player getPlayer1() {
+			return player1;
+		}
+
+		public void setPlayer1(Player player1) {
+			this.player1 = player1;
+		}
+
+		public Player getPlayer2() {
+			return player2;
+		}
+
+		public void setPlayer2(Player player2) {
+			this.player2 = player2;
+		}
+
+		public boolean isReady1() {
+			return ready1;
+		}
+
+		public void setReady1(boolean ready1) {
+			this.ready1 = ready1;
+		}
+
+		public boolean isReady2() {
+			return ready2;
+		}
+
+		public void setReady2(boolean ready2) {
+			this.ready2 = ready2;
+		}
+
+		public boolean isStarted() {
+			return started;
+		}
+
+		public void setStarted(boolean started) {
+			this.started = started;
+		}
+		
+		
 	}
 	
 	public class MyContactListener extends ContactListener {
@@ -653,7 +712,7 @@ public class VolleyballServer implements MessageListener {
 		if(player!=null){
 			//TODO match game
 			int addPlayerResult = 0;
-			for (Iterator iterator = volleyballCourts.iterator(); iterator.hasNext();) {
+			for (Iterator<VolleyballCourt> iterator = volleyballCourtMap.values().iterator(); iterator.hasNext();) {
 				VolleyballCourt volleyballCourt = (VolleyballCourt) iterator.next();
 				addPlayerResult=volleyballCourt.addPlayer(player);
 				if(addPlayerResult!=0){
@@ -662,9 +721,10 @@ public class VolleyballServer implements MessageListener {
 			}
 			
 			if(addPlayerResult==0){
-				VolleyballCourt vc=new VolleyballCourt();
+				VolleyballCourt vc=new VolleyballCourt(random.nextLong());
 				vc.addPlayer(player);
-				volleyballCourts.add(vc);
+				player.setRoomId(vc.getId());
+				volleyballCourtMap.put(vc.getId(), vc);
 			}
 		}
 	}

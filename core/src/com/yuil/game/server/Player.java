@@ -7,6 +7,7 @@ import com.yuil.game.entity.attribute.Attribute;
 public class Player {
 	long id;
 	long btObjectId;
+	long roomId;
 	long sessionId;
 	public HashMap<String, Object> Attributes=new HashMap<String, Object>();
 
@@ -44,6 +45,12 @@ public class Player {
 	}
 	public void setAttributes(HashMap<String, Object> attributes) {
 		Attributes = attributes;
+	}
+	public long getRoomId() {
+		return roomId;
+	}
+	public void setRoomId(long roomId) {
+		this.roomId = roomId;
 	}
 	
 	

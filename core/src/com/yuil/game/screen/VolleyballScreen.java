@@ -1192,7 +1192,10 @@ public class MyContactListener extends ContactListener {
 			@Override
 			public void yJustUppedAction() {
 				// TODO Auto-generated method stub
-				
+				RenderableBtObject rb= physicsWorldBuilder.btObjectFactory.createRenderableCube(1f,1f,new Vector3(1,1,1),new Color(1, 55, 55, 55));
+				rb.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+
+				physicsWorld.addPhysicsObject(rb);
 			}
 			
 			@Override
