@@ -1207,11 +1207,16 @@ public class MyContactListener extends ContactListener {
 			@Override
 			public void xJustUppedAction() {
 				// TODO Auto-generated method stub
+				Vector3 tmpV3=new Vector3();
+				Color tmpCor=new Color(55,55,55,1);
 				for(int y=1;y<10;y++){
 					for(int z=0;z<10;z++){
 						for(int x=0;x<10;x++){
+							tmpV3.set(x, y, z);
+							tmpCor.set(random.nextInt(255)/255f,random.nextInt(255)/255f, random.nextInt(255)/255f, 1);
+							//System.out.println(tmpCor.toString());
 
-							RenderableBtObject rb= physicsWorldBuilder.btObjectFactory.createRenderableCube(1f,1f,new Vector3(x,y,z),new Color(1, 55, 55, 55));
+							RenderableBtObject rb= physicsWorldBuilder.btObjectFactory.createRenderableCube(1f,0f,tmpV3,tmpCor);
 							rb.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 
 							physicsWorld.addPhysicsObject(rb);

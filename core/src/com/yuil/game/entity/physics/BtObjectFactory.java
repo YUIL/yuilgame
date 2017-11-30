@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -189,14 +190,14 @@ public class BtObjectFactory {
 	public RenderableBtObject createRenderableCube(float sideLength,float mass,Vector3 position,Color color){
 		
 	
-		Model boxModel=modelBuilder.createBox(sideLength, sideLength, sideLength, new Material(ColorAttribute.createDiffuse(color),
-				ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
-		Usage.Position | Usage.Normal);
+		//Model boxModel=modelBuilder.createBox(sideLength, sideLength, sideLength, new Material(ColorAttribute.createDiffuse(color),
+		//		ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
+		//Usage.Position | Usage.Normal);
 
 		btCollisionShape collisionShape = new btBoxShape(tempVector.set(0.5f, 0.5f, 0.5f));
-		RenderableBtObject renderableBtObject=createRenderableBtObject(boxModel, collisionShape, mass, position.x,position.y, position.z);
+		RenderableBtObject renderableBtObject=createRenderableBtObject(defaultBoxModel, collisionShape, mass, position.x,position.y, position.z);
 		renderableBtObject.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(sideLength,sideLength,sideLength));
-
+		((ColorAttribute)(renderableBtObject.getInstance().materials.get(0).get(ColorAttribute.Diffuse))).color.set(color);
 		return  renderableBtObject;
 	}
 	public BtObject createCube(float sideLength,float mass,Vector3 position){
