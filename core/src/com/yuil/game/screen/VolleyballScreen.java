@@ -226,7 +226,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 	@Override
 	public void render(float delta) {
-		checkKeyBoardStatus();
+		//checkKeyBoardStatus();
 		deviceInputHandler.checkDeviceInput();
 		while (!createObstacleQueue.isEmpty()) {
 			S2C_ADD_OBSTACLE message = createObstacleQueue.poll();
@@ -874,7 +874,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	}
 
 	protected void mouseLeftJustPressedAction() {
-		long id = getObject(Gdx.input.getX(), Gdx.input.getY());
+	/*	long id = getObject(Gdx.input.getX(), Gdx.input.getY());
 		System.out.println("hjkhjk:" + id);
 
 		if (id != -1) {
@@ -887,7 +887,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			// tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
 			// tempVector3.y=10;
 			// playerObject.getRigidBody().setLinearVelocity(tempVector3);
-		}
+		}*/
 	}
 
 	protected void mouseLeftJustUppedAction() {
@@ -925,7 +925,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			dst = position.dst2(camera.position);
 			if (Intersector.intersectRaySphere(ray, position, 3f, null)) {
 				if (((GameObjectTypeAttribute) (((BtObject) physicsObject).getAttributes()
-						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() == GameObjectType.OBSTACLE
+						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() == GameObjectType.PLAYER_S_OBJECT
 								.ordinal()) {
 					if (dst < dst2) {
 						dst2 = dst;
@@ -1387,7 +1387,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void mouseRightJustUppedAction() {
 				// TODO Auto-generated method stub
-
+				long id = getObject(Gdx.input.getX(), Gdx.input.getY());
+				System.out.println("hjkhjk:" + id);
 			}
 
 			@Override
