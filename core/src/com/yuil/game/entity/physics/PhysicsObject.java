@@ -15,7 +15,7 @@ public abstract class PhysicsObject {
 		this.id = id;
 	}
 	public abstract Matrix4 getTransform();
-	public abstract Vector3 getPosition();
+	public abstract Vector3 getPosition(Matrix4 tm4);
 	public abstract void setPosition(Vector3 position);
 	public abstract Object getUserData() ;
 	public abstract void setUserData(Object userData) ;

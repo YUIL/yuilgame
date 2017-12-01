@@ -176,7 +176,7 @@ public class BulletEngineTestScreen extends Screen2D {
 			// System.out.println("!!!!!!!!");
 			// System.out.println(modelInstance.transform);
 			// modelInstance.transform.scl(new Vector3(5, 5, 5));
-			GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (((BtObject) physicsObject).Attributes
+			GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (((BtObject) physicsObject).getAttributes()
 					.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 
 			if (gameObjectType != null) {
@@ -220,16 +220,16 @@ public class BulletEngineTestScreen extends Screen2D {
 				if (type0 == GameObjectType.PLAYER.ordinal() && type1== GameObjectType.PLAYER.ordinal()) {
 					System.out.println("ppp");
 				}else if(type0==GameObjectType.PLAYER.ordinal()&& type1==GameObjectType.BULLET.ordinal()){
-					HealthPoint hp=((HealthPoint)(btObject0.Attributes.get(AttributeType.HEALTH_POINT.ordinal())));
-					DamagePoint dp=((DamagePoint)(btObject1.Attributes.get(AttributeType.DAMAGE_POINT.ordinal())));
+					HealthPoint hp=((HealthPoint)(btObject0.getAttributes().get(AttributeType.HEALTH_POINT.ordinal())));
+					DamagePoint dp=((DamagePoint)(btObject1.getAttributes().get(AttributeType.DAMAGE_POINT.ordinal())));
 					hp.setHealthPoint(hp.getHealthPoint()-dp.getDamagePoint());
 					if (hp.getHealthPoint()<=0){
 						physicsWorld.removePhysicsObject(btObject0);
 					}
 					physicsWorld.removePhysicsObject(btObject1);
 				}else if(type0==GameObjectType.BULLET.ordinal()&& type1==GameObjectType.PLAYER.ordinal()){
-					HealthPoint hp=((HealthPoint)(btObject1.Attributes.get(AttributeType.HEALTH_POINT.ordinal())));
-					DamagePoint dp=((DamagePoint)(btObject0.Attributes.get(AttributeType.DAMAGE_POINT.ordinal())));
+					HealthPoint hp=((HealthPoint)(btObject1.getAttributes().get(AttributeType.HEALTH_POINT.ordinal())));
+					DamagePoint dp=((DamagePoint)(btObject0.getAttributes().get(AttributeType.DAMAGE_POINT.ordinal())));
 					hp.setHealthPoint(hp.getHealthPoint()-dp.getDamagePoint());
 					if (hp.getHealthPoint()<=0){
 						physicsWorld.removePhysicsObject(btObject1);
@@ -368,7 +368,7 @@ public class BulletEngineTestScreen extends Screen2D {
 		Vector3 tempVector = new Vector3();
 		btCollisionShape collisionShape = new btBoxShape(tempVector.set(1, 0, 1));
 		ground = physicsWorldBuilder.btObjectFactory.createRenderableBtObject(model, collisionShape, 0, 0, 0, 0);
-		ground.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+		ground.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		return ground;
 	}
@@ -401,9 +401,9 @@ public class BulletEngineTestScreen extends Screen2D {
 		testObject = physicsWorldBuilder.btObjectFactory.createRenderableBtObject(model, collisionShape, 1, 0, 10, 0);
 		//testObject.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		testObject.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(1f, 1f, 1f));
-		testObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+		testObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
-		testObject.Attributes.put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(100));
+		testObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(100));
 
 		// testObject.getRigidBody().setContactCallbackFlag(0);
 		// testObject.getRigidBody().setContactCallbackFilter(0);
@@ -430,9 +430,9 @@ public class BulletEngineTestScreen extends Screen2D {
 		bullet = physicsWorldBuilder.btObjectFactory.createRenderableBtObject(model, collisionShape, 1, 0, 10, 0);
 		//testObject.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		bullet.getRigidBody().getCollisionShape().setLocalScaling(new Vector3(1f, 1f, 1f));
-		bullet.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+		bullet.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.BULLET.ordinal()));
-		bullet.Attributes.put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(20));
+		bullet.getAttributes().put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(20));
 		
 		bullet.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		
@@ -677,17 +677,17 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void mouseRightJustUppedAction() {
-				
+				Matrix4 tm4=new Matrix4();
 		       // Ray ray = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
 				tempVector3.set(camera.position);
 				//tempVector3.y=testBtObject.getPosition().y;
-				 Ray ray = new Ray(camera.position, testBtObject.getPosition().sub(tempVector3).nor());
+				 Ray ray = new Ray(camera.position, testBtObject.getPosition(tm4).sub(tempVector3).nor());
 		        tempVector3=ray.direction;
 		        
 		        BtObject bullet=createBullet();
 		        
 		        bullet.getRigidBody().getWorldTransform(tempMatrix4);
-		        tempMatrix4.setTranslation(testBtObject.getPosition().x,testBtObject.getPosition().y,testBtObject.getPosition().z-2);
+		        tempMatrix4.setTranslation(testBtObject.getPosition(tm4).x,testBtObject.getPosition(tm4).y,testBtObject.getPosition(tm4).z-2);
 		        bullet.getTransform().getTranslation(bulletPosition);
 		        bullet.getRigidBody().setWorldTransform(tempMatrix4);
 		        bullet.getRigidBody().applyForce(tempVector3.scl(1000),bulletPosition);

@@ -30,7 +30,7 @@ public class GameObjectTypeAttribute implements Attribute {
 	}
 	
 	public static int getGameObjectType(BtObject btObject){
-		GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (btObject.Attributes
+		GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (btObject.getAttributes()
 				.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 		if (gameObjectType!=null){
 			return gameObjectType.getGameObjectType();

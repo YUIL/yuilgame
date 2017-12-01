@@ -4,5 +4,6 @@ public enum GameObjectType {
 	GROUND,
 	PLAYER,
 	OBSTACLE,
-	BULLET
+	BULLET,
+	PLAYER_S_OBJECT
 }

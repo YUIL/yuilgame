@@ -217,9 +217,9 @@ public class VolleyballServer implements MessageListener {
 				BtObject btObject0 = (BtObject) (((btRigidBody) colObj0).userData);
 				BtObject btObject1 = (BtObject) (((btRigidBody) colObj1).userData);
 
-				GameObjectTypeAttribute gameObjectType0 = (GameObjectTypeAttribute) (btObject0.Attributes
+				GameObjectTypeAttribute gameObjectType0 = (GameObjectTypeAttribute) (btObject0.getAttributes()
 						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
-				GameObjectTypeAttribute gameObjectType1 = (GameObjectTypeAttribute) (btObject1.Attributes
+				GameObjectTypeAttribute gameObjectType1 = (GameObjectTypeAttribute) (btObject1.getAttributes()
 						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 				if (gameObjectType0.getGameObjectType() == GameObjectType.GROUND.ordinal()
 						|| gameObjectType1.getGameObjectType() == GameObjectType.GROUND.ordinal()) {
@@ -229,7 +229,7 @@ public class VolleyballServer implements MessageListener {
 				if (gameObjectType0 != null && gameObjectType1 != null) {
 					if (gameObjectType0.getGameObjectType() == GameObjectType.PLAYER.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()) {
-						HealthPoint healthPoint = ((HealthPoint) (btObject0.Attributes
+						HealthPoint healthPoint = ((HealthPoint) (btObject0.getAttributes()
 								.get(AttributeType.HEALTH_POINT.ordinal())));
 						int demage = (int) Math
 								.floor((btObject1.getRigidBody().getCollisionShape().getLocalScaling().x * 10));
@@ -243,7 +243,7 @@ public class VolleyballServer implements MessageListener {
 						removeBtObjectQueue.add(btObject1);
 					} else if (gameObjectType0.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.PLAYER.ordinal()) {
-						HealthPoint healthPoint = ((HealthPoint) (btObject1.Attributes
+						HealthPoint healthPoint = ((HealthPoint) (btObject1.getAttributes()
 								.get(AttributeType.HEALTH_POINT.ordinal())));
 						int demage = (int) Math
 								.floor((btObject0.getRigidBody().getCollisionShape().getLocalScaling().x * 10));
@@ -265,7 +265,7 @@ public class VolleyballServer implements MessageListener {
 		}
 
 		void handleBtObject(BtObject btObject) {
-			if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
+			if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
 				// System.out.println(((OwnerPlayerId)(btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()))).getPlayerId());
 				v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
 				btObject.getRigidBody().setLinearVelocity(v3);
@@ -356,7 +356,7 @@ public class VolleyballServer implements MessageListener {
 					obstacleBallSpawner.update();// 刷障碍物体
 					while (!removeBtObjectQueue.isEmpty()) {
 						BtObject btObject = removeBtObjectQueue.poll();
-						if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
+						if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
 							System.out.println("remove a player!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 						}
 						physicsWorld.removePhysicsObject(btObject);
@@ -372,20 +372,20 @@ public class VolleyballServer implements MessageListener {
 						btObject.getRigidBody().getWorldTransform().getTranslation(tempVector3);
 						if (tempVector3.y < -20) {// 所有物体的死亡高度判断
 
-							if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
+							if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
 								System.out.println("remove a player!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 							}
 							physicsWorld.removePhysicsObject(btObject);
 							remove_BTOBJECT_message.setId(btObject.getId());
 							broadCastor.broadCast_SINGLE_MESSAGE(remove_BTOBJECT_message, false);
-						} else if (((GameObjectTypeAttribute) (btObject.Attributes
+						} else if (((GameObjectTypeAttribute) (btObject.getAttributes()
 								.get(AttributeType.GMAE_OBJECT_TYPE.ordinal())))
 										.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()) {
 							// 检查障碍物位置,超过边界则删除
 							if (tempVector3.z > -45) {
 								physicsWorld.removePhysicsObject(btObject);
 							}
-						} else if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
+						} else if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
 						}
 					} 
 					
@@ -439,11 +439,11 @@ public class VolleyballServer implements MessageListener {
 					BtObject btObject = physicsWorldBuilder.createDefaultBall(5, 10, 0);
 					
 					btObject.setId(objectId);
-					btObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+					btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 							new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
-					btObject.Attributes.put(AttributeType.OWNER_PLAYER_ID.ordinal(),
+					btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),
 							new OwnerPlayerId(message.getId()));
-					btObject.Attributes.put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(1000));
+					btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(1000));
 					// btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.PLAYER.ordinal());
 					// btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal()));
 					// System.out.println("asd:"+((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal())));
@@ -529,7 +529,7 @@ public class VolleyballServer implements MessageListener {
 					message.set(src);
 					BtObject btObject = physicsWorld.getPhysicsObjects().get(message.getId());
 					if (btObject != null) {
-						Attribute attribute = btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal());
+						Attribute attribute = btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal());
 						if (attribute != null) {
 							s2c_ADD_PLAYER_message.setId(((OwnerPlayerId) attribute).getPlayerId());
 							s2c_ADD_PLAYER_message.setObjectId(message.getId());
@@ -668,11 +668,11 @@ public class VolleyballServer implements MessageListener {
 				float radius = 3;
 				// float radius = 0.5f+((random.nextInt(10000) / 10000f) * 3);
 				BtObject btObject = physicsWorldBuilder.createBall(radius, radius, v3);
-				btObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 						new GameObjectTypeAttribute(GameObjectType.OBSTACLE.ordinal()));
-				btObject.Attributes.put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(1));
+				btObject.getAttributes().put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(1));
 				color.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f, random.nextInt(255) / 255f, 1);
-				btObject.Attributes.put(AttributeType.COLOR.ordinal(), new com.yuil.game.entity.attribute.Color(color));
+				btObject.getAttributes().put(AttributeType.COLOR.ordinal(), new com.yuil.game.entity.attribute.Color(color));
 
 				// btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.OBSTACLE.ordinal()));
 				// btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));

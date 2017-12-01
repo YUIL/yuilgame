@@ -36,7 +36,7 @@ public class PhysicsWorldBuilder {
 	public BtObject createDefaultGround(){
 		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
 		BtObject btObject=new BtObject();
-		btObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		
 		btObjectFactory.initBtObject(btObject, collisionShape, 0, 0, 0, 0);
 		//btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.GROUND.ordinal()));
@@ -45,7 +45,7 @@ public class PhysicsWorldBuilder {
 	}
 	public RenderableBtObject createDefaultRenderableGround(){
 		RenderableBtObject btObject=btObjectFactory.createRenderableGround();
-		btObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		return btObject;
 	}
 	

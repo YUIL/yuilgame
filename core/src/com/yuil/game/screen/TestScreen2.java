@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -173,8 +174,8 @@ public class MyContactListener extends ContactListener {
 				handleBtObject(btObject0);
 				handleBtObject(btObject1);
 				
-				GameObjectTypeAttribute gameObjectType0=(GameObjectTypeAttribute)(btObject0.Attributes.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
-				GameObjectTypeAttribute gameObjectType1=(GameObjectTypeAttribute)(btObject1.Attributes.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
+				GameObjectTypeAttribute gameObjectType0=(GameObjectTypeAttribute)(btObject0.getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
+				GameObjectTypeAttribute gameObjectType1=(GameObjectTypeAttribute)(btObject1.getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 
 				if (gameObjectType0!=null&&gameObjectType1!=null) {
 					if(gameObjectType0.getGameObjectType()==GameObjectType.PLAYER.ordinal()&&gameObjectType1.getGameObjectType()==GameObjectType.OBSTACLE.ordinal()){
@@ -202,7 +203,7 @@ public class MyContactListener extends ContactListener {
 			}	
 		}
 		void handleBtObject(BtObject btObject){
-			if (btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
+			if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
 				//v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
 				//btObject.getRigidBody().setLinearVelocity(v3);
 			}
@@ -236,9 +237,9 @@ public class MyContactListener extends ContactListener {
 					//System.out.println("color.g:"+message.getG());
 					BtObject btObject=physicsWorldBuilder.createRenderableBall(message.getRadius(), message.getRadius(), v3, color);
 					btObject.setId(message.getId());
-					btObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.OBSTACLE.ordinal()));
-					btObject.Attributes.put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(1));
-					btObject.Attributes.put(AttributeType.COLOR.ordinal(), new com.yuil.game.entity.attribute.Color(color));
+					btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.OBSTACLE.ordinal()));
+					btObject.getAttributes().put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(1));
+					btObject.getAttributes().put(AttributeType.COLOR.ordinal(), new com.yuil.game.entity.attribute.Color(color));
 					//btObject.getRigidBody().setContactCallbackFilter(GameObjectType.PLAYER.ordinal());
 					btObject.getRigidBody().setContactCallbackFilter(1<<GameObjectType.GROUND.ordinal());
 
@@ -280,7 +281,7 @@ public class MyContactListener extends ContactListener {
 		}else{
 			//System.out.println("x:"+playerObject.getPosition().x);
 			try {
-				camera.position.set(playerObject.getPosition().x, playerObject.getPosition().y+2f, playerObject.getPosition().z+10);
+				camera.position.set(playerObject.getPosition(tempMatrix4).x, playerObject.getPosition(tempMatrix4).y+2f, playerObject.getPosition(tempMatrix4).z+10);
 				//camera.lookAt(playerObject.getPosition().x,playerObject.getPosition().y, playerObject.getPosition().z);
 				camera.update();
 			} catch (Exception e) {
@@ -293,7 +294,7 @@ public class MyContactListener extends ContactListener {
 			ModelInstance modelInstance=((RenderableBtObject)physicsObject).getInstance();
 			((BtObject)physicsObject).getRigidBody().getMotionState().getWorldTransform(modelInstance.transform);
 
-			GameObjectTypeAttribute gameObjectType=(GameObjectTypeAttribute)(((BtObject)physicsObject).Attributes.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
+			GameObjectTypeAttribute gameObjectType=(GameObjectTypeAttribute)(((BtObject)physicsObject).getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 /*
 			if (gameObjectType!=null) {
 				if (gameObjectType.getGameObjectType()==GameObjectType.GROUND.ordinal()){
@@ -305,10 +306,10 @@ public class MyContactListener extends ContactListener {
 			modelInstance.transform.scl(((BtObject)physicsObject).getRigidBody().getCollisionShape().getLocalScaling());
 			//modelInstance.nodes.first().localTransform.scl(((BtObject)physicsObject).getRigidBody().getCollisionShape().getLocalScaling());
 			
-			if (((GameObjectTypeAttribute)(((BtObject)physicsObject).Attributes.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() ==GameObjectType.OBSTACLE.ordinal()) {
+			if (((GameObjectTypeAttribute)(((BtObject)physicsObject).getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() ==GameObjectType.OBSTACLE.ordinal()) {
 				// 检查障碍物位置,超过边界则删除
 				//System.out.println("asdasd");
-				if (((BtObject)physicsObject).getPosition().z > -45) {
+				if (((BtObject)physicsObject).getPosition(tempMatrix4).z > -45) {
 					physicsWorld.removePhysicsObject(physicsObject);
 					//remove_BTOBJECT_message.setId(btObject.getId());
 					//broadCastor.broadCast_SINGLE_MESSAGE(remove_BTOBJECT_message, false);
@@ -835,7 +836,7 @@ public class MyContactListener extends ContactListener {
 		if(playerId!=0&&playerObject!=null){
 			//System.out.println("playerId:"+playerId);
 			//System.out.println("ObjectId:"+playerObject.getId());
-			if(playerObject.getPosition().y<0.7f){
+			if(playerObject.getPosition(tempMatrix4).y<0.7f){
 				System.out.println("juijkj:"+playerObject.getId());
 				temp_update_liner_velocity_message.setX(NO_CHANGE);
 				temp_update_liner_velocity_message.setY(10);
@@ -915,7 +916,7 @@ public class MyContactListener extends ContactListener {
 			physicsObject.getTransform().getTranslation(position);
             dst=position.dst2(camera.position);
 			if (Intersector.intersectRaySphere(ray, position, 3f, null)) {
-				if (((GameObjectTypeAttribute)(((BtObject)physicsObject).Attributes.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() ==GameObjectType.OBSTACLE.ordinal()) {
+				if (((GameObjectTypeAttribute)(((BtObject)physicsObject).getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() ==GameObjectType.OBSTACLE.ordinal()) {
 				if(dst<dst2){
 					dst2=dst;
 	                result = physicsObject.getId();
@@ -1010,8 +1011,8 @@ public class MyContactListener extends ContactListener {
 					ColorAttribute ca=(ColorAttribute)(((RenderableBtObject)btObject).getInstance().nodes.get(0).parts.get(0).material.get(ColorAttribute.Diffuse));
 					ca.color.set(0.9f, 0.2f, 0.1f, 1);
 					btObject.setId(message.getObjectId());
-					btObject.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
-					btObject.Attributes.put(AttributeType.OWNER_PLAYER_ID.ordinal(), new OwnerPlayerId(message.getId()));
+					btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
+					btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(), new OwnerPlayerId(message.getId()));
 					btObject.getRigidBody().setContactCallbackFilter(1<<GameObjectType.GROUND.ordinal());
 					//System.out.println(1<<GameObjectType.GROUND.ordinal());
 					physicsWorld.addPhysicsObject(btObject);
@@ -1066,7 +1067,7 @@ public class MyContactListener extends ContactListener {
 				BtObject btObject=(BtObject) physicsWorld.getPhysicsObjects().get(message.getId());
 				if(btObject!=null){
 
-					OwnerPlayerId ownerPlayerId=(OwnerPlayerId) btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal());
+					OwnerPlayerId ownerPlayerId=(OwnerPlayerId) btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal());
 					if(ownerPlayerId!=null&&ownerPlayerId.getPlayerId()==playerId){
 						//System.out.println("remove myself");
 						showGameOver();
@@ -1075,7 +1076,7 @@ public class MyContactListener extends ContactListener {
 						playerId=0;
 						playerObject=null;
 					}
-					System.out.println("remove position:"+btObject.getPosition());
+					System.out.println("remove position:"+btObject.getPosition(tempMatrix4));
 					physicsWorld.removePhysicsObject(physicsWorld.getPhysicsObjects().get(message.getId()));
 				}
 			}

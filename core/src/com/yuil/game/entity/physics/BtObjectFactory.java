@@ -77,7 +77,7 @@ public class BtObjectFactory {
 	public RenderableBtObject createRenderableGround() {
 		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
 		RenderableBtObject ground=createRenderableBtObject(defaultGroundModel, collisionShape, 0, 0, 0, 0);
-		ground.Attributes.put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+		ground.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		ground.getRigidBody().setCollisionFlags(1<<GameObjectType.GROUND.ordinal());
 
 		return ground;

@@ -17,10 +17,9 @@ public class BtObject extends PhysicsObject implements Disposable{
 	btCollisionShape collisionShape;
 	btRigidBodyConstructionInfo  rigidBodyConstructionInfo;
 	public Object userData;
-	public HashMap<Integer, Attribute> Attributes=new HashMap<Integer, Attribute>();
+	private HashMap<Integer, Attribute> attributes=null;
 	public short group=1;
 	public short mask=(short) 65535;
-	private Matrix4 tm4=new Matrix4();
 
 	private Vector3 position=new Vector3();
 
@@ -47,7 +46,7 @@ public class BtObject extends PhysicsObject implements Disposable{
 
 	
 	
-	public Vector3 getPosition() {
+	public Vector3 getPosition(Matrix4 tm4) {
 		rigidBody.getMotionState().getWorldTransform(tm4);
 		return tm4.getTranslation(position);
 	}
@@ -68,11 +67,14 @@ public class BtObject extends PhysicsObject implements Disposable{
 	}
 
 	public HashMap<Integer, Attribute> getAttributes() {
-		return Attributes;
+		if (this.attributes==null){
+			this.attributes=new HashMap<Integer, Attribute>();
+		}
+		return this.attributes;
 	}
 
 	public void setAttributes(HashMap<Integer, Attribute> attributes) {
-		Attributes = attributes;
+		this.attributes = attributes;
 	}
 
 	public short getGroup() {
