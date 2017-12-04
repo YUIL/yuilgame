@@ -226,7 +226,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 	@Override
 	public void render(float delta) {
-		//checkKeyBoardStatus();
+		// checkKeyBoardStatus();
 		deviceInputHandler.checkDeviceInput();
 		while (!createObstacleQueue.isEmpty()) {
 			S2C_ADD_OBSTACLE message = createObstacleQueue.poll();
@@ -282,8 +282,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		} else {
 			// System.out.println("x:"+playerObject.getPosition().x);
 			try {
-				camera.position.set(playerObject.getPosition(tempMatrix4).x, playerObject.getPosition(tempMatrix4).y + 2f,
-						playerObject.getPosition(tempMatrix4).z + 10);
+				camera.position.set(playerObject.getPosition(tempMatrix4).x,
+						playerObject.getPosition(tempMatrix4).y + 2f, playerObject.getPosition(tempMatrix4).z + 10);
 				// camera.lookAt(playerObject.getPosition().x,playerObject.getPosition().y,
 				// playerObject.getPosition().z);
 				camera.update();
@@ -874,20 +874,20 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	}
 
 	protected void mouseLeftJustPressedAction() {
-	/*	long id = getObject(Gdx.input.getX(), Gdx.input.getY());
-		System.out.println("hjkhjk:" + id);
-
-		if (id != -1) {
-			temp_update_liner_velocity_message.setX(NO_CHANGE);
-			temp_update_liner_velocity_message.setY(10);
-			temp_update_liner_velocity_message.setZ(NO_CHANGE);
-			temp_update_liner_velocity_message.setId(id);
-			sendSingleMessage(temp_update_liner_velocity_message);
-
-			// tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
-			// tempVector3.y=10;
-			// playerObject.getRigidBody().setLinearVelocity(tempVector3);
-		}*/
+		/*
+		 * long id = getObject(Gdx.input.getX(), Gdx.input.getY());
+		 * System.out.println("hjkhjk:" + id);
+		 * 
+		 * if (id != -1) { temp_update_liner_velocity_message.setX(NO_CHANGE);
+		 * temp_update_liner_velocity_message.setY(10);
+		 * temp_update_liner_velocity_message.setZ(NO_CHANGE);
+		 * temp_update_liner_velocity_message.setId(id);
+		 * sendSingleMessage(temp_update_liner_velocity_message);
+		 * 
+		 * // tempVector3.set(playerObject.getRigidBody().getLinearVelocity());
+		 * // tempVector3.y=10; //
+		 * playerObject.getRigidBody().setLinearVelocity(tempVector3); }
+		 */
 	}
 
 	protected void mouseLeftJustUppedAction() {
@@ -923,42 +923,37 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 			physicsObject.getTransform().getTranslation(position);
 			dst = position.dst2(camera.position);
-			if (Intersector.intersectRaySphere(ray, position, 3f, null)) {
-				if (((GameObjectTypeAttribute) (((BtObject) physicsObject).getAttributes()
-						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()))).getGameObjectType() == GameObjectType.PLAYER_S_OBJECT
-								.ordinal()) {
-					if (dst < dst2) {
-						dst2 = dst;
-						result = physicsObject.getId();
-					}
+			if (Intersector.intersectRaySphere(ray, position, 0.6f, null)) {
+				if (dst < dst2) {
+					dst2 = dst;
+					result = physicsObject.getId();
 				}
+
 			}
 		}
 		return result;
 	}
-	
-	public void createCubes(){
+
+	public void createCubes() {
 
 		Vector3 tmpV3 = new Vector3();
 		Color tmpCor = new Color(55, 55, 55, 1);
-		//for (int y = 1; y < 100; y++) {
-			for (int z = -20; z <20; z++) {
-				for (int x = -20; x < 20; x++) {
-					tmpV3.set(x, 0, z);
-					tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f,
-							random.nextInt(255) / 255f, 1);
-					// System.out.println(tmpCor.toString());
-					RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(1f, 0f,
-							tmpV3, tmpCor);
-					// BtObject rb=
-					// physicsWorldBuilder.btObjectFactory.createCube(1f,0f,tmpV3);
-					rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
-							new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
-					rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
-					physicsWorld.addPhysicsObject(rb);
-				}
+		// for (int y = 1; y < 100; y++) {
+		for (int z = -20; z < 20; z++) {
+			for (int x = -20; x < 20; x++) {
+				tmpV3.set(x, 0, z);
+				tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f, random.nextInt(255) / 255f, 1);
+				// System.out.println(tmpCor.toString());
+				RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(1f, 0f, tmpV3, tmpCor);
+				// BtObject rb=
+				// physicsWorldBuilder.btObjectFactory.createCube(1f,0f,tmpV3);
+				rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+						new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+				rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+				physicsWorld.addPhysicsObject(rb);
 			}
-	//	}
+		}
+		// }
 	}
 
 	void setupActorInput() {
@@ -1250,24 +1245,24 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				// TODO Auto-generated method stub
 				Vector3 tmpV3 = new Vector3();
 				Color tmpCor = new Color(55, 55, 55, 1);
-				//for (int y = 1; y < 100; y++) {
-					for (int z = -20; z <20; z++) {
-						for (int x = -20; x < 20; x++) {
-							tmpV3.set(x, 0, z);
-							tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f,
-									random.nextInt(255) / 255f, 1);
-							// System.out.println(tmpCor.toString());
-							RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(1f, 0f,
-									tmpV3, tmpCor);
-							// BtObject rb=
-							// physicsWorldBuilder.btObjectFactory.createCube(1f,0f,tmpV3);
-							rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
-									new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
-							rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
-							physicsWorld.addPhysicsObject(rb);
-						}
+				// for (int y = 1; y < 100; y++) {
+				for (int z = -20; z < 20; z++) {
+					for (int x = -20; x < 20; x++) {
+						tmpV3.set(x, 0, z);
+						tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f, random.nextInt(255) / 255f,
+								1);
+						// System.out.println(tmpCor.toString());
+						RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(1f, 0f, tmpV3,
+								tmpCor);
+						// BtObject rb=
+						// physicsWorldBuilder.btObjectFactory.createCube(1f,0f,tmpV3);
+						rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+								new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+						rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+						physicsWorld.addPhysicsObject(rb);
 					}
-			//	}
+				}
+				// }
 			}
 
 			@Override
@@ -1279,7 +1274,6 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void wJustUppedAction() {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
