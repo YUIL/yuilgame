@@ -936,6 +936,30 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		}
 		return result;
 	}
+	
+	public void createCubes(){
+
+		Vector3 tmpV3 = new Vector3();
+		Color tmpCor = new Color(55, 55, 55, 1);
+		//for (int y = 1; y < 100; y++) {
+			for (int z = -20; z <20; z++) {
+				for (int x = -20; x < 20; x++) {
+					tmpV3.set(x, 0, z);
+					tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f,
+							random.nextInt(255) / 255f, 1);
+					// System.out.println(tmpCor.toString());
+					RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(1f, 0f,
+							tmpV3, tmpCor);
+					// BtObject rb=
+					// physicsWorldBuilder.btObjectFactory.createCube(1f,0f,tmpV3);
+					rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+							new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+					rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+					physicsWorld.addPhysicsObject(rb);
+				}
+			}
+	//	}
+	}
 
 	void setupActorInput() {
 		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
@@ -1226,10 +1250,10 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				// TODO Auto-generated method stub
 				Vector3 tmpV3 = new Vector3();
 				Color tmpCor = new Color(55, 55, 55, 1);
-				for (int y = 1; y < 100; y++) {
-					for (int z = 0; z < 10; z++) {
-						for (int x = 0; x < 10; x++) {
-							tmpV3.set(x, y, z);
+				//for (int y = 1; y < 100; y++) {
+					for (int z = -20; z <20; z++) {
+						for (int x = -20; x < 20; x++) {
+							tmpV3.set(x, 0, z);
 							tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f,
 									random.nextInt(255) / 255f, 1);
 							// System.out.println(tmpCor.toString());
@@ -1243,7 +1267,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 							physicsWorld.addPhysicsObject(rb);
 						}
 					}
-				}
+			//	}
 			}
 
 			@Override

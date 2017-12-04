@@ -1,5 +1,6 @@
 package com.yuil.game.entity.message.action;
 
 public enum VollyBallAction {
-	MATCH_GAME
+	MATCH_GAME,
+	CREATE_CUBES
 }

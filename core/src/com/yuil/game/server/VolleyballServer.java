@@ -47,6 +47,7 @@ import com.yuil.game.entity.physics.BtObjectFactory;
 import com.yuil.game.entity.physics.BtObjectSpawner;
 import com.yuil.game.entity.physics.BtWorld;
 import com.yuil.game.entity.physics.PhysicsWorldBuilder;
+import com.yuil.game.entity.physics.RenderableBtObject;
 import com.yuil.game.input.InputDeviceControler;
 import com.yuil.game.input.InputDeviceListener;
 import com.yuil.game.net.MessageListener;
@@ -727,5 +728,29 @@ public class VolleyballServer implements MessageListener {
 				volleyballCourtMap.put(vc.getId(), vc);
 			}
 		}
+		
+	}
+
+	public void createCubes(){
+
+		Vector3 tmpV3 = new Vector3();
+		Color tmpCor = new Color(55, 55, 55, 1);
+		//for (int y = 1; y < 100; y++) {
+			for (int z = -20; z <20; z++) {
+				for (int x = -20; x < 20; x++) {
+					tmpV3.set(x, 0, z);
+					tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f,
+							random.nextInt(255) / 255f, 1);
+					// System.out.println(tmpCor.toString());
+					//RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(1f, 0f,
+					//		tmpV3, tmpCor);
+					 BtObject rb= physicsWorldBuilder.btObjectFactory.createCube(1f,0f,tmpV3);
+					rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+							new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+					rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+					physicsWorld.addPhysicsObject(rb);
+				}
+			}
+	//	}
 	}
 }
