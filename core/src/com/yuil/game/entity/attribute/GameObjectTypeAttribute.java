@@ -26,7 +26,7 @@ public class GameObjectTypeAttribute implements Attribute {
 	@Override
 	public Integer getType() {
 		// TODO Auto-generated method stub
-		return 0;
+		return this.type;
 	}
 	
 	public static int getGameObjectType(BtObject btObject){

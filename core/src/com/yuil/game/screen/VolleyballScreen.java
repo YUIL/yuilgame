@@ -31,6 +31,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -39,6 +40,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.yuil.game.MyGame;
 import com.yuil.game.entity.attribute.AttributeType;
 import com.yuil.game.entity.attribute.DamagePoint;
+import com.yuil.game.entity.attribute.ExplosionStrength;
 import com.yuil.game.entity.attribute.GameObjectTypeAttribute;
 import com.yuil.game.entity.attribute.HealthPoint;
 import com.yuil.game.entity.attribute.OwnerPlayerId;
@@ -172,6 +174,15 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				handleBtObject(btObject0);
 				handleBtObject(btObject1);
 
+				if (btObject0.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal())!=null){
+					System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
+					physicsWorld.removePhysicsObject(btObject1);
+				}else if(btObject1.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal())!=null){
+					System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
+					physicsWorld.removePhysicsObject(btObject0);
+
+				}
+				
 				GameObjectTypeAttribute gameObjectType0 = (GameObjectTypeAttribute) (btObject0.getAttributes()
 						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 				GameObjectTypeAttribute gameObjectType1 = (GameObjectTypeAttribute) (btObject1.getAttributes()
@@ -189,6 +200,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 						// sound.play();
 
 					}
+					
+					
 				}
 
 				/*
@@ -295,6 +308,12 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
 			if (physicsObject instanceof RenderableBtObject) {
+				
+				BtObject btObject=(BtObject)physicsObject;
+				if(btObject.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal())!=null){
+					physicsWorld.removePhysicsObject(physicsObject);
+				}
+				
 				ModelInstance modelInstance = ((RenderableBtObject) physicsObject).getInstance();
 				((BtObject) physicsObject).getRigidBody().getWorldTransform(modelInstance.transform);
 				GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (((BtObject) physicsObject)
@@ -1215,6 +1234,14 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void zJustUppedAction() {
 				// TODO Auto-generated method stub
 				System.out.println("zup");
+				RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableBall(2, 0,
+						new Vector3(0, 0, 0), new Color(55 / 255f, 55 / 255f, 55 / 255f, 1));
+				rb.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+				rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+						new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+
+				rb.getAttributes().put(AttributeType.EXPLOSION_STRENGTH.ordinal(), new ExplosionStrength(50));
+				physicsWorld.addPhysicsObject(rb);
 			}
 
 			@Override
