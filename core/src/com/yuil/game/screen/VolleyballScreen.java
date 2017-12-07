@@ -302,6 +302,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				// playerObject.getPosition().z);
 				//playerPrePosition.set(playerObject.getPosition(tempMatrix4));
 				playerPrePosition.set(playerObject.getRigidBody().getWorldTransform().getTranslation(tempVector3));
+				camController.target.set(playerObject.getRigidBody().getWorldTransform().getTranslation(tempVector3));
+
 				camera.update();
 			} catch (Exception e) {
 				// System.out.println("object已被刪除");
@@ -1624,6 +1626,20 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void dJustUppedAction() {
 				// TODO Auto-generated method stub
 
+				tempVector3.set(0, 1, 0);
+				
+				Vector3 v3=new Vector3();
+				v3.set(camera.direction);
+				System.out.println(camera.direction);
+
+				v3.rotate(tempVector3, -90);
+				v3.y=0;
+				
+				Matrix4 mat4=new Matrix4();
+				mat4.set(playerObject.getTransform());
+				mat4.translate(v3);
+				//playerObject.getRigidBody().getMotionState().setWorldTransform(mat4);
+				playerObject.getRigidBody().translate(v3);
 			}
 
 			@Override
@@ -1668,7 +1684,6 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 						playerObject.getPosition(tempMatrix4).y , playerObject.getPosition(tempMatrix4).z);
 				//camera.lookAt(playerObject.getPosition(tempMatrix4).x,playerObject.getPosition(tempMatrix4).y,playerObject.getPosition(tempMatrix4).z);
 
-				camController.target.set(playerObject.getPosition(tempMatrix4));
 			}
 
 			@Override
