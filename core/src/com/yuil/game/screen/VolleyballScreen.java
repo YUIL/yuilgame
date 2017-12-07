@@ -932,12 +932,16 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 	}
 
-	public long getObject(int screenX, int screenY) {
+	public long getObjectId(int screenX, int screenY) {
+		return getObject(screenX, screenY).getId();
+	}
+	
+	public PhysicsObject getObject(int screenX, int screenY) {
 		Ray ray = camera.getPickRay(screenX, screenY);
 		Vector3 position = new Vector3();
 		float dst = 0;
 		float dst2 = Float.MAX_VALUE;
-		long result = -1;
+		PhysicsObject result = null;
 		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
 
 			physicsObject.getTransform().getTranslation(position);
@@ -945,14 +949,13 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			if (Intersector.intersectRaySphere(ray, position, 0.6f, null)) {
 				if (dst < dst2) {
 					dst2 = dst;
-					result = physicsObject.getId();
+					result = physicsObject;
 				}
 
 			}
 		}
 		return result;
 	}
-
 	public void createCubes() {
 
 		Vector3 tmpV3 = new Vector3();
@@ -975,6 +978,38 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		// }
 	}
 
+	public void makeExplosion(Vector3 position){
+		RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableBall(2, 0,
+				position, new Color(55 / 255f, 55 / 255f, 55 / 255f, 1));
+		rb.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+
+		rb.getAttributes().put(AttributeType.EXPLOSION_STRENGTH.ordinal(), new ExplosionStrength(50));
+		physicsWorld.addPhysicsObject(rb);
+	}
+	
+	public void createVolleyballCourt(){
+
+		Vector3 position = new Vector3();
+		Color tmpCor = new Color(55, 55, 55, 1);
+		tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f, random.nextInt(255) / 255f, 1);
+		
+		RenderableBtObject rb=null;
+		rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(10f, 0f, position, tmpCor);
+		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+		rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+		physicsWorld.addPhysicsObject(rb);
+		
+		position.z-=20;
+		rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(10f, 0f, position, tmpCor);
+		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+		rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+		physicsWorld.addPhysicsObject(rb);
+	}
+	
 	void setupActorInput() {
 		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -1234,14 +1269,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void zJustUppedAction() {
 				// TODO Auto-generated method stub
 				System.out.println("zup");
-				RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableBall(2, 0,
-						new Vector3(0, 0, 0), new Color(55 / 255f, 55 / 255f, 55 / 255f, 1));
-				rb.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
-				rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
-						new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
-
-				rb.getAttributes().put(AttributeType.EXPLOSION_STRENGTH.ordinal(), new ExplosionStrength(50));
-				physicsWorld.addPhysicsObject(rb);
+				createVolleyballCourt();
 			}
 
 			@Override
@@ -1432,8 +1460,11 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void mouseRightJustUppedAction() {
 				// TODO Auto-generated method stub
-				long id = getObject(Gdx.input.getX(), Gdx.input.getY());
-				System.out.println("hjkhjk:" + id);
+				PhysicsObject obj=getObject(Gdx.input.getX(), Gdx.input.getY());
+				if(obj!=null)
+					makeExplosion(obj.getPosition(tempMatrix4));
+				
+				
 			}
 
 			@Override
@@ -1613,7 +1644,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void bJustUppedAction() {
 				// TODO Auto-generated method stub
-
+System.out.println(camera.position);
 			}
 
 			@Override
@@ -1625,6 +1656,18 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void aJustUppedAction() {
 				// TODO Auto-generated method stub
+				tempVector3.set(0, 1, 0);
+				
+				Vector3 v3=new Vector3();
+				v3.set(camera.direction);
+				System.out.println(camera);
+
+				v3.rotate(tempVector3, 90);
+				v3.y=0;
+
+
+				camera.translate(v3);
+				camera.update();
 
 			}
 
