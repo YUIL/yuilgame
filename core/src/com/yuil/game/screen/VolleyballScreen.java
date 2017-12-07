@@ -106,6 +106,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 	long playerId;
 	BtObject playerObject;
+	Vector3 playerPrePosition=new Vector3();
 	int vinearVelocityX = 10;
 	int vinearVelocityZ = 30;
 
@@ -295,10 +296,12 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		} else {
 			// System.out.println("x:"+playerObject.getPosition().x);
 			try {
-				camera.position.set(playerObject.getPosition(tempMatrix4).x,
-						playerObject.getPosition(tempMatrix4).y + 2f, playerObject.getPosition(tempMatrix4).z + 10);
+				//camera.translate(playerObject.getPosition(tempMatrix4).sub(playerPrePosition));
+				camera.translate(playerObject.getRigidBody().getWorldTransform().getTranslation(tempVector3).sub(playerPrePosition));
 				// camera.lookAt(playerObject.getPosition().x,playerObject.getPosition().y,
 				// playerObject.getPosition().z);
+				//playerPrePosition.set(playerObject.getPosition(tempMatrix4));
+				playerPrePosition.set(playerObject.getRigidBody().getWorldTransform().getTranslation(tempVector3));
 				camera.update();
 			} catch (Exception e) {
 				// System.out.println("object已被刪除");
@@ -1644,7 +1647,28 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void bJustUppedAction() {
 				// TODO Auto-generated method stub
-System.out.println(camera.position);
+				long id=random.nextLong();
+				RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(5, 10, 0);
+				ColorAttribute ca = (ColorAttribute) (((RenderableBtObject) btObject).getInstance().nodes
+						.get(0).parts.get(0).material.get(ColorAttribute.Diffuse));
+				ca.color.set(0.9f, 0.2f, 0.1f, 1);
+				btObject.setId(id);
+				btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+						new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
+				btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),
+						new OwnerPlayerId(id));
+				btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
+				// System.out.println(1<<GameObjectType.GROUND.ordinal());
+				physicsWorld.addPhysicsObject(btObject);
+				playerPrePosition.set(btObject.getPosition(tempMatrix4));
+				playerObject = btObject;
+				
+
+				camera.position.set(playerObject.getPosition(tempMatrix4).x,
+						playerObject.getPosition(tempMatrix4).y , playerObject.getPosition(tempMatrix4).z);
+				//camera.lookAt(playerObject.getPosition(tempMatrix4).x,playerObject.getPosition(tempMatrix4).y,playerObject.getPosition(tempMatrix4).z);
+
+				camController.target.set(playerObject.getPosition(tempMatrix4));
 			}
 
 			@Override
@@ -1660,15 +1684,16 @@ System.out.println(camera.position);
 				
 				Vector3 v3=new Vector3();
 				v3.set(camera.direction);
-				System.out.println(camera);
+				System.out.println(camera.direction);
 
 				v3.rotate(tempVector3, 90);
 				v3.y=0;
-
-
-				camera.translate(v3);
-				camera.update();
-
+				
+				Matrix4 mat4=new Matrix4();
+				mat4.set(playerObject.getTransform());
+				mat4.translate(v3);
+				//playerObject.getRigidBody().getMotionState().setWorldTransform(mat4);
+				playerObject.getRigidBody().translate(v3);
 			}
 
 			@Override
