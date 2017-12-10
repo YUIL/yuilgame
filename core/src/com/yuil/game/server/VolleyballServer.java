@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -38,6 +39,7 @@ import com.yuil.game.entity.attribute.AttributeType;
 import com.yuil.game.entity.attribute.DamagePoint;
 import com.yuil.game.entity.attribute.GameObjectTypeAttribute;
 import com.yuil.game.entity.attribute.HealthPoint;
+import com.yuil.game.entity.attribute.MoveSpeed;
 import com.yuil.game.entity.attribute.OwnerPlayerId;
 import com.yuil.game.entity.gameobject.GameObjectType;
 import com.yuil.game.entity.message.*;
@@ -68,6 +70,7 @@ import io.netty.buffer.ByteBuf;
 public class VolleyballServer implements MessageListener {
 	final float NO_CHANGE = 1008611;
 	NetSocket netSocket;
+	int port;
 	BroadCastor broadCastor;
 	BtWorld physicsWorld;
 	PhysicsWorldBuilder physicsWorldBuilder = new PhysicsWorldBuilder(false);
@@ -305,6 +308,8 @@ public class VolleyballServer implements MessageListener {
 
 	public VolleyballServer() {
 		Bullet.init();
+		initConfig();
+
 		physicsWorld = new BtWorld();
 		physicsWorld.addPhysicsObject(physicsWorldBuilder.createDefaultGround());
 
@@ -312,7 +317,7 @@ public class VolleyballServer implements MessageListener {
 		contactListener = new MyContactListener();
 
 		try {
-			netSocket = new UdpSocket(9091);
+			netSocket = new UdpSocket(port);
 		} catch (BindException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -323,7 +328,6 @@ public class VolleyballServer implements MessageListener {
 		
 		gameWorldThread = new Thread(new WorldLogic());
 		
-		initConfig();
 	}
 
 	public void start() {
@@ -445,6 +449,7 @@ public class VolleyballServer implements MessageListener {
 					btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),
 							new OwnerPlayerId(message.getId()));
 					btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(1000));
+					btObject.getAttributes().put(AttributeType.MOVE_SPEED.ordinal(),new MoveSpeed(15));
 					// btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.PLAYER.ordinal());
 					// btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal()));
 					// System.out.println("asd:"+((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal())));
@@ -461,6 +466,8 @@ public class VolleyballServer implements MessageListener {
 					broadCastor.broadCast_SINGLE_MESSAGE(s2c_ADD_PLAYER_message, false);
 					updateBtObjectMotionStateBroadCastQueue.add(btObject);
 					recentPlayerObjectId = objectId;
+					
+					
 					// BtTestServer2.updateBtObjectMotionStateBroadCastQueue.add(btObject);
 				}
 			});
@@ -520,7 +527,32 @@ public class VolleyballServer implements MessageListener {
 					}
 				}
 			});
+			messageHandlerMap.put(EntityMessageType.MOVE_DIRECTION.ordinal(), new MessageHandler() {
+				MOVE_DIRECTION message = new MOVE_DIRECTION();
+				Vector3 v3 = new Vector3();
 
+				@Override
+				public void handle(ByteBuf src) {
+					message.set(src);
+					BtObject btObject = physicsWorld.getPhysicsObjects().get(message.getId());
+
+					if (btObject != null) {
+						
+						int moveSpeed=((MoveSpeed)(btObject.getAttributes().get(AttributeType.MOVE_SPEED.ordinal()))).getMoveSpeed();
+						v3.set(message.getX(),0,message.getZ());
+						v3.nor();
+						v3.scl(moveSpeed);
+						v3.y=btObject.getRigidBody().getLinearVelocity().y;
+						if (!btObject.getRigidBody().isActive()) {
+							btObject.getRigidBody().activate();
+						}
+
+						btObject.getRigidBody().setLinearVelocity(v3);
+						VolleyballServer.updateBtObjectMotionStateBroadCastQueue.add(btObject);
+
+					}
+				}
+			});
 			messageHandlerMap.put(EntityMessageType.C2S_ENQUIRE_BTOBJECT.ordinal(), new MessageHandler() {
 				C2S_ENQUIRE_BTOBJECT message = new C2S_ENQUIRE_BTOBJECT();
 				S2C_ADD_PLAYER s2c_ADD_PLAYER_message = new S2C_ADD_PLAYER();
@@ -542,6 +574,8 @@ public class VolleyballServer implements MessageListener {
 
 			messageHandlerMap.put(EntityMessageType.DO_ACTION.ordinal(), new MessageHandler() {
 				DO_ACTION message = new DO_ACTION();
+				Vector3 position=new Vector3();
+				Vector3 v3=new Vector3();
 
 				@Override
 				public void handle(ByteBuf src) {
@@ -549,8 +583,23 @@ public class VolleyballServer implements MessageListener {
 					if(message.getActionId()==VollyBallAction.MATCH_GAME.ordinal()){
 						System.out.println("MATCH_GAME");
 						matchGame(session);
+					}if(message.getActionId()==VollyBallAction.PLYAER_JUMP.ordinal()){
+						Player player=playerMap.get(session.getId());
+						if(player!=null){
+							BtObject btObject=physicsWorld.getPhysicsObjects().get(player.getBtObjectId());
+							if(btObject!=null){
+								v3.set(Vector3.Y);
+								v3.scl(500);
+								btObject.getRigidBody().applyForce(v3, btObject.getRigidBody().getWorldTransform().getTranslation(position));
+								VolleyballServer.updateBtObjectMotionStateBroadCastQueue.add(btObject);
+								//System.out.println("jump");
+
+							}
+						}
+						
+						
 					}
-					System.out.println(message.toString());
+					//System.out.println(message.toString());
 					// netSocket.send(SINGLE_MESSAGE.get(message.get().array()),
 					// session, false);
 
@@ -648,7 +697,8 @@ public class VolleyballServer implements MessageListener {
 					spawners.item(i).getOwnerDocument().getElementsByTagName("interval").item(0).getTextContent());
 			obstacleBallSpawner = createSpawner(interval);
 		}
-
+		NodeList portNode = document.getElementsByTagName("port");
+		port=Integer.parseInt(portNode.item(0).getTextContent());
 	}
 
 	BtObjectSpawner createSpawner(int interval) {
@@ -661,10 +711,10 @@ public class VolleyballServer implements MessageListener {
 			public void spawn() {
 				// TODO Auto-generated method stub
 				// physicsWorld.addPhysicsObjectQueue.
-				// v3.x = -18 + random.nextInt(36);
-				v3.x = 0;
-				// v3.y = 10+random.nextInt(50);
-				v3.y = 11;
+				 v3.x = -18 + random.nextInt(36);
+				//v3.x = 0;
+				 v3.y = 10+random.nextInt(50);
+				//v3.y = 11;
 				v3.z = -200;
 				float radius = 3;
 				// float radius = 0.5f+((random.nextInt(10000) / 10000f) * 3);

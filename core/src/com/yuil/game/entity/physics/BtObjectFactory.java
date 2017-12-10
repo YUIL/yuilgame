@@ -50,7 +50,7 @@ public class BtObjectFactory {
 							ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
 					Usage.Position | Usage.Normal);
 			
-			defaultGroundModel = modelBuilder.createRect(20f, 0f, -200f, -20f, 0f, -200f, -20f, 0f, 20f, 20f, 0f, 20f, 0,
+			defaultGroundModel = modelBuilder.createRect(20f, 0f, -200f, -20f, 0f, -200f, -20f, 0f, 200f, 20f, 0f, 200f, 0,
 					1,
 					0, new Material(ColorAttribute.createDiffuse(new Color(0.2f, 0.4f, 0.6f, 1)),
 							ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(16f)),

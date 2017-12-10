@@ -44,6 +44,7 @@ import com.yuil.game.entity.attribute.DamagePoint;
 import com.yuil.game.entity.attribute.ExplosionStrength;
 import com.yuil.game.entity.attribute.GameObjectTypeAttribute;
 import com.yuil.game.entity.attribute.HealthPoint;
+import com.yuil.game.entity.attribute.MoveSpeed;
 import com.yuil.game.entity.attribute.OwnerPlayerId;
 import com.yuil.game.entity.gameobject.GameObjectType;
 import com.yuil.game.entity.message.*;
@@ -96,6 +97,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	InputDeviceControler deviceInputHandler;
 
 	public PerspectiveCamera camera;
+	Vector3 previousCameraDirection=new Vector3();
 	CameraInputController camController;
 
 	ModelBatch modelBatch = new ModelBatch();
@@ -108,18 +110,23 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	long playerId;
 	BtObject playerObject;
 	Vector3 playerPrePosition = new Vector3();
-	int vinearVelocityX = 10;
-	int vinearVelocityZ = 30;
+	Vector3 moveDirection=new Vector3();
+	boolean playerForward=false;
+	boolean playerBack=false;
+	boolean playerLeft=false;
+	boolean playerRight=false;
+	boolean playerDirectionChanged=false;
 
 	Sound sound = Gdx.audio.newSound(Gdx.files.internal("sound/bee.wav"));
 
 	Matrix4 tempMatrix4 = new Matrix4();
 	Vector3 tempVector3 = new Vector3();
 
-	UPDATE_BTOBJECT_MOTIONSTATE temp_update_rigidbody_message;
-	UPDATE_LINEAR_VELOCITY temp_update_liner_velocity_message = new UPDATE_LINEAR_VELOCITY();
-	DO_ACTION temp_do_action_messge = new DO_ACTION();
-
+	UPDATE_BTOBJECT_MOTIONSTATE message_update_rigidbody;
+	UPDATE_LINEAR_VELOCITY message_update_liner_velocity = new UPDATE_LINEAR_VELOCITY();
+	DO_ACTION message_do_action = new DO_ACTION();
+	MOVE_DIRECTION message_move_direction=new MOVE_DIRECTION();
+	
 	boolean isLogin = false;
 
 	public VolleyballScreen(MyGame game) {
@@ -127,9 +134,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		Bullet.init();
 		deviceInputHandler = new InputDeviceControler(inputDeviceStatus, createDeviceInputListener());
 
+		//clientSocket = new ClientSocket(9092, "39.106.33.9", 9091, this);
 		clientSocket = new ClientSocket(9092, "127.0.0.1", 9091, this);
 
-		// clientSocket=new ClientSocket(9092,"uyuil.com",9091,this);
 		initMessageHandle();
 
 		GuiFactory guiFactory = new GuiFactory();
@@ -242,6 +249,13 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	public void render(float delta) {
 		// checkKeyBoardStatus();
 		deviceInputHandler.checkDeviceInput();
+		if(!previousCameraDirection.equals(camera.direction)){
+			if(Gdx.input.isKeyPressed(Keys.A)||Gdx.input.isKeyPressed(Keys.D)||Gdx.input.isKeyPressed(Keys.S)||Gdx.input.isKeyPressed(Keys.W)){
+				playerDirectionChanged=true;
+			}
+		}
+		previousCameraDirection.set(camera.direction);
+		sendMessage_MOVE_DIRECTION();
 		while (!createObstacleQueue.isEmpty()) {
 			S2C_ADD_OBSTACLE message = createObstacleQueue.poll();
 			C2S_UPDATE_BTOBJECT_MOTIONSTATE c2s_UPDATE_BTOBJECT_MOTIONSTATE_message = new C2S_UPDATE_BTOBJECT_MOTIONSTATE();
@@ -322,8 +336,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 				ModelInstance modelInstance = ((RenderableBtObject) physicsObject).getInstance();
 				((BtObject) physicsObject).getRigidBody().getWorldTransform(modelInstance.transform);
-				GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (((BtObject) physicsObject)
-						.getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
+				//GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (((BtObject) physicsObject).getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 				/*
 				 * if (gameObjectType!=null) { if
 				 * (gameObjectType.getGameObjectType()==GameObjectType.GROUND.
@@ -410,7 +423,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		PhysicsObject result = null;
 		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
 
-			physicsObject.getTransform().getTranslation(position);
+			((BtObject)physicsObject).getRigidBody().getWorldTransform().getTranslation(position);
 			dst = position.dst2(camera.position);
 			if (Intersector.intersectRaySphere(ray, position, 0.6f, null)) {
 				if (dst < dst2) {
@@ -493,13 +506,84 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
 		physicsWorld.addPhysicsObject(rb);
 	}
+	
+	public void sendMessage_ADD_PLAYER(){
+		if (isLogin) {
+			// sound.play();
+			if (playerId == 0) {
+				playerId = random.nextLong();
+				System.out.println("new id:" + playerId);
+				C2S_ADD_PLAYER add_player = new C2S_ADD_PLAYER();
+				add_player.setId(playerId);
+				sendSingleMessage(add_player);
+			}
+		} else {
+			TEST message = new TEST();
+			sendSingleMessage(message);
+		}
 
+	}
+	public void sendMessage_MOVE_DIRECTION(){
+		if(playerDirectionChanged&&playerObject!=null){
+			tempVector3.set(camera.direction);
+			if(playerForward){
+				if(playerLeft){
+					tempVector3.rotate(Vector3.Y, 45);
+				}else if(playerRight){
+					tempVector3.rotate(Vector3.Y, -45);
+				}
+			}else if(playerBack){
+				if(playerLeft){
+					tempVector3.rotate(Vector3.Y, 135);
+				}else if(playerRight){
+					tempVector3.rotate(Vector3.Y, -135);
+				}else{
+					tempVector3.rotate(Vector3.Y, -180);
+				}
+			}else if (playerLeft){
+				tempVector3.rotate(Vector3.Y, 90);
+			}else if(playerRight){
+				tempVector3.rotate(Vector3.Y, -90);
+			}else{
+				tempVector3.setZero();
+			}
+			tempVector3.y = 0;
+			tempVector3.nor();
+			
+			message_move_direction.setId(playerObject.getId());
+			message_move_direction.setX(tempVector3.x);
+			message_move_direction.setY(tempVector3.y);
+			message_move_direction.setZ(tempVector3.z);
+
+			if (isLogin&&playerId!=0&&playerObject!=null) {
+				sendSingleMessage(message_move_direction,false);
+			} else {
+				TEST message = new TEST();
+				sendSingleMessage(message);
+			}
+			
+			playerDirectionChanged=false;
+		}
+	}
+	
+	void sendSingleMessage(Message message) {
+		sendSingleMessage(message,false);
+	}
+	void sendSingleMessage(Message message,boolean isImmediately) {
+		clientSocket.send(SINGLE_MESSAGE.get(message.get().array()).array(), isImmediately);
+	}
+	void sendSingleMessage(byte[] data) {
+		sendSingleMessage(data,false);
+	}
+	void sendSingleMessage(byte[] data,boolean isImmediately) {
+		clientSocket.send(SINGLE_MESSAGE.get(data).array(), isImmediately);
+	}
 	void setupActorInput() {
 		stage.getRoot().findActor("A").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				deviceInputHandler.deviceInputListener.aJustUppedAction();
 			}
-
+	
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				deviceInputHandler.deviceInputListener.aJustPressedAction();
 				return true;
@@ -509,16 +593,16 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				deviceInputHandler.deviceInputListener.dJustUppedAction();
 			}
-
+	
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				deviceInputHandler.deviceInputListener.dJustPressedAction();
 				return true;
 			}
 		});
-		stage.getRoot().findActor("Z").addListener(new ActorInputListenner() {
-
+		stage.getRoot().findActor("ADD").addListener(new ActorInputListenner() {
+	
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				deviceInputHandler.deviceInputListener.zJustPressedAction();
+				deviceInputHandler.deviceInputListener.zJustUppedAction();
 			}
 		});
 		stage.getRoot().findActor("X").addListener(new ActorInputListenner() {
@@ -527,58 +611,48 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			}
 		});
 		stage.getRoot().findActor("G").addListener(new ActorInputListenner() {
-
+	
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				// gameObjectId = Long.parseLong(((TextArea)
 				// stage.getRoot().findActor("userName")).getText());
-
+	
 			}
 		});
-
+	
 		stage.getRoot().findActor("W").addListener(new ActorInputListenner() {
-
+	
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				System.out.println("uiuuS");
 				deviceInputHandler.deviceInputListener.wJustPressedAction();
 			}
 		});
-
+	
 		stage.getRoot().findActor("S").addListener(new ActorInputListenner() {
-
+	
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				deviceInputHandler.deviceInputListener.sJustPressedAction();
 			}
 		});
-
+	
 		stage.getRoot().findActor("login").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 			}
 		});
-
+	
 		stage.getRoot().findActor("doAction").addListener(new ActorInputListenner() {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-
-				temp_do_action_messge
+	
+				message_do_action
 						.setActionId(Long.parseLong(((TextArea) stage.getRoot().findActor("actionId")).getText()));
-				sendSingleMessage(temp_do_action_messge);
-
+				sendSingleMessage(message_do_action);
+	
 			}
-
+	
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-
+	
 				return true;
 			}
 		});
-	}
-
-	void sendSingleMessage(Message message) {
-
-		clientSocket.send(SINGLE_MESSAGE.get(message.get().array()).array(), false);
-
-	}
-
-	void sendSingleMessage(byte[] data) {
-		clientSocket.send(SINGLE_MESSAGE.get(data).array(), false);
 	}
 
 	void initMessageHandle() {
@@ -601,6 +675,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 							new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
 					btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),
 							new OwnerPlayerId(message.getId()));
+					btObject.getAttributes().put(AttributeType.MOVE_SPEED.ordinal(),new MoveSpeed(20));
+					
 					btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
 					// System.out.println(1<<GameObjectType.GROUND.ordinal());
 					physicsWorld.addPhysicsObject(btObject);
@@ -679,6 +755,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void handle(ByteBuf src) {
 				// TODO Auto-generated method stub
+				//System.out.println("UPDATE_BTOBJECT_MOTIONSTATE");
 				message.set(src);
 				BtObject btObject = (BtObject) physicsWorld.getPhysicsObjects().get(message.getId());
 				if (btObject == null) {
@@ -753,7 +830,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void zJustUppedAction() {
 				// TODO Auto-generated method stub
 				System.out.println("zup");
-				createVolleyballCourt();
+				//createVolleyballCourt();
+				sendMessage_ADD_PLAYER();
 			}
 
 			@Override
@@ -812,12 +890,17 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 			@Override
 			public void wJustUppedAction() {
-				// TODO Auto-generated method stub
+				playerForward=false;
+				if(!Gdx.input.isKeyPressed(Keys.S)){
+					playerDirectionChanged=true;
+				}
 			}
 
 			@Override
 			public void wJustPressedAction() {
-				// TODO Auto-generated method stub
+				playerForward=true;
+				playerBack=false;
+				playerDirectionChanged=true;
 
 			}
 
@@ -866,18 +949,28 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void spaceJustPressedAction() {
 				// TODO Auto-generated method stub
-
+				if(playerId!=0&&playerObject!=null){
+					message_do_action.setActionId(VollyBallAction.PLYAER_JUMP.ordinal());
+					message_do_action.setPlayerId(playerId);
+					sendSingleMessage(message_do_action, true);
+				}
 			}
 
 			@Override
 			public void sJustUppedAction() {
-				// TODO Auto-generated method stub
+				playerBack=false;
+				if(!Gdx.input.isKeyPressed(Keys.W)){
+					playerDirectionChanged=true;
 
+				}
 			}
 
 			@Override
 			public void sJustPressedAction() {
-				// TODO Auto-generated method stub
+				playerBack=true;
+				playerForward=false;
+				playerDirectionChanged=true;
+
 
 			}
 
@@ -1101,50 +1194,18 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 			@Override
 			public void dJustUppedAction() {
-				// TODO Auto-generated method stub
-				if (!Gdx.input.isKeyPressed(Keys.A)) {
-					if (playerId != 0 && playerObject != null) {
-						System.out.println("Auppp");
-						tempVector3.setZero();
-						temp_update_liner_velocity_message.setX(0);
-						temp_update_liner_velocity_message.setY(NO_CHANGE);
-						temp_update_liner_velocity_message.setZ(0);
-						temp_update_liner_velocity_message.setId(playerObject.getId());
-						// sendSingleMessage(temp_update_liner_velocity_message);
+				playerRight=false;
+				if(!Gdx.input.isKeyPressed(Keys.A)){
+					playerDirectionChanged=true;
 
-						tempVector3.y = playerObject.getRigidBody().getLinearVelocity().y;
-
-						playerObject.getRigidBody().setLinearVelocity(tempVector3);
-					}
-				}else{
-					deviceInputHandler.deviceInputListener.aJustPressedAction();
 				}
 			}
 
 			@Override
 			public void dJustPressedAction() {
-				// TODO Auto-generated method stub
-
-				if (playerId != 0 && playerObject != null) {
-
-					tempVector3.set(camera.direction);
-					tempVector3.rotate(Vector3.Y, -90);
-					tempVector3.y = 0;
-
-					temp_update_liner_velocity_message.setX(tempVector3.nor().x);
-					temp_update_liner_velocity_message.setY(NO_CHANGE);
-					temp_update_liner_velocity_message.setZ(tempVector3.nor().z);
-					temp_update_liner_velocity_message.setId(playerObject.getId());
-					// sendSingleMessage(temp_update_liner_velocity_message);
-
-					tempVector3.y = playerObject.getRigidBody().getLinearVelocity().y;
-					// System.out.println(tempVector3.nor().scl(5));
-
-					playerObject.getRigidBody().activate();
-					playerObject.getRigidBody().setLinearVelocity(tempVector3.nor().scl(5));
-					System.out.println(playerObject.getRigidBody().getLinearVelocity());
-
-				}
+				playerRight=true;
+				playerLeft=false;
+				playerDirectionChanged=true;
 			}
 
 			@Override
@@ -1192,50 +1253,19 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 			@Override
 			public void aJustUppedAction() {
-				// TODO Auto-generated method stub
-				if (!Gdx.input.isKeyPressed(Keys.D)) {
-					if (playerId != 0 && playerObject != null) {
-						System.out.println("Auppp");
-						tempVector3.setZero();
-						temp_update_liner_velocity_message.setX(0);
-						temp_update_liner_velocity_message.setY(NO_CHANGE);
-						temp_update_liner_velocity_message.setZ(0);
-						temp_update_liner_velocity_message.setId(playerObject.getId());
-						// sendSingleMessage(temp_update_liner_velocity_message);
+				playerLeft=false;
+				if(!Gdx.input.isKeyPressed(Keys.D)){
+					playerDirectionChanged=true;
 
-						tempVector3.y = playerObject.getRigidBody().getLinearVelocity().y;
-
-						playerObject.getRigidBody().setLinearVelocity(tempVector3);
-					}
-				}else{
-					deviceInputHandler.deviceInputListener.dJustPressedAction();
 				}
 			}
 
 			@Override
 			public void aJustPressedAction() {
-				// TODO Auto-generated method stub
+				playerLeft=true;
+				playerRight=false;
+				playerDirectionChanged=true;
 
-				if (playerId != 0 && playerObject != null) {
-
-					tempVector3.set(camera.direction);
-					tempVector3.rotate(Vector3.Y, 90);
-					tempVector3.y = 0;
-
-					temp_update_liner_velocity_message.setX(tempVector3.nor().x);
-					temp_update_liner_velocity_message.setY(NO_CHANGE);
-					temp_update_liner_velocity_message.setZ(tempVector3.nor().z);
-					temp_update_liner_velocity_message.setId(playerObject.getId());
-					// sendSingleMessage(temp_update_liner_velocity_message);
-
-					tempVector3.y = playerObject.getRigidBody().getLinearVelocity().y;
-					// System.out.println(tempVector3.nor().scl(5));
-
-					playerObject.getRigidBody().activate();
-					playerObject.getRigidBody().setLinearVelocity(tempVector3.nor().scl(5));
-					System.out.println(playerObject.getRigidBody().getLinearVelocity());
-
-				}
 			}
 
 			@Override

@@ -64,7 +64,7 @@
         <height>100</height>
         <skin name="default"></skin>
     </actor>
-     <actor id="6" type="textButton" name="Z" text="ADD">
+     <actor id="6" type="textButton" name="ADD" text="ADD">
         <x>700</x>
         <y>300</y>
         

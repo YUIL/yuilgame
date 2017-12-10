@@ -12,11 +12,11 @@ public class ExplosionStrength implements Attribute {
 		this.strength = strength;
 	}
 
-	public int getDamagePoint() {
+	public int getStrength() {
 		return strength;
 	}
 
-	public void setDamagePoint(int strength) {
+	public void setStrength(int strength) {
 		this.strength = strength;
 	}
 

@@ -8,18 +8,21 @@ import com.yuil.game.net.message.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 
-public class S2C_ADD_PLAYER implements Message {
-	public final int type=EntityMessageType.S2C_ADD_PLAYER.ordinal();
-	long id=0;
-	long objectId;
+public class MOVE_DIRECTION implements Message {
+	public final int type=EntityMessageType.MOVE_DIRECTION.ordinal();
+	long id;
+	float x;
+	float y;
+	float z;
 	
 	
-	public S2C_ADD_PLAYER() {
+	
+	public MOVE_DIRECTION() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
-	public S2C_ADD_PLAYER(ByteBuf src) {
+	public MOVE_DIRECTION(ByteBuf src) {
 		super();
 		this.set(src);
 		// TODO Auto-generated constructor stub
@@ -33,14 +36,28 @@ public class S2C_ADD_PLAYER implements Message {
 		this.id = id;
 	}
 
-	
-
-	public long getObjectId() {
-		return objectId;
+	public float getX() {
+		return x;
 	}
 
-	public void setObjectId(long objectId) {
-		this.objectId = objectId;
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public float getZ() {
+		return z;
+	}
+
+	public void setZ(float z) {
+		this.z = z;
 	}
 
 	@Override
@@ -48,7 +65,9 @@ public class S2C_ADD_PLAYER implements Message {
 		// TODO Auto-generated method stub
 		buf.readByte();
 		this.setId(buf.readLong());
-		this.setObjectId(buf.readLong());
+		this.setX(buf.readFloat());
+		this.setY(buf.readFloat());
+		this.setZ(buf.readFloat());
 		return this;
 	}
 
@@ -66,16 +85,19 @@ public class S2C_ADD_PLAYER implements Message {
 		
 		return dest;*/
 		
-		ByteBuf buf=UnpooledByteBufAllocator.DEFAULT.heapBuffer(8+8+Message.TYPE_LENGTH);
+		ByteBuf buf=UnpooledByteBufAllocator.DEFAULT.heapBuffer(8+4+4+4+Message.TYPE_LENGTH);
 		buf.writeByte(this.type);
 		buf.writeLong(this.id);
-		buf.writeLong(this.objectId);
+		buf.writeFloat(this.x);
+		buf.writeFloat(this.y);
+		buf.writeFloat(this.z);
+	
 		return buf;
 	}
 
 	@Override
 	public String toString() {
-		return "ADD_BALL [type=" + type + ", id=" + id + "]";
+		return "ADD_BALL [type=" + type + ", id=" + id + ", x=" + x + ", y=" + y + ", z=" + z+ "]";
 	}
 	
 	
