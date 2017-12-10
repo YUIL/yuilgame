@@ -14,9 +14,9 @@ import io.netty.buffer.ByteBuf;
 public class UdpSession extends Session{
 	
 	volatile boolean isSending=false;
-	int timeOut=10;//millisecond
+	int timeOut=40;//millisecond
 	int maxUnusedTime=30000;//millisecond
-	int maxResendTimes=20;
+	int maxResendTimes=10;
 	SendServicer sendThread;
 	volatile short resendTimes=0;
 	volatile long lastSendTime;

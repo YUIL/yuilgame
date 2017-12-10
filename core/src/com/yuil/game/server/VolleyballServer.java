@@ -387,7 +387,7 @@ public class VolleyballServer implements MessageListener {
 								.get(AttributeType.GMAE_OBJECT_TYPE.ordinal())))
 										.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()) {
 							// 检查障碍物位置,超过边界则删除
-							if (tempVector3.z > -45) {
+							if (tempVector3.z > 200) {
 								physicsWorld.removePhysicsObject(btObject);
 							}
 						} else if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
@@ -441,7 +441,7 @@ public class VolleyballServer implements MessageListener {
 					s2c_ADD_PLAYER_message.setId(message.getId());
 					s2c_ADD_PLAYER_message.setObjectId(objectId);
 
-					BtObject btObject = physicsWorldBuilder.createDefaultBall(5, 10, 0);
+					BtObject btObject = physicsWorldBuilder.createDefaultBall(19, 10, random.nextInt(30));
 					
 					btObject.setId(objectId);
 					btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
@@ -459,8 +459,7 @@ public class VolleyballServer implements MessageListener {
 					playerMap.put(session.getId(), new Player(message.getId(), objectId, session.getId()));
 				
 
-					tempVector3.set(btObject.getRigidBody().getLinearVelocity().x,
-							btObject.getRigidBody().getLinearVelocity().y, -5);
+					//tempVector3.set(btObject.getRigidBody().getLinearVelocity().x,btObject.getRigidBody().getLinearVelocity().y, -5);
 					// btObject.getRigidBody().setLinearVelocity(tempVector3);
 
 					broadCastor.broadCast_SINGLE_MESSAGE(s2c_ADD_PLAYER_message, false);

@@ -83,7 +83,7 @@
         <skin name="default"></skin>
     </actor>
 	<actor id="6" type="textButton" name="W" text="UP##">
-        <x>700</x>
+        <x>-700</x>
         <y>100</y>
         
         <width>100</width>
@@ -103,14 +103,14 @@
     </actor>
     <actor id="1" type="textArea" name="actionId" text="0">
         <x>0</x>
-        <y>300</y>
+        <y>-300</y>
         <skin name="default"></skin>
     </actor> 
     
      
 	<actor id="6" type="textButton" name="doAction" text="DoAction">
         <x>30</x>
-        <y>250</y>
+        <y>-250</y>
         <skin name="default"></skin>
     </actor>
 </stage>

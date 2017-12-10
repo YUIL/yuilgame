@@ -134,8 +134,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		Bullet.init();
 		deviceInputHandler = new InputDeviceControler(inputDeviceStatus, createDeviceInputListener());
 
-		//clientSocket = new ClientSocket(9092, "39.106.33.9", 9091, this);
-		clientSocket = new ClientSocket(9092, "127.0.0.1", 9091, this);
+		clientSocket = new ClientSocket(9092, "39.106.33.9", 9091, this);
+		//clientSocket = new ClientSocket(9092, "127.0.0.1", 9091, this);
 
 		initMessageHandle();
 
@@ -355,7 +355,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 								.ordinal()) {
 					// 检查障碍物位置,超过边界则删除
 					// System.out.println("asdasd");
-					if (((BtObject) physicsObject).getPosition(tempMatrix4).z > -45) {
+					if (((BtObject) physicsObject).getPosition(tempMatrix4).z > 200) {
 						physicsWorld.removePhysicsObject(physicsObject);
 						// remove_BTOBJECT_message.setId(btObject.getId());
 						// broadCastor.broadCast_SINGLE_MESSAGE(remove_BTOBJECT_message,
@@ -666,7 +666,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				hideGameOver();
 				System.out.println("recv addplayer");
 				if (physicsWorld.getPhysicsObjects().get(message.getObjectId()) == null) {
-					RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(5, 10, 0);
+					RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(19, 10, random.nextInt(30));
 					ColorAttribute ca = (ColorAttribute) (((RenderableBtObject) btObject).getInstance().nodes
 							.get(0).parts.get(0).material.get(ColorAttribute.Diffuse));
 					ca.color.set(0.9f, 0.2f, 0.1f, 1);
