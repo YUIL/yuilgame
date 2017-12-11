@@ -134,8 +134,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		Bullet.init();
 		deviceInputHandler = new InputDeviceControler(inputDeviceStatus, createDeviceInputListener());
 
-		clientSocket = new ClientSocket(9092, "39.106.33.9", 9091, this);
-		//clientSocket = new ClientSocket(9092, "127.0.0.1", 9091, this);
+		//clientSocket = new ClientSocket(9092, "39.106.33.9", 9091, this);
+		clientSocket = new ClientSocket(9092, "127.0.0.1", 9091, this);
 
 		initMessageHandle();
 
@@ -950,7 +950,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void spaceJustPressedAction() {
 				// TODO Auto-generated method stub
 				if(playerId!=0&&playerObject!=null){
-					message_do_action.setActionId(VollyBallAction.PLYAER_JUMP.ordinal());
+					message_do_action.setActionId(VollyBallAction.PLAYER_JUMP.ordinal());
 					message_do_action.setPlayerId(playerId);
 					sendSingleMessage(message_do_action, true);
 				}
@@ -1178,6 +1178,11 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void eJustPressedAction() {
 				// TODO Auto-generated method stub
 
+				if(playerId!=0&&playerObject!=null){
+					message_do_action.setActionId(VollyBallAction.PLAYER_MAKE_EXPLOSION.ordinal());
+					message_do_action.setPlayerId(playerId);
+					sendSingleMessage(message_do_action, true);
+				}
 			}
 
 			@Override
