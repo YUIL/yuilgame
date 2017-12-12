@@ -2,7 +2,7 @@
 <config>
     <port>9091</port>
     <spawner>
-        <interval>1000</interval>   
+        <interval>250</interval>   
     </spawner>
     
 </config>

@@ -64,7 +64,7 @@ import com.yuil.game.input.InputManager;
 import com.yuil.game.input.InputDeviceStatus;
 import com.yuil.game.net.MessageListener;
 import com.yuil.game.net.Session;
-import com.yuil.game.net.message.MESSAGE_ARRAY;
+import com.yuil.game.net.message.MULTI_MESSAGE;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.net.message.MessageHandler;
 import com.yuil.game.net.message.MessageType;
@@ -386,8 +386,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		// System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
 
 		switch (MessageType.values()[typeOrdinal]) {
-		case MESSAGE_ARRAY:
-			MESSAGE_ARRAY message_ARRAY = new MESSAGE_ARRAY(data);
+		case MULTI_MESSAGE:
+			MULTI_MESSAGE message_ARRAY = new MULTI_MESSAGE(data);
 			for (ByteBuf data1 : message_ARRAY.gameMessages) {
 				disposeSingleMessage(session, data1);
 			}
@@ -459,7 +459,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	}
 
 	public void makeExplosion(Vector3 position) {
-		RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableBall(2, 0, position,
+		RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableBall(10, 0, position,
 				new Color(55 / 255f, 55 / 255f, 55 / 255f, 1));
 		rb.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
@@ -977,7 +977,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void rJustUppedAction() {
 				// TODO Auto-generated method stub
-
+				createCubes();
 			}
 
 			@Override

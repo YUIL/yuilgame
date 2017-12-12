@@ -27,7 +27,7 @@ import com.yuil.game.entity.physics.BtWorld;
 import com.yuil.game.net.MessageListener;
 import com.yuil.game.net.NetSocket;
 import com.yuil.game.net.Session;
-import com.yuil.game.net.message.MESSAGE_ARRAY;
+import com.yuil.game.net.message.MULTI_MESSAGE;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.net.message.MessageHandler;
 import com.yuil.game.net.message.MessageType;
@@ -114,8 +114,8 @@ public class RunCmdServer implements MessageListener {
 		// System.out.println("type:" + MessageType.values()[typeOrdinal]);
 
 		switch (MessageType.values()[typeOrdinal]) {
-		case MESSAGE_ARRAY:
-			MESSAGE_ARRAY message_ARRAY = new MESSAGE_ARRAY(data);
+		case MULTI_MESSAGE:
+			MULTI_MESSAGE message_ARRAY = new MULTI_MESSAGE(data);
 			for (ByteBuf data1 : message_ARRAY.gameMessages) {
 				disposeSingleMessage(session, data1);
 			}

@@ -58,7 +58,7 @@ import com.yuil.game.input.InputManager;
 import com.yuil.game.input.InputDeviceStatus;
 import com.yuil.game.net.MessageListener;
 import com.yuil.game.net.Session;
-import com.yuil.game.net.message.MESSAGE_ARRAY;
+import com.yuil.game.net.message.MULTI_MESSAGE;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.net.message.MessageHandler;
 import com.yuil.game.net.message.MessageType;
@@ -346,8 +346,8 @@ public class TestScreen2 extends Screen2D implements MessageListener {
 		// System.out.println("type:" + GameMessageType.values()[typeOrdinal]);
 
 		switch (MessageType.values()[typeOrdinal]) {
-		case MESSAGE_ARRAY:
-			MESSAGE_ARRAY message_ARRAY = new MESSAGE_ARRAY(data);
+		case MULTI_MESSAGE:
+			MULTI_MESSAGE message_ARRAY = new MULTI_MESSAGE(data);
 			for (ByteBuf data1 : message_ARRAY.gameMessages) {
 				disposeSingleMessage(session, data1);
 			}

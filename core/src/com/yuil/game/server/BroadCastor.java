@@ -2,7 +2,7 @@ package com.yuil.game.server;
 
 import com.yuil.game.net.NetSocket;
 import com.yuil.game.net.Session;
-import com.yuil.game.net.message.MESSAGE_ARRAY;
+import com.yuil.game.net.message.MULTI_MESSAGE;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.net.message.SINGLE_MESSAGE;
 
@@ -27,10 +27,12 @@ public class BroadCastor {
 		broadCast(SINGLE_MESSAGE.get(data), isImmediately);
 	}
 
-	public  void broadCast_MESSAGE_ARRAY(Message[] messages, boolean isImmediately) {
-		broadCast(new MESSAGE_ARRAY(messages).get(), isImmediately);
+	public  void broadCast_MESSAGE_ARRAY(Message[] messages,int length, boolean isImmediately) {
+		broadCast(new MULTI_MESSAGE(messages,length).get(), isImmediately);
 	}
-	
+	public  void broadCast_MESSAGE_ARRAY(MULTI_MESSAGE message, boolean isImmediately) {
+		broadCast(message.get(), isImmediately);
+	}
 	public  void broadCast(ByteBuf data, boolean isImmediately) {
 		//System.out.println("broadcast");
 

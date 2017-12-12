@@ -56,7 +56,7 @@ import com.yuil.game.input.InputDeviceListener;
 import com.yuil.game.net.MessageListener;
 import com.yuil.game.net.NetSocket;
 import com.yuil.game.net.Session;
-import com.yuil.game.net.message.MESSAGE_ARRAY;
+import com.yuil.game.net.message.MULTI_MESSAGE;
 import com.yuil.game.net.message.Message;
 import com.yuil.game.net.message.MessageHandler;
 import com.yuil.game.net.message.MessageType;
@@ -107,6 +107,10 @@ public class VolleyballServer implements MessageListener {
 	ContactListener contactListener;
 	REMOVE_BTOBJECT remove_BTOBJECT_message = new REMOVE_BTOBJECT();
 	UPDATE_BTOBJECT_MOTIONSTATE update_BTRIGIDBODY = new UPDATE_BTOBJECT_MOTIONSTATE();
+	UPDATE_BTOBJECT_MOTIONSTATE[] update_BTRIGIDBODY_array=new UPDATE_BTOBJECT_MOTIONSTATE[2];
+	MULTI_MESSAGE multi_message=new MULTI_MESSAGE();
+	
+	
 	public static Queue<BtObject> updateBtObjectMotionStateBroadCastQueue = new ConcurrentLinkedDeque<BtObject>();
 	public static Queue<BtObject> removeBtObjectQueue = new ConcurrentLinkedDeque<BtObject>();
 	BtObjectSpawner obstacleBallSpawner;
@@ -216,6 +220,35 @@ public class VolleyballServer implements MessageListener {
 
 		REMOVE_BTOBJECT remove_BTOBJECT_message = new REMOVE_BTOBJECT();
 
+		
+		void explosionApplyForce(BtObject explisive,BtObject other){
+			GameObjectTypeAttribute otherType = (GameObjectTypeAttribute) (other.getAttributes()
+					.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
+			if(otherType.getGameObjectType()==GameObjectType.OBSTACLE.ordinal()){
+				System.out.println(other.getId()+",explosion!!!!!!!!!!!!!!!!!!!!!!!");
+
+				other.getRigidBody().getWorldTransform().getTranslation(v3);
+				v3.sub(explisive.getRigidBody().getWorldTransform().getTranslation(v3_2));
+				v3.nor();
+				v3.scl(((ExplosionStrength)(explisive.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()))).getStrength());
+				other.getRigidBody().applyImpulse(v3, other.getRigidBody().getWorldTransform().getTranslation(v3_2));
+				updateBtObjectMotionStateBroadCastQueue.add(other);
+			}
+		}
+		void playerCollideDamage(BtObject player,BtObject other){
+				HealthPoint healthPoint = ((HealthPoint) (player.getAttributes()
+						.get(AttributeType.HEALTH_POINT.ordinal())));
+				int demage = (int) Math
+						.floor((other.getRigidBody().getCollisionShape().getLocalScaling().x * 10));
+				healthPoint.setHealthPoint(healthPoint.getHealthPoint() - demage);
+				//System.out.println("剩余生命：" + healthPoint.getHealthPoint());
+
+				if (healthPoint.getHealthPoint() <= 0) {
+					removeBtObjectQueue.add(player);
+
+				}
+				removeBtObjectQueue.add(other);
+		}
 		@Override
 		public void onContactStarted(btCollisionObject colObj0, btCollisionObject colObj1) {
 			// System.out.println("coll"+random.nextInt());
@@ -233,56 +266,22 @@ public class VolleyballServer implements MessageListener {
 						|| gameObjectType1.getGameObjectType() == GameObjectType.GROUND.ordinal()) {
 				} else {
 
+
 					if (btObject0.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
-						System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
-						btObject1.getRigidBody().getWorldTransform().getTranslation(v3);
-						v3.sub(btObject0.getRigidBody().getWorldTransform().getTranslation(v3_2));
-						v3.nor();
-						v3.scl(((ExplosionStrength)(btObject0.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()))).getStrength());
-						btObject1.getRigidBody().applyImpulse(v3, btObject1.getRigidBody().getWorldTransform().getTranslation(v3_2));
-						updateBtObjectMotionStateBroadCastQueue.add(btObject1);
+						explosionApplyForce(btObject0, btObject1);
 
 					} else if (btObject1.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
-						System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
-						btObject0.getRigidBody().getWorldTransform().getTranslation(v3);
-						v3.sub(btObject1.getRigidBody().getWorldTransform().getTranslation(v3_2));
-						v3.nor();
-						v3.scl(((ExplosionStrength)(btObject1.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()))).getStrength());
-						btObject0.getRigidBody().applyImpulse(v3, btObject0.getRigidBody().getWorldTransform().getTranslation(v3_2));
-						updateBtObjectMotionStateBroadCastQueue.add(btObject0);
-
+						explosionApplyForce(btObject1, btObject0);
 					}
 					
 				}
 				if (gameObjectType0 != null && gameObjectType1 != null) {
 					if (gameObjectType0.getGameObjectType() == GameObjectType.PLAYER.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()) {
-						HealthPoint healthPoint = ((HealthPoint) (btObject0.getAttributes()
-								.get(AttributeType.HEALTH_POINT.ordinal())));
-						int demage = (int) Math
-								.floor((btObject1.getRigidBody().getCollisionShape().getLocalScaling().x * 10));
-						healthPoint.setHealthPoint(healthPoint.getHealthPoint() - demage);
-						System.out.println("剩余生命：" + healthPoint.getHealthPoint());
-
-						if (healthPoint.getHealthPoint() <= 0) {
-							removeBtObjectQueue.add(btObject0);
-
-						}
-						removeBtObjectQueue.add(btObject1);
+						playerCollideDamage(btObject0, btObject1);
 					} else if (gameObjectType0.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.PLAYER.ordinal()) {
-						HealthPoint healthPoint = ((HealthPoint) (btObject1.getAttributes()
-								.get(AttributeType.HEALTH_POINT.ordinal())));
-						int demage = (int) Math
-								.floor((btObject0.getRigidBody().getCollisionShape().getLocalScaling().x * 10));
-						healthPoint.setHealthPoint(healthPoint.getHealthPoint() - demage);
-						System.out.println("剩余生命：" + healthPoint.getHealthPoint());
-
-						if (healthPoint.getHealthPoint() <= 0) {
-							removeBtObjectQueue.add(btObject1);
-
-						}
-						updateBtObjectMotionStateBroadCastQueue.add(btObject0);
+						playerCollideDamage(btObject1, btObject0);
 					}
 				}
 
@@ -301,6 +300,18 @@ public class VolleyballServer implements MessageListener {
 		}
 
 		public void onContactProcessed(btCollisionObject colObj0, btCollisionObject colObj1) {
+/*
+			if (colObj0 instanceof btRigidBody && colObj1 instanceof btRigidBody) {
+				BtObject btObject0 = (BtObject) (((btRigidBody) colObj0).userData);
+				BtObject btObject1 = (BtObject) (((btRigidBody) colObj1).userData);
+				
+				if (btObject0.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
+					//explosionApplyForce(btObject0, btObject1);
+
+				} else if (btObject1.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
+					explosionApplyForce(btObject1, btObject0);
+				}
+			}*/
 		}
 
 		public void onContactEnded(btCollisionObject colObj0, btCollisionObject colObj1) {
@@ -333,7 +344,12 @@ public class VolleyballServer implements MessageListener {
 	public VolleyballServer() {
 		Bullet.init();
 		initConfig();
-
+		
+		for (int i = 0; i < update_BTRIGIDBODY_array.length; i++) {
+			update_BTRIGIDBODY_array[i]=new UPDATE_BTOBJECT_MOTIONSTATE();
+		}
+		
+		
 		physicsWorld = new BtWorld();
 		physicsWorld.addPhysicsObject(physicsWorldBuilder.createDefaultGround());
 
@@ -371,6 +387,8 @@ public class VolleyballServer implements MessageListener {
 			nextUpdateTime = System.currentTimeMillis();
 			while (true) {
 				if (System.currentTimeMillis() >= nextUpdateTime) {// 更新世界
+					
+					
 					while(!removeSessionQueue.isEmpty()){
 						Player player=playerMap.get(removeSessionQueue.poll());
 						if (player!=null){
@@ -429,16 +447,29 @@ public class VolleyballServer implements MessageListener {
 					physicsWorld.update(interval / 1000f);// 更新物理世界
 
 					// 向连接的客户端发送btObjectMotionstate同步消息
-					for (int i = 0; i < updateBtObjectMotionStateBroadCastQueue.size(); i++) {
-						BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
-						if (btObject.getRigidBody() != null) {
-							// System.out.println("btId:"+btObject.getId());
-							// System.out.println("send up
-							// velocity:"+btObject.getRigidBody().getLinearVelocity());
-							// System.out.println("update");
-							update_BTRIGIDBODY.set(btObject);
-							// System.out.println(update_BTRIGIDBODY.toString());
-							broadCastor.broadCast_SINGLE_MESSAGE(update_BTRIGIDBODY, true);
+					if (updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length){
+						for (int i = 0; i < update_BTRIGIDBODY_array.length; i++) {
+							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
+							if (btObject.getRigidBody() != null) {
+								update_BTRIGIDBODY_array[i].set(btObject);
+							}
+						}
+						multi_message.set(update_BTRIGIDBODY_array, update_BTRIGIDBODY_array.length);
+						System.out.println("asdasdasd:"+multi_message.get().array().length);
+						broadCastor.broadCast_MESSAGE_ARRAY(multi_message, false);
+
+					}else{
+						for (int i = 0; i < updateBtObjectMotionStateBroadCastQueue.size(); i++) {
+							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
+							if (btObject.getRigidBody() != null) {
+								// System.out.println("btId:"+btObject.getId());
+								// System.out.println("send up
+								// velocity:"+btObject.getRigidBody().getLinearVelocity());
+								// System.out.println("update");
+								update_BTRIGIDBODY.set(btObject);
+								// System.out.println(update_BTRIGIDBODY.toString());
+								broadCastor.broadCast_SINGLE_MESSAGE(update_BTRIGIDBODY, true);
+							}
 						}
 					}
 
@@ -633,7 +664,7 @@ public class VolleyballServer implements MessageListener {
 							if(btObject!=null){
 								btObject.getRigidBody().getWorldTransform().getTranslation(position);
 								
-								BtObject explosion = physicsWorldBuilder.btObjectFactory.createBall(20, 0, position);
+								BtObject explosion = physicsWorldBuilder.btObjectFactory.createBall(100, 0, position);
 								explosion.getRigidBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 								explosion.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 										new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
@@ -683,8 +714,8 @@ public class VolleyballServer implements MessageListener {
 		// System.out.println("type:" + MessageType.values()[typeOrdinal]);
 
 		switch (MessageType.values()[typeOrdinal]) {
-		case MESSAGE_ARRAY:
-			MESSAGE_ARRAY message_ARRAY = new MESSAGE_ARRAY(data);
+		case MULTI_MESSAGE:
+			MULTI_MESSAGE message_ARRAY = new MULTI_MESSAGE(data);
 			for (ByteBuf data1 : message_ARRAY.gameMessages) {
 				disposeSingleMessage(session, data1);
 			}
