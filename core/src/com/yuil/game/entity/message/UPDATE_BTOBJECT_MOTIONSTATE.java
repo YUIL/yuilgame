@@ -85,7 +85,7 @@ public class UPDATE_BTOBJECT_MOTIONSTATE implements Message {
 
 	@Override
 	public ByteBuf get() {
-		ByteBuf buf = UnpooledByteBufAllocator.DEFAULT.heapBuffer(64 + 12 + 12 + Message.TYPE_LENGTH);
+		ByteBuf buf = UnpooledByteBufAllocator.DEFAULT.heapBuffer(8+64 + 12 + 12 + Message.TYPE_LENGTH);
 		buf.writeByte(this.type);
 		buf.writeLong(this.getId());
 

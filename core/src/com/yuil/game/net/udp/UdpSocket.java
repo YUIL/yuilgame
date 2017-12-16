@@ -148,6 +148,7 @@ public class UdpSocket implements NetSocket {
 		ByteBuf message = UnpooledByteBufAllocator.DEFAULT.heapBuffer(data.length + UdpMessage.HEADER_LENGTH);
 		UdpMessage.setSessionId(message, session.getId());
 		UdpMessage.setType(message, (byte) 1);
+		//System.out.println("sendlength:"+data.length);
 		UdpMessage.setLength(message, data.length);
 		UdpMessage.setData(message, data);
 		return send(message, (UdpSession) session, isImmediately);
@@ -401,8 +402,9 @@ public class UdpSocket implements NetSocket {
 					// System.out.println("recvTread终止！");
 					break;
 				}
-
-				if (DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 12)) > 65515) {
+				//System.out.println("recvlength:"+DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 13)));
+				//if (DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 12)) > 65515) {
+				if(false){
 					System.out.println("data too long");
 					System.out.println(DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 12)));
 
@@ -436,7 +438,7 @@ public class UdpSocket implements NetSocket {
 							// session.getRecvMessageQueue().add(recvMessageBuf);
 							session.lastRecvSequenceId = UdpMessage.getSequenceId(recvMessageBuf);
 							if (messageListener != null && UdpMessage.getLength(recvMessageBuf) > 0) {
-
+								//System.out.println("recvMessageBuf.writerindex:"+recvMessageBuf.writerIndex());
 								messageListener.recvMessage(session, UdpMessage.getData(recvMessageBuf));
 							}
 							UdpMessage.setSequenceId(responseMessage, UdpMessage.getSequenceId(recvMessageBuf));

@@ -1,6 +1,5 @@
 package com.yuil.game.net.message;
 
-import com.yuil.game.util.DataUtil;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;

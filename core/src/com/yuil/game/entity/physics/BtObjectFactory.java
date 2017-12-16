@@ -76,11 +76,15 @@ public class BtObjectFactory {
 
 	public RenderableBtObject createRenderableGround() {
 		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
-		RenderableBtObject ground=createRenderableBtObject(defaultGroundModel, collisionShape, 0, 0, 0, 0);
-		ground.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
-		ground.getRigidBody().setCollisionFlags(1<<GameObjectType.GROUND.ordinal());
-
-		return ground;
+		RenderableBtObject btObject=createRenderableBtObject(defaultGroundModel, collisionShape, 0, 0, 0, 0);
+		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+		btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.GROUND.ordinal());
+		//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.OBSTACLE.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
+//		btObject.getRigidBody().setIgnoreCollisionCheck(co, ignoreCollisionCheck);
+		System.out.println(btObject.getRigidBody().getCollisionFlags());
+		System.out.println(btObject.getRigidBody().getContactCallbackFilter());
+		
+		return btObject;
 	}
 	/*
 	public BtObject createGround() {

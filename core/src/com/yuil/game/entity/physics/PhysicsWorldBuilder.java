@@ -39,7 +39,8 @@ public class PhysicsWorldBuilder {
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		
 		btObjectFactory.initBtObject(btObject, collisionShape, 0, 0, 0, 0);
-		//btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.GROUND.ordinal()));
+		btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.GROUND.ordinal()));
+		btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.OBSTACLE.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
 
 		return btObject;
 	}

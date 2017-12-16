@@ -11,7 +11,7 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 public class MULTI_MESSAGE implements Message {
 	public final int type=MessageType.MULTI_MESSAGE.ordinal();
 
-	public short messageNum;
+	public byte messageNum;
 	public int messageLength;
 	public int[] messageLengths;
 	public ByteBuf[] gameMessages;
@@ -28,6 +28,7 @@ public class MULTI_MESSAGE implements Message {
 	}
 	
 	public void set(Message[] messages,int length){
+		messageLength=0;
 		if( messages.length>255){
 			throw new IllegalArgumentException("message's length must <255");
 		}
@@ -47,13 +48,19 @@ public class MULTI_MESSAGE implements Message {
 	
 	@Override
 	public Message set(ByteBuf buf) {
+
+		messageLength=0;
 		buf.readByte();
-		messageNum=buf.readShort();
+		messageNum=buf.readByte();
+
 		messageLengths=new int[messageNum];
 		for (int i = 0; i <messageNum; i++) {
 			messageLengths[i]=buf.readInt();
 			messageLength+=messageLengths[i];
 		}
+		
+
+		
 		gameMessages=new ByteBuf[messageNum];
 		for (int i = 0; i < messageNum; i++) {
 			gameMessages[i]=buf.readBytes(messageLengths[i]);
@@ -63,20 +70,20 @@ public class MULTI_MESSAGE implements Message {
 
 	@Override
 	public ByteBuf get() {
-		
-		ByteBuf buf=UnpooledByteBufAllocator.DEFAULT.heapBuffer(1+2*messageNum+messageLength+Message.TYPE_LENGTH);
+
+		ByteBuf buf=UnpooledByteBufAllocator.DEFAULT.heapBuffer(1+4*messageNum+messageLength+Message.TYPE_LENGTH);
 		
 		buf.writeByte(this.type);
-		buf.writeShort(this.messageNum);
-		
-		
+		buf.writeByte(this.messageNum);
 		for (int i = 0; i < messageNum; i++) {
 			buf.writeInt(messageLengths[i]);
 		}
 		
 		for (int i = 0; i < messageNum; i++) {
+			gameMessages[i].resetReaderIndex();
 			buf.writeBytes(gameMessages[i]);
 		}
+		
 		return buf;
 	}
 

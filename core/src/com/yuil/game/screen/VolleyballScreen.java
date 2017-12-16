@@ -1,16 +1,12 @@
 package com.yuil.game.screen;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -21,12 +17,9 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -90,6 +83,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	PhysicsWorldBuilder physicsWorldBuilder;
 	PhysicsWorld physicsWorld;
 	Environment lights;
+	BtObject groundBtObject;
+	
 
 	ContactListener contactListener;
 
@@ -149,7 +144,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 		physicsWorldBuilder = new PhysicsWorldBuilder(true);
 		physicsWorld = new BtWorld();
-		physicsWorld.addPhysicsObject(physicsWorldBuilder.btObjectFactory.createRenderableGround());
+		groundBtObject= physicsWorldBuilder.btObjectFactory.createRenderableGround();
+		physicsWorld.addPhysicsObject(groundBtObject);
 
 		contactListener = new MyContactListener();
 
@@ -160,7 +156,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			camera = new PerspectiveCamera(45, 3f * width / height, 3f);
 		else
 			camera = new PerspectiveCamera(45, 3f, 3f * height / width);
-		camera.far = 200;
+		camera.far = 400;
 		camera.position.set(10f, 10f, 10f);
 		camera.lookAt(0, 0, 0);
 		camera.update();
@@ -184,10 +180,10 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				handleBtObject(btObject1);
 
 				if (btObject0.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
-					System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
+					//System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
 					physicsWorld.removePhysicsObject(btObject1);
 				} else if (btObject1.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
-					System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
+					//System.out.println("explosion!!!!!!!!!!!!!!!!!!!!!!!");
 					physicsWorld.removePhysicsObject(btObject0);
 
 				}
@@ -263,7 +259,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			Vector3 v3 = new Vector3();
 			if (physicsWorld.getPhysicsObjects().get(message.getId()) == null) {
 				v3.x = 0;
-				v3.y = -100;
+				v3.y = -1000;
 				v3.z = -100;
 				color.set(message.getR(), message.getG(), message.getB(), message.getA());
 				// System.out.println("color.g:"+message.getG());
@@ -276,8 +272,14 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				btObject.getAttributes().put(AttributeType.COLOR.ordinal(),
 						new com.yuil.game.entity.attribute.Color(color));
 				// btObject.getRigidBody().setContactCallbackFilter(GameObjectType.PLAYER.ordinal());
-				btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
-
+				//btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
+				//btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.OBSTACLE.ordinal()));
+				//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
+				/*System.out.println(btObject.getRigidBody().getCollisionFlags());
+				System.out.println(btObject.getRigidBody().getContactCallbackFilter());*/
+				//btObject.getRigidBody().setIgnoreCollisionCheck(, ignoreCollisionCheck);
+			//	btObject.getRigidBody().setIgnoreCollisionCheck(groundBtObject.getRigidBody(), true);
+				
 				physicsWorld.addPhysicsObject(btObject);
 				c2s_UPDATE_BTOBJECT_MOTIONSTATE_message.setId(message.getId());
 				sendSingleMessage(c2s_UPDATE_BTOBJECT_MOTIONSTATE_message);
@@ -379,6 +381,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		 * // TODO Auto-generated catch block e.printStackTrace(); }
 		 */
 		// TODO Auto-generated method stub
+		//System.out.println("public void recvMessage(Session session, ByteBuf data) data:"+data);
 		if (data.array().length < Message.TYPE_LENGTH) {
 			return;
 		}
@@ -387,8 +390,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 		switch (MessageType.values()[typeOrdinal]) {
 		case MULTI_MESSAGE:
-			MULTI_MESSAGE message_ARRAY = new MULTI_MESSAGE(data);
-			for (ByteBuf data1 : message_ARRAY.gameMessages) {
+			MULTI_MESSAGE multiMessage = new MULTI_MESSAGE(data);
+			//System.out.println("multiMessage:"+multiMessage.messageNum);
+			for (ByteBuf data1 : multiMessage.gameMessages) {
 				disposeSingleMessage(session, data1);
 			}
 			break;
@@ -407,7 +411,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			return;
 		}
 		int typeOrdinal = MessageUtil.getType(data.array());
-		// System.out.println("typeOrdinal"+typeOrdinal);
+	//	 System.out.println("typeOrdinal:"+typeOrdinal);
 		messageHandlerMap.get(typeOrdinal).handle(data);
 	}
 
@@ -512,7 +516,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			// sound.play();
 			if (playerId == 0) {
 				playerId = random.nextLong();
-				System.out.println("new id:" + playerId);
+				//System.out.println("new id:" + playerId);
 				C2S_ADD_PLAYER add_player = new C2S_ADD_PLAYER();
 				add_player.setId(playerId);
 				sendSingleMessage(add_player);
@@ -622,7 +626,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		stage.getRoot().findActor("W").addListener(new ActorInputListenner() {
 	
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				System.out.println("uiuuS");
+				//System.out.println("uiuuS");
 				deviceInputHandler.deviceInputListener.wJustPressedAction();
 			}
 		});
@@ -664,7 +668,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				// TODO Auto-generated method stub
 				message.set(src);
 				hideGameOver();
-				System.out.println("recv addplayer");
+			//	System.out.println("recv addplayer");
 				if (physicsWorld.getPhysicsObjects().get(message.getObjectId()) == null) {
 					RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(19, 10, random.nextInt(30));
 					ColorAttribute ca = (ColorAttribute) (((RenderableBtObject) btObject).getInstance().nodes
@@ -677,7 +681,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 							new OwnerPlayerId(message.getId()));
 					btObject.getAttributes().put(AttributeType.MOVE_SPEED.ordinal(),new MoveSpeed(20));
 					
-					btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
+					//btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
 					// System.out.println(1<<GameObjectType.GROUND.ordinal());
 					physicsWorld.addPhysicsObject(btObject);
 					if (message.getId() == playerId) {
@@ -742,7 +746,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 						playerId = 0;
 						playerObject = null;
 					}
-					System.out.println("remove position:" + btObject.getPosition(tempMatrix4));
+					//System.out.println("remove position:" + btObject.getPosition(tempMatrix4));
 					physicsWorld.removePhysicsObject(physicsWorld.getPhysicsObjects().get(message.getId()));
 				}
 			}

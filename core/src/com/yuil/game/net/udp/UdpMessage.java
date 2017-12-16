@@ -48,7 +48,9 @@ public class UdpMessage {
 	}
 	//===========
 	public static ByteBuf getData(ByteBuf buf){
-		return buf.copy(HEADER_LENGTH,buf.array().length-HEADER_LENGTH);
+		//return buf.copy(HEADER_LENGTH,buf.array().length-HEADER_LENGTH);
+		return buf.copy(HEADER_LENGTH,getLength(buf));
+
 	}
 	public static void setData(ByteBuf buf,ByteBuf data){
 		buf.setBytes(HEADER_LENGTH, data);

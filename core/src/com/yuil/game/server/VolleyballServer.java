@@ -107,7 +107,7 @@ public class VolleyballServer implements MessageListener {
 	ContactListener contactListener;
 	REMOVE_BTOBJECT remove_BTOBJECT_message = new REMOVE_BTOBJECT();
 	UPDATE_BTOBJECT_MOTIONSTATE update_BTRIGIDBODY = new UPDATE_BTOBJECT_MOTIONSTATE();
-	UPDATE_BTOBJECT_MOTIONSTATE[] update_BTRIGIDBODY_array=new UPDATE_BTOBJECT_MOTIONSTATE[2];
+	UPDATE_BTOBJECT_MOTIONSTATE[] update_BTRIGIDBODY_array=new UPDATE_BTOBJECT_MOTIONSTATE[100];
 	MULTI_MESSAGE multi_message=new MULTI_MESSAGE();
 	
 	
@@ -225,7 +225,7 @@ public class VolleyballServer implements MessageListener {
 			GameObjectTypeAttribute otherType = (GameObjectTypeAttribute) (other.getAttributes()
 					.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 			if(otherType.getGameObjectType()==GameObjectType.OBSTACLE.ordinal()){
-				System.out.println(other.getId()+",explosion!!!!!!!!!!!!!!!!!!!!!!!");
+			//	System.out.println(other.getId()+",explosion!!!!!!!!!!!!!!!!!!!!!!!");
 
 				other.getRigidBody().getWorldTransform().getTranslation(v3);
 				v3.sub(explisive.getRigidBody().getWorldTransform().getTranslation(v3_2));
@@ -248,6 +248,17 @@ public class VolleyballServer implements MessageListener {
 
 				}
 				removeBtObjectQueue.add(other);
+		}
+		
+
+		void handleBtObject(BtObject btObject,GameObjectTypeAttribute gameObjectType) {
+			if (gameObjectType!= null&&gameObjectType.getType()!=GameObjectType.PLAYER.ordinal()) {
+				// System.out.println(((OwnerPlayerId)(btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()))).getPlayerId());
+				/*v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
+				btObject.getRigidBody().setLinearVelocity(v3);*/
+				updateBtObjectMotionStateBroadCastQueue.add(btObject);
+
+			}
 		}
 		@Override
 		public void onContactStarted(btCollisionObject colObj0, btCollisionObject colObj1) {
@@ -285,19 +296,12 @@ public class VolleyballServer implements MessageListener {
 					}
 				}
 
-				handleBtObject(btObject0);
-				handleBtObject(btObject1);
+				handleBtObject(btObject0,gameObjectType0);
+				handleBtObject(btObject1,gameObjectType1);
 			}
 
 		}
 
-		void handleBtObject(BtObject btObject) {
-			if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
-				// System.out.println(((OwnerPlayerId)(btObject.Attributes.get(AttributeType.OWNER_PLAYER_ID.ordinal()))).getPlayerId());
-				v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
-				btObject.getRigidBody().setLinearVelocity(v3);
-			}
-		}
 
 		public void onContactProcessed(btCollisionObject colObj0, btCollisionObject colObj1) {
 /*
@@ -447,18 +451,21 @@ public class VolleyballServer implements MessageListener {
 					physicsWorld.update(interval / 1000f);// 更新物理世界
 
 					// 向连接的客户端发送btObjectMotionstate同步消息
-					if (updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length){
-						for (int i = 0; i < update_BTRIGIDBODY_array.length; i++) {
+					//if (updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length){
+					if (updateBtObjectMotionStateBroadCastQueue.size()>0){
+						int length=updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length?update_BTRIGIDBODY_array.length:updateBtObjectMotionStateBroadCastQueue.size();
+						
+						for (int i = 0; i < length; i++) {
 							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
 							if (btObject.getRigidBody() != null) {
 								update_BTRIGIDBODY_array[i].set(btObject);
 							}
 						}
-						multi_message.set(update_BTRIGIDBODY_array, update_BTRIGIDBODY_array.length);
-						System.out.println("asdasdasd:"+multi_message.get().array().length);
+						multi_message.set(update_BTRIGIDBODY_array, length);
+						
 						broadCastor.broadCast_MESSAGE_ARRAY(multi_message, false);
 
-					}else{
+					}/*else{
 						for (int i = 0; i < updateBtObjectMotionStateBroadCastQueue.size(); i++) {
 							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
 							if (btObject.getRigidBody() != null) {
@@ -468,11 +475,13 @@ public class VolleyballServer implements MessageListener {
 								// System.out.println("update");
 								update_BTRIGIDBODY.set(btObject);
 								// System.out.println(update_BTRIGIDBODY.toString());
-								broadCastor.broadCast_SINGLE_MESSAGE(update_BTRIGIDBODY, true);
+								broadCastor.broadCast_SINGLE_MESSAGE(update_BTRIGIDBODY, false);
 							}
 						}
-					}
-
+					}*/
+					
+					
+					
 					if (recentPlayerObjectId != 0) {
 						// System.out.println(physicsWorld.getPhysicsObjects().get(recentPlayerObjectId).getPosition());
 					}
@@ -512,8 +521,8 @@ public class VolleyballServer implements MessageListener {
 							new OwnerPlayerId(message.getId()));
 					btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(1000));
 					btObject.getAttributes().put(AttributeType.MOVE_SPEED.ordinal(),new MoveSpeed(15));
-					// btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.PLAYER.ordinal());
-					// btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal()));
+					//btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.PLAYER.ordinal());
+				//	btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal()));
 					// System.out.println("asd:"+((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal())));
 
 					physicsWorld.addPhysicsObject(btObject);
@@ -788,10 +797,10 @@ public class VolleyballServer implements MessageListener {
 			public void spawn() {
 				// TODO Auto-generated method stub
 				// physicsWorld.addPhysicsObjectQueue.
-				// v3.x = -18 + random.nextInt(36);
-				v3.x = 0;
-				// v3.y = 10+random.nextInt(50);
-				v3.y = 11;
+				 v3.x = -18 + random.nextInt(36);
+				//v3.x = 0;
+				 v3.y = 10+random.nextInt(50);
+				//v3.y = 11;
 				v3.z = -200;
 				float radius = 3;
 				// float radius = 0.5f+((random.nextInt(10000) / 10000f) * 3);
@@ -801,10 +810,10 @@ public class VolleyballServer implements MessageListener {
 				btObject.getAttributes().put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(1));
 				color.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f, random.nextInt(255) / 255f, 1);
 				btObject.getAttributes().put(AttributeType.COLOR.ordinal(), new com.yuil.game.entity.attribute.Color(color));
-
-				// btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.OBSTACLE.ordinal()));
-				// btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
-
+				
+				//btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.OBSTACLE.ordinal());
+				//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
+				//btObject.getRigidBody().setContactCallbackFilter(1<<GameObjectType.GROUND.ordinal());
 				v3.x = 0;
 				v3.y = 0;
 				v3.z = 40;
