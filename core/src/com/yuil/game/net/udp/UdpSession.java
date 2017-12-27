@@ -14,7 +14,7 @@ import io.netty.buffer.ByteBuf;
 public class UdpSession extends Session{
 	
 	volatile boolean isSending=false;
-	int timeOut=40;//millisecond
+	int timeOut=5;//millisecond
 	int maxUnusedTime=30000;//millisecond
 	int maxResendTimes=10;
 	SendServicer sendThread;
@@ -29,7 +29,7 @@ public class UdpSession extends Session{
 	public volatile int sendMessageBufferMaxSize=100;
 	
 	public UdpSession(){
-		init(new Random().nextLong());
+		init(new Random(System.currentTimeMillis()).nextLong());
 	}
 	
 	public UdpSession(long id){
@@ -42,6 +42,14 @@ public class UdpSession extends Session{
 		lastRecvSequenceId=-1;
 	}
 
+	public void config(UdpSessionConfiguration config){
+		this.setTimeOut(config.getTimeOut());
+		this.setMaxUnusedTime(config.getMaxUnusedTime());
+		this.setMaxResendTimes(config.getMaxResendTimes());
+		this.setSendMessageBufferMaxSize(config.getSendMessageBufferMaxSize());
+		
+	}
+	
 	public SendServicer getSendThread() {
 		return sendThread;
 	}
@@ -102,6 +110,65 @@ public class UdpSession extends Session{
 
 	public void setLastReceiveTime(long lastReceiveTime) {
 		this.lastReceiveTime = lastReceiveTime;
+	}
+	
+	
+	
+
+	public boolean isSending() {
+		return isSending;
+	}
+
+	public void setSending(boolean isSending) {
+		this.isSending = isSending;
+	}
+
+	public int getMaxUnusedTime() {
+		return maxUnusedTime;
+	}
+
+	public void setMaxUnusedTime(int maxUnusedTime) {
+		this.maxUnusedTime = maxUnusedTime;
+	}
+
+	public int getMaxResendTimes() {
+		return maxResendTimes;
+	}
+
+	public void setMaxResendTimes(int maxResendTimes) {
+		this.maxResendTimes = maxResendTimes;
+	}
+
+	public short getResendTimes() {
+		return resendTimes;
+	}
+
+	public void setResendTimes(short resendTimes) {
+		this.resendTimes = resendTimes;
+	}
+
+	public UdpMessage getCurrentSendMessage() {
+		return currentSendMessage;
+	}
+
+	public void setCurrentSendMessage(UdpMessage currentSendMessage) {
+		this.currentSendMessage = currentSendMessage;
+	}
+
+	public int getLastSendSequenceId() {
+		return lastSendSequenceId;
+	}
+
+	public void setLastSendSequenceId(int lastSendSequenceId) {
+		this.lastSendSequenceId = lastSendSequenceId;
+	}
+
+	public int getLastRecvSequenceId() {
+		return lastRecvSequenceId;
+	}
+
+	public void setLastRecvSequenceId(int lastRecvSequenceId) {
+		this.lastRecvSequenceId = lastRecvSequenceId;
 	}
 
 	@Override

@@ -97,6 +97,8 @@ public class RunCmdServer implements MessageListener {
 
 		@Override
 		public void run() {
+			ByteBuf data=dataQueue.poll();
+
 			int typeOrdinal = MessageUtil.getType(data.array());
 			// System.out.println("type:" +
 			// EntityMessageType.values()[typeOrdinal]);
@@ -132,7 +134,7 @@ public class RunCmdServer implements MessageListener {
 
 	void disposeSingleMessage(Session session, ByteBuf data1) {
 		messageProcessor.setSession(session);
-		messageProcessor.setData(data1);
+		messageProcessor.getDataQueue().offer(data1);
 		threadPool.execute(messageProcessor);
 	}
 

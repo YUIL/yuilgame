@@ -306,7 +306,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		physicsWorld.update(delta);
 
 		if (playerObject == null) {
+			
 			if (playerId != 0) {
+				
 				playerObject = (BtObject) physicsWorld.getPhysicsObjects().get(playerId);
 			}
 		} else {
@@ -516,7 +518,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			// sound.play();
 			if (playerId == 0) {
 				playerId = random.nextLong();
-				//System.out.println("new id:" + playerId);
+				System.out.println("new id:" + playerId);
 				C2S_ADD_PLAYER add_player = new C2S_ADD_PLAYER();
 				add_player.setId(playerId);
 				sendSingleMessage(add_player);
@@ -684,7 +686,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 					//btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
 					// System.out.println(1<<GameObjectType.GROUND.ordinal());
 					physicsWorld.addPhysicsObject(btObject);
-					if (message.getId() == playerId) {
+					if (message.getId() == playerId&&playerObject==null) {
+						//System.out.println("kkkkkkkkkkkkkk:"+btObject.getId());
 						playerObject = btObject;
 					}
 				}
@@ -738,8 +741,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 					OwnerPlayerId ownerPlayerId = (OwnerPlayerId) btObject.getAttributes()
 							.get(AttributeType.OWNER_PLAYER_ID.ordinal());
-					if (ownerPlayerId != null && ownerPlayerId.getPlayerId() == playerId) {
-						// System.out.println("remove myself");
+					if (btObject==playerObject) {
+						 System.out.println("remove myself:"+playerObject.getId());
 						showGameOver();
 						sound.play(1, 0.5f, 0);
 

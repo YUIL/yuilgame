@@ -1,5 +1,6 @@
 package com.yuil.game.net.udp;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
@@ -13,6 +14,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.yuil.game.net.NetSocket;
 import com.yuil.game.net.Session;
@@ -36,7 +45,8 @@ public class UdpSocket implements NetSocket {
 	Thread guardThread;
 	MessageListener messageListener;
 	private static final ByteBuf CLOSE_MESSAGE = UnpooledByteBufAllocator.DEFAULT.heapBuffer(UdpMessage.HEADER_LENGTH);;
-	private static final ByteBuf REMOVE_SESSION=UnpooledByteBufAllocator.DEFAULT.heapBuffer(8);
+	private static final ByteBuf REMOVE_SESSION = UnpooledByteBufAllocator.DEFAULT.heapBuffer(8);
+	UdpSessionConfiguration sessionConfiguration = new UdpSessionConfiguration();
 
 	volatile long recvCount = 0;
 	volatile long sendCount = 0;
@@ -63,6 +73,7 @@ public class UdpSocket implements NetSocket {
 
 	public UdpSession createUdpSession(long sessionId, InetSocketAddress address) {
 		UdpSession session = new UdpSession(sessionId);
+		session.config(sessionConfiguration);
 		session.setContactorAddress(address);
 		session.setSendThread(new SendServicer(session));
 		sessions.put(session.getId(), session);
@@ -78,6 +89,46 @@ public class UdpSocket implements NetSocket {
 	}
 
 	public void init(int port, int maximumConections) throws BindException {
+		
+		
+		
+
+		System.out.println("initConfig");
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db;
+		Document document = null;
+		File file = new File(".//config//UdpSocketConfig.xml");
+		if (file.exists()) {
+			try {
+				db = dbf.newDocumentBuilder();
+				document = db.parse(file);
+
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			sessionConfiguration
+					.setTimeOut(Integer.parseInt(document.getElementsByTagName("timeOut").item(0).getTextContent()));
+			sessionConfiguration.setMaxUnusedTime(
+					Integer.parseInt(document.getElementsByTagName("maxUnusedTime").item(0).getTextContent()));
+			sessionConfiguration.setMaxResendTimes(
+					Integer.parseInt(document.getElementsByTagName("maxResendTimes").item(0).getTextContent()));
+			sessionConfiguration.setSendMessageBufferMaxSize(Integer
+					.parseInt(document.getElementsByTagName("sendMessageBufferMaxSize").item(0).getTextContent()));
+			maximumConections=Integer
+					.parseInt(document.getElementsByTagName("maximumConections").item(0).getTextContent());
+	
+		}else{
+			System.err.println("configFileNotFound");
+		}
+		
 		try {
 			datagramSocket = new DatagramSocket(port);
 
@@ -148,7 +199,7 @@ public class UdpSocket implements NetSocket {
 		ByteBuf message = UnpooledByteBufAllocator.DEFAULT.heapBuffer(data.length + UdpMessage.HEADER_LENGTH);
 		UdpMessage.setSessionId(message, session.getId());
 		UdpMessage.setType(message, (byte) 1);
-		//System.out.println("sendlength:"+data.length);
+		// System.out.println("sendlength:"+data.length);
 		UdpMessage.setLength(message, data.length);
 		UdpMessage.setData(message, data);
 		return send(message, (UdpSession) session, isImmediately);
@@ -157,11 +208,11 @@ public class UdpSocket implements NetSocket {
 	@Override
 	public boolean send(ByteBuf data, Session session, boolean isImmediately) {
 		// TODO Auto-generated method stub
-		boolean temp=send(data.array(),session,isImmediately);
+		boolean temp = send(data.array(), session, isImmediately);
 		data.release();
 		return temp;
 	}
-	
+
 	public boolean send(ByteBuf message, UdpSession session, boolean isImmediately) {
 
 		if (isImmediately) {
@@ -190,7 +241,7 @@ public class UdpSocket implements NetSocket {
 		return true;
 	}
 
-	//保持sessions的活跃状态， 定时发消息
+	// 保持sessions的活跃状态， 定时发消息
 	public class GuardThread implements Runnable {
 		int interval = 10000;
 		long nextCheckTime;
@@ -218,7 +269,7 @@ public class UdpSocket implements NetSocket {
 						send("".getBytes(), session, false);
 					}
 
-					// report();
+					//report();
 
 				}
 				try {
@@ -294,12 +345,12 @@ public class UdpSocket implements NetSocket {
 
 			boolean isSendSuccess = true;
 			// while ((session.getCurrentSendMessage() != null)) {
-	
+
 			while (UdpMessage.getSequenceId(message) == session.lastSendSequenceId + 1) {// 如果对方还没收到这条消息
 				if (session.resendTimes > session.maxResendTimes) {// 如果单条消息重发次数超过maxResendTimes，删掉session
 					messageListener.removeSession(session.getId());
 					removeSession(session);
-					
+
 					isSendSuccess = false;
 					System.err.println("send_______________________________timeOutMultiple:" + session.resendTimes);
 					System.err.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
@@ -327,8 +378,8 @@ public class UdpSocket implements NetSocket {
 				}
 
 			}
-			if(UdpMessage.getType(message)==1){
-				//System.out.println(message.refCnt());
+			if (UdpMessage.getType(message) == 1) {
+				// System.out.println(message.refCnt());
 				message.release();
 			}
 			session.resendTimes = 0;
@@ -351,7 +402,8 @@ public class UdpSocket implements NetSocket {
 			// System.out.println("Udp send, message:"+message.toString());
 
 			try {
-			//	System.out.println("length2:" + UdpMessage.getLength(message));
+				// System.out.println("length2:" +
+				// UdpMessage.getLength(message));
 				byte[] temp = message.array();
 				DatagramPacket sendPacket = new DatagramPacket(temp, temp.length, address);
 				try {
@@ -359,7 +411,7 @@ public class UdpSocket implements NetSocket {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+
 			} catch (NullPointerException e) {
 				// TODO: handle exception
 			}
@@ -402,11 +454,15 @@ public class UdpSocket implements NetSocket {
 					// System.out.println("recvTread终止！");
 					break;
 				}
-				//System.out.println("recvlength:"+DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 13)));
-				//if (DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 12)) > 65515) {
-				if(false){
+				// System.out.println("recvlength:"+DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(),
+				// 4, 13)));
+				int messageLength = DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 12));
+				// System.out.println("udprecvLength:"+messageLength);;
+				if (false && messageLength > 65515) {
+
 					System.out.println("data too long");
-					System.out.println(DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(), 4, 12)));
+					// System.out.println(DataUtil.bytesToInt(DataUtil.subByte(recvPacket.getData(),
+					// 4, 12)));
 
 				} else {
 					/*
@@ -414,11 +470,17 @@ public class UdpSocket implements NetSocket {
 					 * recvMessageBuf.initUdpMessageByDatagramPacket(recvPacket)
 					 * ;
 					 */
+
 					recvMessageBuf.clear();
 					recvMessageBuf.writeBytes(recvPacket.getData());
-					//System.out.println("udp recv:" + UdpMessage.getType(recvMessageBuf) + "  thread:"+ Thread.currentThread().getName());
+					// System.out.println("udprecvLength2:"+UdpMessage.getLength(recvMessageBuf));;
+
+					recvDataLength += UdpMessage.getLength(recvMessageBuf);
+
+					// System.out.println("udp recv:" +
+					// UdpMessage.getType(recvMessageBuf) + " thread:"+
+					// Thread.currentThread().getName());
 					// UdpMessage recvMessageBuf = new UdpMessage(recvPacket);
-					recvDataLength += (recvMessageBuf.array().length - UdpMessage.HEADER_LENGTH);
 
 					session = findSession(UdpMessage.getSessionId(recvMessageBuf));
 					if (session == null) {
@@ -438,8 +500,10 @@ public class UdpSocket implements NetSocket {
 							// session.getRecvMessageQueue().add(recvMessageBuf);
 							session.lastRecvSequenceId = UdpMessage.getSequenceId(recvMessageBuf);
 							if (messageListener != null && UdpMessage.getLength(recvMessageBuf) > 0) {
-								//System.out.println("recvMessageBuf.writerindex:"+recvMessageBuf.writerIndex());
-								messageListener.recvMessage(session, UdpMessage.getData(recvMessageBuf));
+								// System.out.println("recvMessageBuf.writerindex:"+recvMessageBuf.writerIndex());
+								ByteBuf buf = UdpMessage.getData(recvMessageBuf);
+
+								messageListener.recvMessage(session, buf);
 							}
 							UdpMessage.setSequenceId(responseMessage, UdpMessage.getSequenceId(recvMessageBuf));
 							UdpMessage.setType(responseMessage, (byte) 2);
@@ -465,7 +529,7 @@ public class UdpSocket implements NetSocket {
 					case 2:
 						if (session != null && session.isSending) {
 							if (UdpMessage.getSequenceId(recvMessageBuf) == session.lastSendSequenceId + 1) {
-								//System.out.println("发送成功");
+								// System.out.println("发送成功");
 								session.lastSendSequenceId++;
 
 							}
@@ -503,6 +567,5 @@ public class UdpSocket implements NetSocket {
 		// TODO Auto-generated method stub
 		return sessions.values();
 	}
-
 
 }

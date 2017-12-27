@@ -31,7 +31,7 @@ import com.yuil.game.entity.gameobject.GameObjectType;
 public class BtObjectFactory {
 	ModelBuilder modelBuilder = new ModelBuilder();
 	Vector3 tempVector = new Vector3();
-	Random random=new Random();
+	Random random=new Random(System.currentTimeMillis());
 
 	public Model defaultBallModel;
 	public Model defaultBoxModel;

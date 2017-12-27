@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+
+
+	<timeOut>10</timeOut>
+	<maxUnusedTime>30000</maxUnusedTime>
+	<maxResendTimes>20</maxResendTimes>
+	<sendMessageBufferMaxSize>100</sendMessageBufferMaxSize>
+	<maximumConections>10</maximumConections>
+
+
+</config>

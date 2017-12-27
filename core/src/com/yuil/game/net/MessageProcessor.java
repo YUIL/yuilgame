@@ -1,12 +1,24 @@
 package com.yuil.game.net;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+
 import io.netty.buffer.ByteBuf;
 
 public abstract class MessageProcessor implements Runnable {
 
 	public Session session=null;
-	public ByteBuf data;
-	
+	public Queue<ByteBuf> dataQueue = new ConcurrentLinkedDeque<ByteBuf>();
+
+	public Queue<ByteBuf> getDataQueue() {
+		return dataQueue;
+	}
+
+	public void setDataQueue(Queue<ByteBuf> dataQueue) {
+		this.dataQueue = dataQueue;
+	}
+
 	public Session getSession() {
 		return session;
 	}
@@ -19,13 +31,7 @@ public abstract class MessageProcessor implements Runnable {
 	
 
 
-	public ByteBuf getData() {
-		return data;
-	}
 
-	public void setData(ByteBuf data1) {
-		this.data = data1;
-	}
 
 	public abstract void run() ;
 }
