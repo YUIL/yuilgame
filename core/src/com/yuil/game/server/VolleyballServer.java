@@ -1,4 +1,4 @@
-package com.yuil.game.server.Volleyball;
+package com.yuil.game.server;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +51,7 @@ import com.yuil.game.entity.physics.BtObjectSpawner;
 import com.yuil.game.entity.physics.BtWorld;
 import com.yuil.game.entity.physics.PhysicsWorldBuilder;
 import com.yuil.game.entity.physics.RenderableBtObject;
+import com.yuil.game.entity.volleyball.VolleyballCourt;
 import com.yuil.game.input.InputDeviceControler;
 import com.yuil.game.input.InputDeviceListener;
 import com.yuil.game.net.MessageListener;
@@ -63,9 +64,6 @@ import com.yuil.game.net.message.MessageType;
 import com.yuil.game.net.message.MessageUtil;
 import com.yuil.game.net.message.SINGLE_MESSAGE;
 import com.yuil.game.net.udp.UdpSocket;
-import com.yuil.game.server.BroadCastor;
-import com.yuil.game.server.MultiplayRoom;
-import com.yuil.game.server.Player;
 import com.yuil.game.util.Log;
 
 import io.netty.buffer.ByteBuf;
@@ -307,6 +305,12 @@ public class VolleyballServer implements MessageListener {
 				if (System.currentTimeMillis() >= nextUpdateTime) {// 更新世界
 					
 					
+					while(!readyVolleyballCourtQueue.isEmpty()){
+						VolleyballCourt volleyballCourt=readyVolleyballCourtQueue.poll();
+						createVolleyballCourtInstance(volleyballCourt);
+						startGame(volleyballCourt);
+					}
+					
 					while(!removeSessionQueue.isEmpty()){
 						Player player=playerMap.get(removeSessionQueue.poll());
 						if (player!=null){
@@ -412,6 +416,10 @@ public class VolleyballServer implements MessageListener {
 				}
 			}
 		}
+
+
+
+
 	}
 
 	class MessageProcessor extends com.yuil.game.net.MessageProcessor {
@@ -763,13 +771,14 @@ public class VolleyballServer implements MessageListener {
 	}
 	
 	
-	public void matchGame(Session session){
+	public synchronized void matchGame(Session session){
 		Player player=playerMap.get(session.getId());
 		if(player!=null){
 			//TODO match game
 			int addPlayerResult = 0;
+			VolleyballCourt volleyballCourt=null;
 			for (Iterator<VolleyballCourt> iterator = volleyballCourtMap.values().iterator(); iterator.hasNext();) {
-				VolleyballCourt volleyballCourt = (VolleyballCourt) iterator.next();
+				volleyballCourt = (VolleyballCourt) iterator.next();
 				addPlayerResult=volleyballCourt.addPlayer(player);
 				if(addPlayerResult!=0){
 					break;
@@ -781,11 +790,61 @@ public class VolleyballServer implements MessageListener {
 				vc.addPlayer(player);
 				player.setRoomId(vc.getId());
 				volleyballCourtMap.put(vc.getId(), vc);
+			}else if(addPlayerResult==1){
+				
+			}else if(addPlayerResult==2){
+				readyVolleyballCourtQueue.offer(volleyballCourt);
 			}
+			
 		}
 		
 	}
+	private void createVolleyballCourtInstance(VolleyballCourt volleyballCourt) {
 
+		
+		Vector3 position=volleyballCourt.getPosition(); 
+
+		
+		BtObject btObject = null;
+		btObject = physicsWorldBuilder.btObjectFactory.createCube(10f, 0f, position);
+		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+		btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),new OwnerPlayerId(volleyballCourt.getPlayer1().getId()));
+		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+		
+		physicsWorld.addPhysicsObject(btObject);
+
+		position.x -= 2.5f;
+		position.y += 5;
+		position.z += 7.5f;
+		btObject = physicsWorldBuilder.btObjectFactory.createCube(5f, 0f, position);
+		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+		physicsWorld.addPhysicsObject(btObject);
+		position.x += 5;
+		btObject = physicsWorldBuilder.btObjectFactory.createCube(5f, 0f, position);
+		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+		physicsWorld.addPhysicsObject(btObject);
+
+		position.x -= 2.5f;
+		position.y -= 5;
+		position.z += 7.5f;
+		btObject = physicsWorldBuilder.btObjectFactory.createCube(10f, 0f, position);
+		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
+				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
+		btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),new OwnerPlayerId(volleyballCourt.getPlayer2().getId()));
+		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+		physicsWorld.addPhysicsObject(btObject);
+		
+	}
+	private void startGame(VolleyballCourt volleyballCourt) {
+		
+		
+	}
+	
 	public void createCubes(){
 
 		Vector3 tmpV3 = new Vector3();

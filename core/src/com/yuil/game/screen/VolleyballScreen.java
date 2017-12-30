@@ -475,9 +475,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		physicsWorld.addPhysicsObject(rb);
 	}
 
-	public void createVolleyballCourt() {
+	public void createVolleyballCourtInstance(Vector3 position ) {
 
-		Vector3 position = new Vector3();
 		Color tmpCor = new Color(55, 55, 55, 1);
 		tmpCor.set(0.4f, 0.5f, 0.6f, 1);
 
@@ -914,7 +913,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void vJustUppedAction() {
 				// TODO Auto-generated method stub
-
+				createVolleyballCourtInstance(new Vector3());
 			}
 
 			@Override

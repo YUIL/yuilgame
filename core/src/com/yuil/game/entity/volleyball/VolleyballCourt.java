@@ -1,42 +1,55 @@
-package com.yuil.game.server.Volleyball;
+package com.yuil.game.entity.volleyball;
 
 import com.badlogic.gdx.math.Vector3;
 import com.yuil.game.server.Player;
 
 public class VolleyballCourt{
 	public static final Vector3 previousPosition=new Vector3(0, 0, 0);
+	
 	long id;
 	Player player1=null;
 	Player player2=null;
 	boolean ready1=false;
 	boolean ready2=false;
+	Vector3 position=new Vector3();
 	
 	boolean started=false;
 	
 	
 	public VolleyballCourt(long id) {
 		super();
+		getNextPosition(this.position);
 		this.id = id;
 	}
 
+	
+	public static final synchronized Vector3 getNextPosition(Vector3 postion){
+		previousPosition.x+=100;
+		postion.set(previousPosition);
+		return postion;
+	}
 	
 	/**
 	 * @param player
 	 * @return 1或2表示玩家1还是玩家2，返回0表示没有成功添加玩家
 	 */
 	public int addPlayer(Player player){
-		if (player1==null){
-			player1=player;
-			return 1;
-		}else if (player2==null){
-			player2=player;
-			return 2;
-		}else{
+		if (started) {
 			return 0;
+		}else{
+			if (player1==null){
+				player1=player;
+				return 1;
+			}else if (player2==null){
+				player2=player;
+				return 2;
+			}else{
+				return 0;
+			}
 		}
 	}
 	
-	public void ready(Long playerId){
+/*	public void ready(Long playerId){
 		if(player1!=null){
 			if(player1.getId()==playerId){
 				ready1=true;
@@ -53,7 +66,7 @@ public class VolleyballCourt{
 	public void start(){
 		//readyVolleyballCourtQueue.add(this);
 	}
-
+*/
 	public long getId() {
 		return id;
 	}
@@ -101,6 +114,17 @@ public class VolleyballCourt{
 	public void setStarted(boolean started) {
 		this.started = started;
 	}
+
+
+	public Vector3 getPosition() {
+		return position;
+	}
+
+
+	public void setPosition(Vector3 position) {
+		this.position = position;
+	}
+	
 	
 	
 }
