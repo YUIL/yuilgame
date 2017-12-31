@@ -49,6 +49,7 @@ import com.yuil.game.entity.physics.PhysicsObject;
 import com.yuil.game.entity.physics.PhysicsWorld;
 import com.yuil.game.entity.physics.PhysicsWorldBuilder;
 import com.yuil.game.entity.physics.RenderableBtObject;
+import com.yuil.game.entity.volleyball.VolleyballCourt;
 import com.yuil.game.gui.GuiFactory;
 import com.yuil.game.input.ActorInputListenner;
 import com.yuil.game.input.InputDeviceControler;
@@ -475,13 +476,16 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		physicsWorld.addPhysicsObject(rb);
 	}
 
-	public void createVolleyballCourtInstance(Vector3 position ) {
+	public void createVolleyballCourtInstance(VolleyballCourt volleyballCourt ) {
 
+		Vector3 position=volleyballCourt.getPosition();
+		long id= volleyballCourt.getId();
 		Color tmpCor = new Color(55, 55, 55, 1);
 		tmpCor.set(0.4f, 0.5f, 0.6f, 1);
 
 		RenderableBtObject rb = null;
 		rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(10f, 0f, position, tmpCor);
+		rb.setId(++id);
 		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
@@ -491,12 +495,14 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		position.y += 5;
 		position.z += 7.5f;
 		rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(5f, 0f, position, tmpCor);
+		rb.setId(++id);
 		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
 		physicsWorld.addPhysicsObject(rb);
 		position.x += 5;
 		rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(5f, 0f, position, tmpCor);
+		rb.setId(++id);
 		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
@@ -506,6 +512,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		position.y -= 5;
 		position.z += 7.5f;
 		rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(10f, 0f, position, tmpCor);
+		rb.setId(++id);
 		rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		rb.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
@@ -913,7 +920,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void vJustUppedAction() {
 				// TODO Auto-generated method stub
-				createVolleyballCourtInstance(new Vector3());
+			//	createVolleyballCourtInstance(new Vector3());
 			}
 
 			@Override

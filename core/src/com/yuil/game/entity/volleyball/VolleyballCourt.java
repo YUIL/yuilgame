@@ -1,6 +1,7 @@
 package com.yuil.game.entity.volleyball;
 
 import com.badlogic.gdx.math.Vector3;
+import com.yuil.game.entity.physics.BtObject;
 import com.yuil.game.server.Player;
 
 public class VolleyballCourt{
@@ -9,6 +10,8 @@ public class VolleyballCourt{
 	long id;
 	Player player1=null;
 	Player player2=null;
+	BtObject player1_side=null;
+	BtObject player2_side=null;
 	boolean ready1=false;
 	boolean ready2=false;
 	Vector3 position=new Vector3();
@@ -123,6 +126,26 @@ public class VolleyballCourt{
 
 	public void setPosition(Vector3 position) {
 		this.position = position;
+	}
+
+
+	public BtObject getPlayer1_side() {
+		return player1_side;
+	}
+
+
+	public void setPlayer1_side(BtObject player1_side) {
+		this.player1_side = player1_side;
+	}
+
+
+	public BtObject getPlayer2_side() {
+		return player2_side;
+	}
+
+
+	public void setPlayer2_side(BtObject player2_side) {
+		this.player2_side = player2_side;
 	}
 	
 	

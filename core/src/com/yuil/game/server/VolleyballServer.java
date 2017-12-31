@@ -122,10 +122,6 @@ public class VolleyballServer implements MessageListener {
 	 * @author yuil
 	 *
 	 */
-	/**
-	 * @author yuil
-	 *
-	 */
 	public class MyContactListener extends ContactListener {
 		Vector3 v3 = new Vector3();
 		Vector3 v3_2 = new Vector3();
@@ -307,7 +303,6 @@ public class VolleyballServer implements MessageListener {
 					
 					while(!readyVolleyballCourtQueue.isEmpty()){
 						VolleyballCourt volleyballCourt=readyVolleyballCourtQueue.poll();
-						createVolleyballCourtInstance(volleyballCourt);
 						startGame(volleyballCourt);
 					}
 					
@@ -773,7 +768,7 @@ public class VolleyballServer implements MessageListener {
 	
 	public synchronized void matchGame(Session session){
 		Player player=playerMap.get(session.getId());
-		if(player!=null){
+		if(player!=null&&player.getRoomId()==0){
 			//TODO match game
 			int addPlayerResult = 0;
 			VolleyballCourt volleyballCourt=null;
@@ -787,6 +782,7 @@ public class VolleyballServer implements MessageListener {
 			
 			if(addPlayerResult==0){
 				VolleyballCourt vc=new VolleyballCourt(random.nextLong());
+				createVolleyballCourtInstance(volleyballCourt);
 				vc.addPlayer(player);
 				player.setRoomId(vc.getId());
 				volleyballCourtMap.put(vc.getId(), vc);
@@ -795,7 +791,6 @@ public class VolleyballServer implements MessageListener {
 			}else if(addPlayerResult==2){
 				readyVolleyballCourtQueue.offer(volleyballCourt);
 			}
-			
 		}
 		
 	}
@@ -803,27 +798,30 @@ public class VolleyballServer implements MessageListener {
 
 		
 		Vector3 position=volleyballCourt.getPosition(); 
-
+		long id=volleyballCourt.getId();
 		
 		BtObject btObject = null;
 		btObject = physicsWorldBuilder.btObjectFactory.createCube(10f, 0f, position);
+		btObject.setId(++id);
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),new OwnerPlayerId(volleyballCourt.getPlayer1().getId()));
 		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
-		
 		physicsWorld.addPhysicsObject(btObject);
+		volleyballCourt.setPlayer1_side(btObject);
 
 		position.x -= 2.5f;
 		position.y += 5;
 		position.z += 7.5f;
 		btObject = physicsWorldBuilder.btObjectFactory.createCube(5f, 0f, position);
+		btObject.setId(++id);
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
 		physicsWorld.addPhysicsObject(btObject);
 		position.x += 5;
 		btObject = physicsWorldBuilder.btObjectFactory.createCube(5f, 0f, position);
+		btObject.setId(++id);
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
@@ -833,10 +831,12 @@ public class VolleyballServer implements MessageListener {
 		position.y -= 5;
 		position.z += 7.5f;
 		btObject = physicsWorldBuilder.btObjectFactory.createCube(10f, 0f, position);
+		btObject.setId(++id);
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
 		btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),new OwnerPlayerId(volleyballCourt.getPlayer2().getId()));
 		btObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(10));
+		volleyballCourt.setPlayer2_side(btObject);
 		physicsWorld.addPhysicsObject(btObject);
 		
 	}
@@ -855,9 +855,6 @@ public class VolleyballServer implements MessageListener {
 					tmpV3.set(x, 0, z);
 					tmpCor.set(random.nextInt(255) / 255f, random.nextInt(255) / 255f,
 							random.nextInt(255) / 255f, 1);
-					// System.out.println(tmpCor.toString());
-					//RenderableBtObject rb = physicsWorldBuilder.btObjectFactory.createRenderableCube(1f, 0f,
-					//		tmpV3, tmpCor);
 					 BtObject rb= physicsWorldBuilder.btObjectFactory.createCube(1f,0f,tmpV3);
 					rb.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 							new GameObjectTypeAttribute(GameObjectType.PLAYER_S_OBJECT.ordinal()));
