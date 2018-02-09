@@ -723,7 +723,7 @@ public class VolleyballServer implements MessageListener {
 				//btObject.getRigidBody().setContactCallbackFilter(1<<GameObjectType.GROUND.ordinal());
 				v3.x = 0;
 				v3.y = 0;
-				v3.z = 100;
+				v3.z = 80;
 				btObject.getRigidBody().setLinearVelocity(v3);
 
 				long id = random.nextLong();
