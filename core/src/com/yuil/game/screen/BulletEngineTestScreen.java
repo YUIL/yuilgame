@@ -218,7 +218,7 @@ public class BulletEngineTestScreen extends Screen2D {
 				int type1=GameObjectTypeAttribute.getGameObjectType(btObject1);
 
 				if (type0 == GameObjectType.PLAYER.ordinal() && type1== GameObjectType.PLAYER.ordinal()) {
-					System.out.println("ppp");
+					System.out.println("pcp");
 				}else if(type0==GameObjectType.PLAYER.ordinal()&& type1==GameObjectType.BULLET.ordinal()){
 					HealthPoint hp=((HealthPoint)(btObject0.getAttributes().get(AttributeType.HEALTH_POINT.ordinal())));
 					DamagePoint dp=((DamagePoint)(btObject1.getAttributes().get(AttributeType.DAMAGE_POINT.ordinal())));
@@ -258,6 +258,7 @@ public class BulletEngineTestScreen extends Screen2D {
 				}
 			}
 		}
+		
 	}
 
 	public class MyFilterCallback extends btOverlapFilterCallback {
@@ -370,6 +371,8 @@ public class BulletEngineTestScreen extends Screen2D {
 		ground = physicsWorldBuilder.btObjectFactory.createRenderableBtObject(model, collisionShape, 0, 0, 0, 0);
 		ground.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 				new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+		//ground.getRigidBody().setContactCallbackFlag(8);
+		ground.getRigidBody().setContactCallbackFilter(16);
 		return ground;
 	}
 
@@ -405,8 +408,11 @@ public class BulletEngineTestScreen extends Screen2D {
 				new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
 		testObject.getAttributes().put(AttributeType.HEALTH_POINT.ordinal(), new HealthPoint(100));
 
-		// testObject.getRigidBody().setContactCallbackFlag(0);
-		// testObject.getRigidBody().setContactCallbackFilter(0);
+		//testObject.setMask((short)(Short.MAX_VALUE^2));
+		testObject.getRigidBody().setContactCallbackFlag(2);
+		testObject.getRigidBody().setContactCallbackFilter(2);
+		System.out.println("asdasd:"+testObject.getRigidBody().getContactCallbackFilter());
+
 /*
 		btGhostObject ghostObject = new btGhostObject();
 		ghostObject.setCollisionShape(new btSphereShape(3));
@@ -515,12 +521,11 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void wJustUppedAction() {
-				
+				System.out.println("wwww");
 				//testBtObject=physicsWorldBuilder.createObstacleRenderableBall(1, 1, new Vector3(0,0,0),new Color(0f,1f,0f,1f));
 				if(testBtObject==null){
 
 					testBtObject=createTestObject();
-
 					
 					//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal()));
 
@@ -542,6 +547,7 @@ public class BulletEngineTestScreen extends Screen2D {
 
 				}else{
 					BtObject bo=createTestObject();
+					
 					//bo.getRigidBody().setIgnoreCollisionCheck(testBtObject.getRigidBody(), true);
 					physicsWorld.addPhysicsObject(bo);
 				}
@@ -561,7 +567,6 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void vJustPressedAction() {
-				
 				
 			}
 

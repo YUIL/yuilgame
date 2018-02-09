@@ -271,6 +271,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				btObject.getAttributes().put(AttributeType.DAMAGE_POINT.ordinal(), new DamagePoint(1));
 				btObject.getAttributes().put(AttributeType.COLOR.ordinal(),
 						new com.yuil.game.entity.attribute.Color(color));
+				btObject.setGroup((short)2);
 				// btObject.getRigidBody().setContactCallbackFilter(GameObjectType.PLAYER.ordinal());
 				//btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
 				//btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.OBSTACLE.ordinal()));
@@ -682,6 +683,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 							new OwnerPlayerId(message.getId()));
 					btObject.getAttributes().put(AttributeType.MOVE_SPEED.ordinal(),new MoveSpeed(20));
 					
+					btObject.setMask((short)(Short.MAX_VALUE^2));
 					//btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
 					// System.out.println(1<<GameObjectType.GROUND.ordinal());
 					physicsWorld.addPhysicsObject(btObject);

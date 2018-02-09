@@ -81,6 +81,10 @@ public class BtObjectFactory {
 		btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.GROUND.ordinal());
 		//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.OBSTACLE.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
 //		btObject.getRigidBody().setIgnoreCollisionCheck(co, ignoreCollisionCheck);
+		//btObject.getRigidBody().setContactCallbackFlag(1);
+		//btObject.getRigidBody().setContactCallbackFilter(8);
+		//btObject.setGroup((short)4);
+		//btObject.setMask((short)8);
 		System.out.println(btObject.getRigidBody().getCollisionFlags());
 		System.out.println(btObject.getRigidBody().getContactCallbackFilter());
 		

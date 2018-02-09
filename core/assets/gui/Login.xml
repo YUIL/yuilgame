@@ -13,7 +13,7 @@
     
      <actor id="6" type="textButton" name="test" text="test">
         <x>200</x>
-        <y>-100</y>
+        <y>100</y>
         <skin name="default"></skin>
     </actor>
     
