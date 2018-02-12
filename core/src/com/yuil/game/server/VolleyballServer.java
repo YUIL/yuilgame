@@ -170,15 +170,7 @@ public class VolleyballServer implements MessageListener {
 						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 				GameObjectTypeAttribute gameObjectType1 = (GameObjectTypeAttribute) (btObject1.getAttributes()
 						.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
-				if (gameObjectType0.getGameObjectType() == GameObjectType.GROUND.ordinal()
-						|| gameObjectType1.getGameObjectType() == GameObjectType.GROUND.ordinal()) {
-				} else {
-					if (btObject0.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
-						explosionApplyForce(btObject0, btObject1);
-					} else if (btObject1.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
-						explosionApplyForce(btObject1, btObject0);
-					}
-				}
+				
 				if (gameObjectType0 != null && gameObjectType1 != null) {
 					if (gameObjectType0.getGameObjectType() == GameObjectType.PLAYER.ordinal()
 							&& gameObjectType1.getGameObjectType() == GameObjectType.OBSTACLE.ordinal()) {
@@ -188,9 +180,18 @@ public class VolleyballServer implements MessageListener {
 						playerCollideDamage(btObject1, btObject0);
 					}
 				}
+				if (gameObjectType0.getGameObjectType() == GameObjectType.GROUND.ordinal()
+						|| gameObjectType1.getGameObjectType() == GameObjectType.GROUND.ordinal()) {
+				} else {
+					if (btObject0.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
+						explosionApplyForce(btObject0, btObject1);
+					} else if (btObject1.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
+						explosionApplyForce(btObject1, btObject0);
+					}
 
-				handleBtObject(btObject0,gameObjectType0);
-				handleBtObject(btObject1,gameObjectType1);
+					handleBtObject(btObject0,gameObjectType0);
+					handleBtObject(btObject1,gameObjectType1);
+				}
 			}
 
 		}
@@ -302,7 +303,7 @@ public class VolleyballServer implements MessageListener {
 						}
 					}
 					
-					obstacleBallSpawner.update();// 刷障碍物体
+				//	obstacleBallSpawner.update();// 刷障碍物体
 					while (!removeBtObjectQueue.isEmpty()) {
 						BtObject btObject = removeBtObjectQueue.poll();
 						if (btObject.getAttributes().get(AttributeType.PLAYER.ordinal()) != null) {
@@ -417,7 +418,7 @@ public class VolleyballServer implements MessageListener {
 					s2c_ADD_PLAYER_message.setId(message.getId());
 					s2c_ADD_PLAYER_message.setObjectId(objectId);
 
-					BtObject btObject = physicsWorldBuilder.createDefaultBall(19, 10, random.nextInt(30)+100);
+					BtObject btObject = physicsWorldBuilder.createDefaultBall(19, 150, random.nextInt(30)+100);
 					
 					btObject.setId(objectId);
 					btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),

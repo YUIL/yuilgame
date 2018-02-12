@@ -1,6 +1,11 @@
 package com.yuil.game.entity.physics;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
@@ -34,7 +39,10 @@ public class PhysicsWorldBuilder {
 	}
 
 	public BtObject createDefaultGround(){
-		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
+		//btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
+
+		float r =200;
+		btCollisionShape collisionShape = new btSphereShape(r);
 		BtObject btObject=new BtObject();
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		
@@ -45,8 +53,26 @@ public class PhysicsWorldBuilder {
 		return btObject;
 	}
 	public RenderableBtObject createDefaultRenderableGround(){
-		RenderableBtObject btObject=btObjectFactory.createRenderableGround();
+
+		//btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
+		float r =200;
+		btCollisionShape collisionShape = new btSphereShape(r);
+		Model model = btObjectFactory.modelBuilder.createSphere(r*2, r*2, r*2, 100,
+				100, new Material(ColorAttribute.createDiffuse(new Color(0.3f, 0.4f, 0.5f, 1)),
+						ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
+				Usage.Position | Usage.Normal);
+		RenderableBtObject btObject=btObjectFactory.createRenderableBtObject(model, collisionShape, 0, 0, 0, 0);
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
+		btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.GROUND.ordinal());
+		//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.OBSTACLE.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
+//		btObject.getRigidBody().setIgnoreCollisionCheck(co, ignoreCollisionCheck);
+		//btObject.getRigidBody().setContactCallbackFlag(1);
+		//btObject.getRigidBody().setContactCallbackFilter(8);
+		//btObject.setGroup((short)4);
+		//btObject.setMask((short)8);
+		System.out.println(btObject.getRigidBody().getCollisionFlags());
+		System.out.println(btObject.getRigidBody().getContactCallbackFilter());
+		
 		return btObject;
 	}
 	

@@ -145,7 +145,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 		physicsWorldBuilder = new PhysicsWorldBuilder(true);
 		physicsWorld = new BtWorld();
-		groundBtObject= physicsWorldBuilder.btObjectFactory.createRenderableGround();
+		groundBtObject= physicsWorldBuilder.createDefaultRenderableGround();
 		physicsWorld.addPhysicsObject(groundBtObject);
 
 		contactListener = new MyContactListener();
@@ -223,11 +223,11 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			}
 		}
 
-		void handleBtObject(BtObject btObject) {
+		void handleBtObject(BtObject btObject) {/*
 			if (btObject.getAttributes().get(AttributeType.OWNER_PLAYER_ID.ordinal()) != null) {
 				v3.set(0, btObject.getRigidBody().getLinearVelocity().y, 0);
 				btObject.getRigidBody().setLinearVelocity(v3);
-			}
+			}*/
 		}
 
 		@Override
