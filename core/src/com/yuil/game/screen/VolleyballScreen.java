@@ -689,8 +689,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 					btObject.getAttributes().put(AttributeType.OWNER_PLAYER_ID.ordinal(),
 							new OwnerPlayerId(message.getId()));
 					btObject.getAttributes().put(AttributeType.MOVE_SPEED.ordinal(),new MoveSpeed(20));
-					
-					btObject.setMask((short)(Short.MAX_VALUE^2));
+					btObject.setGroup((short)4);
+					btObject.setMask((short)(Short.MAX_VALUE^2^4));
 					//btObject.getRigidBody().setContactCallbackFilter(1 << GameObjectType.GROUND.ordinal());
 					// System.out.println(1<<GameObjectType.GROUND.ordinal());
 					physicsWorld.addPhysicsObject(btObject);

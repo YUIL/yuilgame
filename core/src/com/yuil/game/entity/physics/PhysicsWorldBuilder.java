@@ -46,7 +46,7 @@ public class PhysicsWorldBuilder {
 		BtObject btObject=new BtObject();
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		
-		btObjectFactory.initBtObject(btObject, collisionShape, 0, 0, 0, 0);
+		btObjectFactory.initBtObject(btObject, collisionShape, 0, 0, -20, 0);
 		btObject.getRigidBody().setCollisionFlags((1<<GameObjectType.GROUND.ordinal()));
 		btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.OBSTACLE.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));
 
@@ -61,7 +61,7 @@ public class PhysicsWorldBuilder {
 				100, new Material(ColorAttribute.createDiffuse(new Color(0.3f, 0.4f, 0.5f, 1)),
 						ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
 				Usage.Position | Usage.Normal);
-		RenderableBtObject btObject=btObjectFactory.createRenderableBtObject(model, collisionShape, 0, 0, 0, 0);
+		RenderableBtObject btObject=btObjectFactory.createRenderableBtObject(model, collisionShape, 0, 0, -20, 0);
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.GROUND.ordinal());
 		//btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.OBSTACLE.ordinal())|(1<<GameObjectType.PLAYER.ordinal()));

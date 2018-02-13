@@ -78,28 +78,19 @@ public class VolleyballServer implements MessageListener {
 	volatile Thread gameWorldThread;
 
 	long recentPlayerObjectId = 0;
-	// Queue<UPDATE_BTOBJECT_MOTIONSTATE> updatePhysicsObjectQueue=new
-	// ConcurrentLinkedQueue<UPDATE_BTOBJECT_MOTIONSTATE>();
-	// Queue<APPLY_FORCE> applyForceQueue=new
-	// ConcurrentLinkedQueue<APPLY_FORCE>();
 
 	Random random = new Random(System.currentTimeMillis());
-	
 	
 	Map<Long,Player> playerMap=new HashMap<Long,Player>();
 	Map<Long,MultiplayRoom> multiplayRoomMap=new HashMap<Long,MultiplayRoom>();
 	
-	
 	public static Queue<Long> removeSessionQueue = new ConcurrentLinkedDeque<Long>();
 
-	//List<Player> playerList = new ArrayList<Player>();
-	
 	List<BtObject> obstacleBtObjectList = new LinkedList<BtObject>();
 
 	Vector3 tempVector3 = new Vector3(0, 0, -40);
 	Matrix4 tempMatrix4 = new Matrix4();
 
-	// BtObjectFactory btObjectFactory = new BtObjectFactory(false);
 	Map<Integer, MessageHandler> messageHandlerMap = new HashMap<Integer, MessageHandler>();
 	MessageProcessor messageProcessor;
 	ExecutorService threadPool = Executors.newSingleThreadExecutor();
@@ -109,7 +100,6 @@ public class VolleyballServer implements MessageListener {
 	UPDATE_BTOBJECT_MOTIONSTATE update_BTRIGIDBODY = new UPDATE_BTOBJECT_MOTIONSTATE();
 	UPDATE_BTOBJECT_MOTIONSTATE[] update_BTRIGIDBODY_array=new UPDATE_BTOBJECT_MOTIONSTATE[100];
 	MULTI_MESSAGE multi_message=new MULTI_MESSAGE();
-	
 	
 	public static Queue<BtObject> updateBtObjectMotionStateBroadCastQueue = new ConcurrentLinkedDeque<BtObject>();
 	public static Queue<BtObject> removeBtObjectQueue = new ConcurrentLinkedDeque<BtObject>();
@@ -128,7 +118,6 @@ public class VolleyballServer implements MessageListener {
 
 		REMOVE_BTOBJECT remove_BTOBJECT_message = new REMOVE_BTOBJECT();
 
-		
 		void explosionApplyForce(BtObject explisive,BtObject other){
 			GameObjectTypeAttribute otherType = (GameObjectTypeAttribute) (other.getAttributes()
 					.get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
@@ -303,7 +292,7 @@ public class VolleyballServer implements MessageListener {
 						}
 					}
 					
-				//	obstacleBallSpawner.update();// 刷障碍物体
+					obstacleBallSpawner.update();// 刷障碍物体
 					while (!removeBtObjectQueue.isEmpty()) {
 						BtObject btObject = removeBtObjectQueue.poll();
 						if (btObject.getAttributes().get(AttributeType.PLAYER.ordinal()) != null) {
@@ -430,7 +419,9 @@ public class VolleyballServer implements MessageListener {
 					//btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.PLAYER.ordinal());
 				//	btObject.getRigidBody().setContactCallbackFilter((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal()));
 					// System.out.println("asd:"+((1<<GameObjectType.GROUND.ordinal())|(1<<GameObjectType.OBSTACLE.ordinal())));
-
+					btObject.setGroup((short)4);
+					btObject.setMask((short)(Short.MAX_VALUE^4));
+					
 					physicsWorld.addPhysicsObject(btObject);
 					
 					playerMap.put(session.getId(), new Player(message.getId(), objectId, session.getId()));
@@ -707,7 +698,7 @@ public class VolleyballServer implements MessageListener {
 				// physicsWorld.addPhysicsObjectQueue.
 				 v3.x = -16 + random.nextInt(32);
 				//v3.x = 0;
-				 v3.y = 10+random.nextInt(50);
+				 v3.y = 222+random.nextInt(50);
 				//v3.y = 11;
 				v3.z = -200;
 				float radius = 3;
