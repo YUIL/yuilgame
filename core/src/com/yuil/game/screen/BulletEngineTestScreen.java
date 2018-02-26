@@ -11,6 +11,7 @@ import javax.print.attribute.TextSyntax;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
@@ -85,6 +87,10 @@ public class BulletEngineTestScreen extends Screen2D {
 	boolean turnLeft = true;
 	long nextTurnTime = 0;
 
+	AssetManager assets=new AssetManager();
+	ModelInstance charactor;
+	AnimationController animationController;
+	
 	public HashMap<String, Object> testVariables = new HashMap<String, Object>();
 
 	ModelBuilder modelBuilder = new ModelBuilder();
@@ -154,10 +160,19 @@ public class BulletEngineTestScreen extends Screen2D {
 		setupActorInput();
 		InputManager.setInputProcessor(stage, camController);
 
+		
+		assets.load("data/cube.g3dj", Model.class);
+		assets.finishLoading();
+		charactor=new ModelInstance(assets.get("data/cube.g3dj",Model.class));
+		charactor.transform.translate(0, 0, 0);
+		animationController=new AnimationController(charactor);
+		
+	//	animationController.setAnimation("Cube|CubeAction");
 	}
 
 	@Override
 	public void render(float delta) {
+		animationController.update(delta);
 		inputControler.checkDeviceInput();
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.f);
@@ -202,6 +217,9 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			modelBatch.render(modelInstance, lights);
 		}
+		modelBatch.render(charactor, lights);
+		//System.out.println(charactor.getNode("Cube").translation);
+		
 		modelBatch.end();
 		super.render(delta);
 	}
@@ -562,7 +580,6 @@ public class BulletEngineTestScreen extends Screen2D {
 			@Override
 			public void vJustUppedAction() {
 				
-
 			}
 
 			@Override
@@ -985,6 +1002,11 @@ public class BulletEngineTestScreen extends Screen2D {
 			public void Num2JustUppedAction() {
 				
 
+				if (animationController.current!=null) {
+					System.out.println("at:"+animationController.current.time);
+					animationController.current.time=0;
+				}
+				animationController.setAnimation("Cube|CubeAction.002");
 			}
 
 			@Override
@@ -995,13 +1017,18 @@ public class BulletEngineTestScreen extends Screen2D {
 
 			@Override
 			public void Num1JustUppedAction() {
-				
+
+				if (animationController.current!=null) {
+					System.out.println("at:"+animationController.current.time);
+					animationController.current.time=0;
+				}
+				animationController.setAnimation("Cube|CubeAction");
 				
 			}
 
 			@Override
 			public void Num1JustPressedAction() {
-				
+
 
 			}
 
