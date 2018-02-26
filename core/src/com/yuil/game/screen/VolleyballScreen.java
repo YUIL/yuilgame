@@ -8,15 +8,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
@@ -104,7 +107,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	Random random = new Random(System.currentTimeMillis());
 
 	long playerId;
-	BtObject playerObject;
+	RenderableBtObject playerObject;
 	Vector3 playerPrePosition = new Vector3();
 	Vector3 moveDirection=new Vector3();
 	boolean playerForward=false;
@@ -167,8 +170,21 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		InputManager.setInputProcessor(stage, camController);
 
 		nextTime = System.currentTimeMillis();
+		
+		loadAssets();
+	}
+	void loadAssets(){
+		assets.load("data/cube.g3db", Model.class);
+		assets.finishLoading();
 	}
 
+	void playAnimation(){
+
+		if (playerObject.getAnimationController().current!=null) {
+			playerObject.getAnimationController().current.time=0;
+		}
+		playerObject.getAnimationController().setAnimation("Cube|CubeAction");
+	}
 	public class MyContactListener extends ContactListener {
 		Vector3 v3 = new Vector3();
 
@@ -311,7 +327,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			
 			if (playerId != 0) {
 				
-				playerObject = (BtObject) physicsWorld.getPhysicsObjects().get(playerId);
+				playerObject = (RenderableBtObject) physicsWorld.getPhysicsObjects().get(playerId);
 			}
 		} else {
 			// System.out.println("x:"+playerObject.getPosition().x);
@@ -335,12 +351,17 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		for (PhysicsObject physicsObject : physicsWorld.getPhysicsObjects().values()) {
 			if (physicsObject instanceof RenderableBtObject) {
 
-				BtObject btObject = (BtObject) physicsObject;
+				RenderableBtObject btObject = (RenderableBtObject) physicsObject;
 				if (btObject.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
 					physicsWorld.removePhysicsObject(physicsObject);
 				}
 
-				ModelInstance modelInstance = ((RenderableBtObject) physicsObject).getInstance();
+				ModelInstance modelInstance = btObject.getInstance();
+				AnimationController c=btObject.getAnimationController();
+				if (c!=null){
+					c.update(delta);
+				}
+				
 				((BtObject) physicsObject).getRigidBody().getWorldTransform(modelInstance.transform);
 				//GameObjectTypeAttribute gameObjectType = (GameObjectTypeAttribute) (((BtObject) physicsObject).getAttributes().get(AttributeType.GMAE_OBJECT_TYPE.ordinal()));
 				/*
@@ -538,6 +559,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	}
 	public void sendMessage_MOVE_DIRECTION(){
 		if(playerDirectionChanged&&playerObject!=null){
+			
+
+			
 			tempVector3.set(camera.direction);
 			if(playerForward){
 				if(playerLeft){
@@ -569,7 +593,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			message_move_direction.setZ(tempVector3.z);
 
 			if (isLogin&&playerId!=0&&playerObject!=null) {
+
 				sendSingleMessage(message_move_direction,false);
+				
 			} else {
 				TEST message = new TEST();
 				sendSingleMessage(message);
@@ -679,7 +705,10 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				hideGameOver();
 			//	System.out.println("recv addplayer");
 				if (physicsWorld.getPhysicsObjects().get(message.getObjectId()) == null) {
+					ModelInstance instance=new ModelInstance(assets.get("data/cube.g3db",Model.class));
 					RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(19, 10, random.nextInt(30));
+					btObject.setInstance(instance);
+					btObject.setAnimationController(new AnimationController(instance));
 					ColorAttribute ca = (ColorAttribute) (((RenderableBtObject) btObject).getInstance().nodes
 							.get(0).parts.get(0).material.get(ColorAttribute.Diffuse));
 					ca.color.set(0.9f, 0.2f, 0.1f, 1);
@@ -916,7 +945,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerForward=true;
 				playerBack=false;
 				playerDirectionChanged=true;
-
+				playAnimation();
 			}
 
 			@Override
@@ -985,7 +1014,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerBack=true;
 				playerForward=false;
 				playerDirectionChanged=true;
-
+				playAnimation();
 
 			}
 
@@ -1226,6 +1255,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerRight=true;
 				playerLeft=false;
 				playerDirectionChanged=true;
+				playAnimation();
 			}
 
 			@Override
@@ -1285,7 +1315,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerLeft=true;
 				playerRight=false;
 				playerDirectionChanged=true;
-
+				playAnimation();
 			}
 
 			@Override

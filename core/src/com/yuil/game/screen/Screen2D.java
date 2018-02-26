@@ -1,6 +1,7 @@
 package com.yuil.game.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -14,12 +15,15 @@ public class Screen2D extends BaseScreen{
 	Viewport viewport;
 	Skin skin;
 	Stage stage;
+	AssetManager assets;
+
 	public Screen2D(MyGame game) {
 		super(game);
 		batch = new SpriteBatch();
 		skin = GuiFactory.defaultSkin;
 		stage = new Stage();
-		
+		assets= new AssetManager();
+		 
 		viewport = new StretchViewport(800, 480, stage.getCamera());
 		stage.setViewport(viewport);
 		
@@ -46,6 +50,7 @@ public class Screen2D extends BaseScreen{
 	public void dispose() {
 		stage.dispose();
 		batch.dispose();
+		assets.dispose();
 		//skin.dispose();
 	}
 }

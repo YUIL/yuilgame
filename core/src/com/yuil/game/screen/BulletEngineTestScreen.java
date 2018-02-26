@@ -89,6 +89,8 @@ public class BulletEngineTestScreen extends Screen2D {
 
 	AssetManager assets=new AssetManager();
 	ModelInstance charactor;
+	ModelInstance charactor2;
+
 	AnimationController animationController;
 	
 	public HashMap<String, Object> testVariables = new HashMap<String, Object>();
@@ -164,6 +166,8 @@ public class BulletEngineTestScreen extends Screen2D {
 		assets.load("data/cube.g3dj", Model.class);
 		assets.finishLoading();
 		charactor=new ModelInstance(assets.get("data/cube.g3dj",Model.class));
+		charactor2=new ModelInstance(assets.get("data/cube.g3dj",Model.class));
+		charactor2.transform.translate(10, 0, 0);
 		charactor.transform.translate(0, 0, 0);
 		animationController=new AnimationController(charactor);
 		
@@ -218,6 +222,8 @@ public class BulletEngineTestScreen extends Screen2D {
 			modelBatch.render(modelInstance, lights);
 		}
 		modelBatch.render(charactor, lights);
+		modelBatch.render(charactor2, lights);
+
 		//System.out.println(charactor.getNode("Cube").translation);
 		
 		modelBatch.end();
