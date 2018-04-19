@@ -174,7 +174,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		loadAssets();
 	}
 	void loadAssets(){
-		assets.load("data/cube.g3db", Model.class);
+		assets.load("data/cube_half.g3dj", Model.class);
 		assets.finishLoading();
 	}
 
@@ -183,7 +183,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		if (playerObject.getAnimationController().current!=null) {
 			playerObject.getAnimationController().current.time=0;
 		}
-		playerObject.getAnimationController().setAnimation("Cube|CubeAction");
+		playerObject.getAnimationController().setAnimation("Cube|Jump");
 	}
 	public class MyContactListener extends ContactListener {
 		Vector3 v3 = new Vector3();
@@ -705,7 +705,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				hideGameOver();
 			//	System.out.println("recv addplayer");
 				if (physicsWorld.getPhysicsObjects().get(message.getObjectId()) == null) {
-					ModelInstance instance=new ModelInstance(assets.get("data/cube.g3db",Model.class));
+					ModelInstance instance=new ModelInstance(assets.get("data/cube_half.g3dj",Model.class));
+					
 					RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(19, 10, random.nextInt(30));
 					btObject.setInstance(instance);
 					btObject.setAnimationController(new AnimationController(instance));
@@ -997,6 +998,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 					message_do_action.setActionId(VollyBallAction.PLAYER_JUMP.ordinal());
 					message_do_action.setPlayerId(playerId);
 					sendSingleMessage(message_do_action, true);
+
+					playAnimation();
 				}
 			}
 

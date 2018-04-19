@@ -108,6 +108,17 @@ public class VolleyballServer implements MessageListener {
 	Map<Long,VolleyballCourt> volleyballCourtMap=new HashMap<Long, VolleyballCourt>();
 	public static Queue<VolleyballCourt> readyVolleyballCourtQueue = new ConcurrentLinkedDeque<VolleyballCourt>();
 
+	
+	class WordChunk{
+		int n=10;
+		BtObject objects[][][];
+		public WordChunk() {
+			super();
+			objects=new BtObject[n][n][n];
+			// TODO Auto-generated constructor stub
+		}
+		
+	}
 	/**
 	 * @author yuil
 	 *
