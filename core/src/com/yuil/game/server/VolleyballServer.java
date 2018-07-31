@@ -25,6 +25,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.ApplicationLogger;
+import com.badlogic.gdx.Audio;
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.LifecycleListener;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -34,6 +45,9 @@ import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btPersistentManifold;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.utils.Clipboard;
+import com.badlogic.gdx.utils.GdxNativesLoader;
+import com.yuil.game.MyGame;
 import com.yuil.game.entity.attribute.Attribute;
 import com.yuil.game.entity.attribute.AttributeType;
 import com.yuil.game.entity.attribute.DamagePoint;
@@ -46,6 +60,7 @@ import com.yuil.game.entity.gameobject.GameObjectType;
 import com.yuil.game.entity.message.*;
 import com.yuil.game.entity.message.action.VollyBallAction;
 import com.yuil.game.entity.physics.BtObject;
+import com.yuil.game.entity.physics.Behavior;
 import com.yuil.game.entity.physics.BtObjectFactory;
 import com.yuil.game.entity.physics.BtObjectSpawner;
 import com.yuil.game.entity.physics.BtWorld;
@@ -240,6 +255,7 @@ public class VolleyballServer implements MessageListener {
 	}
 
 	public VolleyballServer() {
+		GdxNativesLoader.load();
 		Bullet.init();
 		initConfig();
 		
@@ -303,7 +319,7 @@ public class VolleyballServer implements MessageListener {
 						}
 					}
 					
-					obstacleBallSpawner.update();// 刷障碍物体
+				//	obstacleBallSpawner.update();// 刷障碍物体
 					while (!removeBtObjectQueue.isEmpty()) {
 						BtObject btObject = removeBtObjectQueue.poll();
 						if (btObject.getAttributes().get(AttributeType.PLAYER.ordinal()) != null) {
@@ -353,7 +369,7 @@ public class VolleyballServer implements MessageListener {
 
 					// 向连接的客户端发送btObjectMotionstate同步消息
 					//if (updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length){
-					if (updateBtObjectMotionStateBroadCastQueue.size()>3){
+					if (updateBtObjectMotionStateBroadCastQueue.size()>1){
 						int length=updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length?update_BTRIGIDBODY_array.length:updateBtObjectMotionStateBroadCastQueue.size();
 						
 						for (int i = 0; i < length; i++) {
@@ -362,7 +378,7 @@ public class VolleyballServer implements MessageListener {
 								update_BTRIGIDBODY_array[i].set(btObject);
 							}
 						}
-						multi_message.set(update_BTRIGIDBODY_array, length);
+						multi_message.set(update_BTRIGIDBODY_array);
 						
 						broadCastor.broadCast_MESSAGE_ARRAY(multi_message, false);
 
@@ -408,17 +424,27 @@ public class VolleyballServer implements MessageListener {
 			messageHandlerMap.put(EntityMessageType.C2S_ADD_PLAYER.ordinal(), new MessageHandler() {
 				C2S_ADD_PLAYER message = new C2S_ADD_PLAYER();
 				S2C_ADD_PLAYER s2c_ADD_PLAYER_message = new S2C_ADD_PLAYER();
-
+				Vector3 temV3=new Vector3();
 				@Override
 				public void handle(ByteBuf src) {
 					message.set(src);
 					// TODO Auto-generated method stub
 					long objectId = random.nextLong();
 					//System.out.println("server, playerObjectId:"+objectId);
-					s2c_ADD_PLAYER_message.setId(message.getId());
-					s2c_ADD_PLAYER_message.setObjectId(objectId);
-
-					BtObject btObject = physicsWorldBuilder.createDefaultBall(19, 150, random.nextInt(30)+100);
+					
+					
+					temV3.set(19, 10, random.nextInt(30)+100);
+					BtObject btObject = physicsWorldBuilder.createDefaultBall(temV3.x,temV3.y,temV3.z);
+					btObject.setBehavior(new Behavior(btObject) {
+						
+						@Override
+						public void update(float delta) {
+							// TODO Auto-generated method stub
+							behaviorObject.getRigidBody().getWorldTransform(tempMatrix4);
+							tempMatrix4.rotate(Vector3.Y, 1);
+							behaviorObject.getRigidBody().setWorldTransform(tempMatrix4);
+						}
+					});
 					
 					btObject.setId(objectId);
 					btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
@@ -440,9 +466,13 @@ public class VolleyballServer implements MessageListener {
 
 					//tempVector3.set(btObject.getRigidBody().getLinearVelocity().x,btObject.getRigidBody().getLinearVelocity().y, -5);
 					// btObject.getRigidBody().setLinearVelocity(tempVector3);
-
+					s2c_ADD_PLAYER_message.setId(message.getId());
+					s2c_ADD_PLAYER_message.setObjectId(objectId);
+					s2c_ADD_PLAYER_message.setX(temV3.x);
+					s2c_ADD_PLAYER_message.setY(temV3.y);
+					s2c_ADD_PLAYER_message.setZ(temV3.z);
 					broadCastor.broadCast_SINGLE_MESSAGE(s2c_ADD_PLAYER_message, false);
-					updateBtObjectMotionStateBroadCastQueue.add(btObject);
+					//updateBtObjectMotionStateBroadCastQueue.add(btObject);
 					recentPlayerObjectId = objectId;
 					
 					
@@ -467,7 +497,7 @@ public class VolleyballServer implements MessageListener {
 					message.set(src);
 					BtObject btObject = physicsWorld.getPhysicsObjects().get(message.getId());
 					if (btObject != null) {
-						// System.out.println("uuuuu");
+						System.out.println("uuuuu");
 						update_BTOBJECT_MOTIONSTATE_message.set(btObject);
 						netSocket.send(SINGLE_MESSAGE.get(update_BTOBJECT_MOTIONSTATE_message.get().array()), session,
 								false);
@@ -593,6 +623,19 @@ public class VolleyballServer implements MessageListener {
 								
 							}
 						}
+					}else if(message.getActionId()==VollyBallAction.PRINT_PLAYER_INFO.ordinal()){
+						Player player=playerMap.get(session.getId());
+						if(player!=null){
+							BtObject btObject=physicsWorld.getPhysicsObjects().get(player.getBtObjectId());
+							if(btObject!=null){
+								System.out.println(btObject);
+								
+							}else{
+								System.out.println("btObject not exist!");
+							}
+						}else{
+							System.out.println("player not exist!");
+						}
 					}
 					//System.out.println(message.toString());
 					// netSocket.send(SINGLE_MESSAGE.get(message.get().array()),
@@ -709,8 +752,8 @@ public class VolleyballServer implements MessageListener {
 				// physicsWorld.addPhysicsObjectQueue.
 				 v3.x = -16 + random.nextInt(32);
 				//v3.x = 0;
-				 v3.y = 222+random.nextInt(50);
-				//v3.y = 11;
+				// v3.y = 222+random.nextInt(40);
+				v3.y = 11;
 				v3.z = -200;
 				float radius = 3;
 				// float radius = 0.5f+((random.nextInt(10000) / 10000f) * 3);

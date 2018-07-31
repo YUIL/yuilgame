@@ -23,11 +23,12 @@ public class MULTI_MESSAGE implements Message {
 		this.set(buf);
 	}
 	
-	public MULTI_MESSAGE(Message[] messages,int length){
-		this.set(messages,length);
+	public MULTI_MESSAGE(Message[] messages){
+		this.set(messages);
 	}
 	
-	public void set(Message[] messages,int length){
+	public void set(Message... messages){
+		int length=messages.length;
 		messageLength=0;
 		if( messages.length>255){
 			throw new IllegalArgumentException("message's length must <255");

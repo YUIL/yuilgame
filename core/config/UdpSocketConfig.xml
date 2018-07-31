@@ -2,9 +2,9 @@
 <config>
 
 
-	<timeOut>10</timeOut>
+	<timeOut>5</timeOut>
 	<maxUnusedTime>30000</maxUnusedTime>
-	<maxResendTimes>20</maxResendTimes>
+	<maxResendTimes>30</maxResendTimes>
 	<sendMessageBufferMaxSize>100</sendMessageBufferMaxSize>
 	<maximumConections>10</maximumConections>
 

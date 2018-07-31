@@ -39,10 +39,10 @@ public class PhysicsWorldBuilder {
 	}
 
 	public BtObject createDefaultGround(){
-		//btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
+		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
 
 		float r =200;
-		btCollisionShape collisionShape = new btSphereShape(r);
+		//btCollisionShape collisionShape = new btSphereShape(r);
 		BtObject btObject=new BtObject();
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		
@@ -54,13 +54,14 @@ public class PhysicsWorldBuilder {
 	}
 	public RenderableBtObject createDefaultRenderableGround(){
 
-		//btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
+		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
 		float r =200;
-		btCollisionShape collisionShape = new btSphereShape(r);
-		Model model = btObjectFactory.modelBuilder.createSphere(r*2, r*2, r*2, 100,
+		//btCollisionShape collisionShape = new btSphereShape(r);
+		/*Model model = btObjectFactory.modelBuilder.createSphere(r*2, r*2, r*2, 100,
 				100, new Material(ColorAttribute.createDiffuse(new Color(0.3f, 0.4f, 0.5f, 1)),
 						ColorAttribute.createSpecular(Color.WHITE), FloatAttribute.createShininess(64f)),
-				Usage.Position | Usage.Normal);
+				Usage.Position | Usage.Normal);*/
+		Model model = btObjectFactory.defaultGroundModel;
 		RenderableBtObject btObject=btObjectFactory.createRenderableBtObject(model, collisionShape, 0, 0, -20, 0);
 		btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.GROUND.ordinal()));
 		btObject.getRigidBody().setCollisionFlags(1<<GameObjectType.GROUND.ordinal());

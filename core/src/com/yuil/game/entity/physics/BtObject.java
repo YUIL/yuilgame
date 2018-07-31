@@ -20,6 +20,7 @@ public class BtObject extends PhysicsObject implements Disposable{
 	private HashMap<Integer, Attribute> attributes=null;
 	public short group=1;
 	public short mask=(short) 65535;
+	Behavior behavior;
 
 	private Vector3 position=new Vector3();
 
@@ -38,7 +39,11 @@ public class BtObject extends PhysicsObject implements Disposable{
 		
 	}
 
+
 	public void update(float delta){
+		if(behavior!=null){
+			behavior.update(delta);
+		}
 	}
 	public  Matrix4 getTransform(){
 		return this.rigidBody.getWorldTransform();
@@ -46,6 +51,14 @@ public class BtObject extends PhysicsObject implements Disposable{
 
 	
 	
+	public Behavior getBehavior() {
+		return behavior;
+	}
+
+	public void setBehavior(Behavior behavior) {
+		this.behavior = behavior;
+	}
+
 	public Vector3 getPosition(Matrix4 tm4) {
 		rigidBody.getMotionState().getWorldTransform(tm4);
 		return tm4.getTranslation(position);
@@ -150,7 +163,7 @@ public class BtObject extends PhysicsObject implements Disposable{
 
 	@Override
 	public String toString() {
-		return "BtObject [rigidBody=" + rigidBody + ", collisionShape="
+		return "BtObject [Id"+id+", rigidBody=" + rigidBody + ", collisionShape="
 				+ collisionShape + ", rigidBodyConstructionInfo=" + rigidBodyConstructionInfo + ", userData=" + userData
 				+ ", position=" + position + "]";
 	}

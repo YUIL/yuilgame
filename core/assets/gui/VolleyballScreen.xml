@@ -51,7 +51,7 @@
     </actor>
      <actor id="6" type="textButton" name="A" text="LEFT">
         <x>0</x>
-        <y>0</y>
+        <y>-555</y>
         
         <width>200</width>
         <height>100</height>
@@ -59,12 +59,12 @@
     </actor>
      <actor id="6" type="textButton" name="D" text="RIGHT">
         <x>600</x>
-        <y>0</y>
+        <y>-444</y>
         <width>200</width>
         <height>100</height>
         <skin name="default"></skin>
     </actor>
-     <actor id="6" type="textButton" name="ADD" text="ADD">
+     <actor id="6" type="textButton" name="ADD" text="Start">
         <x>700</x>
         <y>300</y>
         

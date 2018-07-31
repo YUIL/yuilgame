@@ -133,6 +133,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		Bullet.init();
 		deviceInputHandler = new InputDeviceControler(inputDeviceStatus, createDeviceInputListener());
 
+		
+		
 		//clientSocket = new ClientSocket(9092, "39.106.33.9", 9091, this);
 		clientSocket = new ClientSocket(9092, "127.0.0.1", 9091, this);
 
@@ -172,6 +174,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		nextTime = System.currentTimeMillis();
 		
 		loadAssets();
+		sendMessage_ADD_PLAYER();
 	}
 	void loadAssets(){
 		assets.load("data/cube_half.g3dj", Model.class);
@@ -179,6 +182,41 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	}
 
 	void playAnimation(){
+
+		if (playerObject.getAnimationController().current!=null) {
+			playerObject.getAnimationController().current.time=0;
+		}
+		playerObject.getAnimationController().setAnimation("Cube|Jump");
+	}
+	void playAnimation_moveF(){
+
+		if (playerObject.getAnimationController().current!=null) {
+			playerObject.getAnimationController().current.time=0;
+		}
+		playerObject.getAnimationController().setAnimation("Cube|MoveF");
+	}
+	void playAnimation_moveB(){
+
+		if (playerObject.getAnimationController().current!=null) {
+			playerObject.getAnimationController().current.time=0;
+		}
+		playerObject.getAnimationController().setAnimation("Cube|MoveB");
+	}
+	void playAnimation_moveR(){
+
+		if (playerObject.getAnimationController().current!=null) {
+			playerObject.getAnimationController().current.time=0;
+		}
+		playerObject.getAnimationController().setAnimation("Cube|MoveR");
+	}
+	void playAnimation_moveL(){
+
+		if (playerObject.getAnimationController().current!=null) {
+			playerObject.getAnimationController().current.time=0;
+		}
+		playerObject.getAnimationController().setAnimation("Cube|MoveL");
+	}
+	void playAnimation_jump(){
 
 		if (playerObject.getAnimationController().current!=null) {
 			playerObject.getAnimationController().current.time=0;
@@ -260,6 +298,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 	@Override
 	public void render(float delta) {
+		//System.out.println("btObject num:"+((BtWorld)physicsWorld).getCollisionWorld().getNumCollisionObjects());
 		// checkKeyBoardStatus();
 		deviceInputHandler.checkDeviceInput();
 		if(!previousCameraDirection.equals(camera.direction)){
@@ -697,7 +736,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	void initMessageHandle() {
 		messageHandlerMap.put(EntityMessageType.S2C_ADD_PLAYER.ordinal(), new MessageHandler() {
 			S2C_ADD_PLAYER message = new S2C_ADD_PLAYER();
-
+			C2S_UPDATE_BTOBJECT_MOTIONSTATE c2s_UPDATE_BTOBJECT_MOTIONSTATE_message = new C2S_UPDATE_BTOBJECT_MOTIONSTATE();
+			Vector3 temV3=new Vector3();
 			@Override
 			public void handle(ByteBuf src) {
 				// TODO Auto-generated method stub
@@ -706,8 +746,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			//	System.out.println("recv addplayer");
 				if (physicsWorld.getPhysicsObjects().get(message.getObjectId()) == null) {
 					ModelInstance instance=new ModelInstance(assets.get("data/cube_half.g3dj",Model.class));
-					
-					RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(19, 10, random.nextInt(30));
+
+
+					RenderableBtObject btObject = physicsWorldBuilder.createDefaultRenderableBall(message.getX(), message.getY(), message.getZ());
 					btObject.setInstance(instance);
 					btObject.setAnimationController(new AnimationController(instance));
 					ColorAttribute ca = (ColorAttribute) (((RenderableBtObject) btObject).getInstance().nodes
@@ -728,6 +769,8 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 						//System.out.println("kkkkkkkkkkkkkk:"+btObject.getId());
 						playerObject = btObject;
 					}
+					c2s_UPDATE_BTOBJECT_MOTIONSTATE_message.setId(btObject.getId());
+					//sendSingleMessage(c2s_UPDATE_BTOBJECT_MOTIONSTATE_message, false);
 				}
 			}
 		});
@@ -772,19 +815,22 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void handle(ByteBuf src) {
 				// TODO Auto-generated method stub
-
+				System.out.println("receive message:REMOVE_BTOBJECT");
 				message.set(src);
 				BtObject btObject = (BtObject) physicsWorld.getPhysicsObjects().get(message.getId());
 				if (btObject != null) {
+					System.out.println("receive message:REMOVE_BTOBJECT and btObject id:"+btObject.getId()+" and playerObject id:"+playerObject.getId());
+					System.out.println("btObject==playerObject):"+(btObject==playerObject));
 
 					OwnerPlayerId ownerPlayerId = (OwnerPlayerId) btObject.getAttributes()
 							.get(AttributeType.OWNER_PLAYER_ID.ordinal());
-					if (btObject==playerObject) {
+					if (btObject.getId()==playerObject.getId()) {
 						 System.out.println("remove myself:"+playerObject.getId());
 						showGameOver();
 						sound.play(1, 0.5f, 0);
 
 						playerId = 0;
+						
 						playerObject = null;
 					}
 					//System.out.println("remove position:" + btObject.getPosition(tempMatrix4));
@@ -874,7 +920,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void zJustUppedAction() {
 				// TODO Auto-generated method stub
-				System.out.println("zup");
+				System.out.println("zup and playerid is:" +playerId);
 				//createVolleyballCourt();
 				sendMessage_ADD_PLAYER();
 			}
@@ -946,7 +992,12 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerForward=true;
 				playerBack=false;
 				playerDirectionChanged=true;
-				playAnimation();
+				if(playerId!=0&&playerObject!=null){
+					//System.out.println(playerObject.getInstance().transform);
+					//playerObject.getInstance().transform.rotate(Vector3.Y, 90);
+					//System.out.println(playerObject.getInstance().transform);
+					playAnimation_moveF();
+				}
 			}
 
 			@Override
@@ -999,7 +1050,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 					message_do_action.setPlayerId(playerId);
 					sendSingleMessage(message_do_action, true);
 
-					playAnimation();
+					playAnimation_jump();
 				}
 			}
 
@@ -1017,14 +1068,15 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerBack=true;
 				playerForward=false;
 				playerDirectionChanged=true;
-				playAnimation();
-
+				if(playerId!=0&&playerObject!=null){
+					playAnimation_moveB();
+				}
 			}
 
 			@Override
 			public void rJustUppedAction() {
 				// TODO Auto-generated method stub
-				createCubes();
+				//createCubes();
 			}
 
 			@Override
@@ -1258,7 +1310,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerRight=true;
 				playerLeft=false;
 				playerDirectionChanged=true;
-				playAnimation();
+				//playAnimation();
 			}
 
 			@Override
@@ -1318,7 +1370,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerLeft=true;
 				playerRight=false;
 				playerDirectionChanged=true;
-				playAnimation();
+				//playAnimation();
 			}
 
 			@Override
@@ -1396,7 +1448,11 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void Num3JustUppedAction() {
 				// TODO Auto-generated method stub
-
+				if(playerId!=0&&playerObject!=null){
+					C2S_UPDATE_BTOBJECT_MOTIONSTATE c2s_UPDATE_BTOBJECT_MOTIONSTATE_message = new C2S_UPDATE_BTOBJECT_MOTIONSTATE();
+					c2s_UPDATE_BTOBJECT_MOTIONSTATE_message.setId(playerObject.getId());
+					sendSingleMessage(c2s_UPDATE_BTOBJECT_MOTIONSTATE_message, false);
+				}
 			}
 
 			@Override
@@ -1408,7 +1464,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void Num2JustUppedAction() {
 				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override
@@ -1420,7 +1476,13 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void Num1JustUppedAction() {
 				// TODO Auto-generated method stub
+				if(playerId!=0&&playerObject!=null){
+					System.out.println("local objectid:"+playerObject.getId());
+					message_do_action.setActionId(VollyBallAction.PRINT_PLAYER_INFO.ordinal());
+					message_do_action.setPlayerId(playerId);
+					sendSingleMessage(message_do_action, true);
 
+				}
 			}
 
 			@Override
