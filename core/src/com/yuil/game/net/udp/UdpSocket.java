@@ -48,6 +48,7 @@ public class UdpSocket implements NetSocket {
 	private static final ByteBuf REMOVE_SESSION = UnpooledByteBufAllocator.DEFAULT.heapBuffer(8);
 	UdpSessionConfiguration sessionConfiguration = new UdpSessionConfiguration();
 
+	public boolean report=true;
 	volatile long recvCount = 0;
 	volatile long sendCount = 0;
 	volatile long resendCount = 0;
@@ -268,9 +269,9 @@ public class UdpSocket implements NetSocket {
 						 */
 						send("".getBytes(), session, false);
 					}
-
-					//report();
-
+					if(report){
+						report();
+					}
 				}
 				try {
 					Thread.currentThread();
@@ -284,7 +285,7 @@ public class UdpSocket implements NetSocket {
 
 		}
 
-		@SuppressWarnings("unused")
+		//@SuppressWarnings("unused")
 		private void report() {
 			reportTimes++;
 			Log.print(reportTimes);

@@ -294,7 +294,7 @@ public class VolleyballServer implements MessageListener {
 
 		int interval = 17;// 更新间隔
 		long nextUpdateTime = 0;// 下次更新的时间
-
+		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -333,7 +333,9 @@ public class VolleyballServer implements MessageListener {
 					for (BtObject btObject : physicsWorld.getPhysicsObjects().values()) {
 						// System.out.println(btObject.rigidBody.getWorldTransform());
 						
-
+						if (btObject.getAttributes().get(AttributeType.PLAYER.ordinal()) != null) {
+							updateBtObjectMotionStateBroadCastQueue.add(btObject);
+						}
 						if (btObject.getAttributes().get(AttributeType.EXPLOSION_STRENGTH.ordinal()) != null) {
 							physicsWorld.removePhysicsObject(btObject);
 							remove_BTOBJECT_message.setId(btObject.getId());
