@@ -16,9 +16,9 @@ public class UdpSession extends Session{
 	volatile boolean isSending=false;
 	int timeOut=5;//millisecond
 	int maxUnusedTime=30000;//millisecond
-	int maxResendTimes=10;
+	int maxResendTimes=3;
 	SendServicer sendThread;
-	volatile short resendTimes=0;
+	volatile short resendTimes;
 	volatile long lastSendTime;
 	volatile long lastReceiveTime;
 	InetSocketAddress contactorAddress;

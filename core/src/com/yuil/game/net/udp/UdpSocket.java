@@ -226,7 +226,7 @@ public class UdpSocket implements NetSocket {
 			if (session.getSendMessageBuffer().size() <= session.getSendMessageBufferMaxSize()) {
 				return send(message, session);
 			} else {
-				System.out.println("sendBuffer满了满了……");
+				//System.out.println("sendBuffer满了满了……");
 				return false;
 			}
 		}

@@ -30,9 +30,11 @@ import com.yuil.game.entity.gameobject.GameObjectType;
 
 public class BtObjectFactory {
 	ModelBuilder modelBuilder = new ModelBuilder();
+	
 	Vector3 tempVector = new Vector3();
 	Random random=new Random(System.currentTimeMillis());
 
+	public static float defaultFriction=1;
 	public Model defaultBallModel;
 	public Model defaultBoxModel;
 
@@ -129,7 +131,7 @@ public class BtObjectFactory {
 		btRigidBody rigidBody = new btRigidBody(rigidBodyConstructionInfo);
 		rigidBody.setMotionState(motionState);
 		rigidBody.userData=btObject;
-		rigidBody.setFriction(1f);
+		rigidBody.setFriction(defaultFriction);
 		rigidBody.setAngularFactor(0);
 		
 		btObject.setId(random.nextLong());

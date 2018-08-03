@@ -21,7 +21,8 @@ public class BtObject extends PhysicsObject implements Disposable{
 	public short group=1;
 	public short mask=(short) 65535;
 	Behavior behavior;
-
+	public boolean transformChanged;
+	
 	private Vector3 position=new Vector3();
 
 	public BtObject() {
@@ -146,6 +147,15 @@ public class BtObject extends PhysicsObject implements Disposable{
 
 
 
+	
+
+	public boolean isTransformChanged() {
+		return transformChanged;
+	}
+
+	public void setTransformChanged(boolean transformChanged) {
+		this.transformChanged = transformChanged;
+	}
 
 	@Override
 	public  void dispose() {

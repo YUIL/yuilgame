@@ -116,7 +116,16 @@ public class VolleyballServer implements MessageListener {
 	UPDATE_BTOBJECT_MOTIONSTATE[] update_BTRIGIDBODY_array=new UPDATE_BTOBJECT_MOTIONSTATE[100];
 	MULTI_MESSAGE multi_message=new MULTI_MESSAGE();
 	
-	public static Queue<BtObject> updateBtObjectMotionStateBroadCastQueue = new ConcurrentLinkedDeque<BtObject>();
+	public static Queue<BtObject> updateBtObjectMotionStateBroadCastQueue = new ConcurrentLinkedDeque<BtObject>(){
+		 public boolean add(BtObject e) {
+			 	if(e.transformChanged){
+			 		return false;
+			 	}else{
+			 		e.setTransformChanged(true);
+			 		return offerLast(e);
+			 	}
+		    }
+	};
 	public static Queue<BtObject> removeBtObjectQueue = new ConcurrentLinkedDeque<BtObject>();
 	BtObjectSpawner obstacleBallSpawner;
 
@@ -375,23 +384,29 @@ public class VolleyballServer implements MessageListener {
 						int length=updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length?update_BTRIGIDBODY_array.length:updateBtObjectMotionStateBroadCastQueue.size();
 						
 						for (int i = 0; i < length; i++) {
+							
 							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
-							if (btObject.getRigidBody() != null) {
+							if (btObject.transformChanged&&btObject.getRigidBody() != null) {
+
+								btObject.setTransformChanged(false);
 								update_BTRIGIDBODY_array[i].set(btObject);
+								 //System.out.println("btId:"+update_BTRIGIDBODY_array[i].getId());
+
 							}
 						}
-						multi_message.set(update_BTRIGIDBODY_array);
-						
+						multi_message.set(length,update_BTRIGIDBODY_array);
+						multi_message.messageNum=(byte)length;
 						broadCastor.broadCast_MESSAGE_ARRAY(multi_message, false);
 
 					}else{
 						for (int i = 0; i < updateBtObjectMotionStateBroadCastQueue.size(); i++) {
 							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
-							if (btObject.getRigidBody() != null) {
-								// System.out.println("btId:"+btObject.getId());
+							if (btObject.transformChanged&&btObject.getRigidBody() != null) {
+								 //System.out.println("btId:"+btObject.getId());
 								// System.out.println("send up
 								// velocity:"+btObject.getRigidBody().getLinearVelocity());
 								// System.out.println("update");
+								btObject.setTransformChanged(false);
 								update_BTRIGIDBODY.set(btObject);
 								// System.out.println(update_BTRIGIDBODY.toString());
 								broadCastor.broadCast_SINGLE_MESSAGE(update_BTRIGIDBODY, false);
@@ -438,11 +453,11 @@ public class VolleyballServer implements MessageListener {
 					temV3.set(19, 10, random.nextInt(30)+100);
 					BtObject btObject = physicsWorldBuilder.createDefaultBall(temV3.x,temV3.y,temV3.z);
 					btObject.setBehavior(new Behavior(btObject) {
-						
+						Matrix4 tempMatrix4=new Matrix4();
 						@Override
 						public void update(float delta) {
 							// TODO Auto-generated method stub
-							behaviorObject.getRigidBody().getWorldTransform(tempMatrix4);
+							behaviorObject.getRigidBody().getWorldTransform(this.tempMatrix4);
 							tempMatrix4.rotate(Vector3.Y, 1);
 							behaviorObject.getRigidBody().setWorldTransform(tempMatrix4);
 						}
@@ -551,6 +566,11 @@ public class VolleyballServer implements MessageListener {
 						int moveSpeed=((MoveSpeed)(btObject.getAttributes().get(AttributeType.MOVE_SPEED.ordinal()))).getMoveSpeed();
 						v3.set(message.getX(),0,message.getZ());
 						v3.nor();
+						if(v3.len2()==0){
+							btObject.getRigidBody().setFriction(BtObjectFactory.defaultFriction);
+						}else{
+							btObject.getRigidBody().setFriction(0f);
+						}
 						v3.scl(moveSpeed);
 						v3.y=btObject.getRigidBody().getLinearVelocity().y;
 						if (!btObject.getRigidBody().isActive()) {
@@ -578,6 +598,8 @@ public class VolleyballServer implements MessageListener {
 							s2c_ADD_PLAYER_message.setId(((com.yuil.game.entity.attribute.Player) attribute).getPlayerId());
 							s2c_ADD_PLAYER_message.setObjectId(message.getId());
 							netSocket.send(SINGLE_MESSAGE.get(s2c_ADD_PLAYER_message.get().array()), session, false);
+						}else{
+							System.out.println("ASdasdasdasljalakjglajsdgljsdlkgjsldkjgslkdjglskdjglkjlk");
 						}
 					}
 				}
@@ -591,6 +613,7 @@ public class VolleyballServer implements MessageListener {
 				@Override
 				public void handle(ByteBuf src) {
 					message.set(src);
+					System.out.println("DoAction:"+message);
 					if(message.getActionId()==VollyBallAction.MATCH_GAME.ordinal()){
 						System.out.println("MATCH_GAME");
 						matchGame(session);
@@ -603,7 +626,7 @@ public class VolleyballServer implements MessageListener {
 								v3.scl(500);
 								btObject.getRigidBody().applyForce(v3, btObject.getRigidBody().getWorldTransform().getTranslation(position));
 								VolleyballServer.updateBtObjectMotionStateBroadCastQueue.add(btObject);
-								//System.out.println("jump");
+								System.out.println("jump");
 
 							}
 						}

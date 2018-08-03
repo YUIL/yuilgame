@@ -2,6 +2,7 @@ package com.yuil.game.net.message;
 
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import com.yuil.game.util.DataUtil;
 
@@ -23,12 +24,12 @@ public class MULTI_MESSAGE implements Message {
 		this.set(buf);
 	}
 	
-	public MULTI_MESSAGE(Message[] messages){
-		this.set(messages);
+	public MULTI_MESSAGE(int length,Message... messages){
+		this.set(length,messages);
 	}
 	
-	public void set(Message... messages){
-		int length=messages.length;
+	public void set(int length,Message... messages){
+		
 		messageLength=0;
 		if( messages.length>255){
 			throw new IllegalArgumentException("message's length must <255");
@@ -88,6 +89,13 @@ public class MULTI_MESSAGE implements Message {
 		return buf;
 	}
 
+	@Override
+	public String toString() {
+		return "MULTI_MESSAGE [type=" + type + ", messageNum=" + messageNum + ", messageLength=" + messageLength
+				+ ", messageLengths=" + Arrays.toString(messageLengths) + ", gameMessages="
+				+ Arrays.toString(gameMessages) + "]";
+	}
+
 /*	@Override
 	public static ByteBuf get() {
 		
@@ -107,4 +115,5 @@ public class MULTI_MESSAGE implements Message {
 		return buf;
 	}
 */
+	
 }

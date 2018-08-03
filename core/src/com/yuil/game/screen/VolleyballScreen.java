@@ -597,8 +597,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 	}
 	public void sendMessage_MOVE_DIRECTION(){
+	
 		if(playerDirectionChanged&&playerObject!=null){
-			
+			//System.out.println("sendMessage_MOVE_DIRECTION()");
 
 			
 			tempVector3.set(camera.direction);
@@ -849,10 +850,14 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				//System.out.println("UPDATE_BTOBJECT_MOTIONSTATE");
 				message.set(src);
 				BtObject btObject = (BtObject) physicsWorld.getPhysicsObjects().get(message.getId());
+				//System.out.println("UPDATE_BTOBJECT_MOTIONSTATE+ id:"+message.getId());
 				if (btObject == null) {
+					//System.out.println("UPDATE_BTOBJECT_MOTIONSTATE and null");
 					c2s_ENQUIRE_BTOBJECT_message.setId(message.getId());
 					sendSingleMessage(c2s_ENQUIRE_BTOBJECT_message);
 				} else {
+					//System.out.println("UPDATE_BTOBJECT_MOTIONSTATE and btObject!=null");
+
 					if (!btObject.getRigidBody().isActive()) {
 						btObject.getRigidBody().activate();
 					}
