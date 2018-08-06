@@ -48,7 +48,7 @@ public class UdpSocket implements NetSocket {
 	private static final ByteBuf REMOVE_SESSION = UnpooledByteBufAllocator.DEFAULT.heapBuffer(8);
 	UdpSessionConfiguration sessionConfiguration = new UdpSessionConfiguration();
 
-	public boolean report=true;
+	public boolean report=false;
 	volatile long recvCount = 0;
 	volatile long sendCount = 0;
 	volatile long resendCount = 0;

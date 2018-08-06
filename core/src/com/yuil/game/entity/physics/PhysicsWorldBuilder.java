@@ -1,14 +1,21 @@
 package com.yuil.game.entity.physics;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.assets.loaders.ModelLoader.ModelParameters;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
+import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btConvexHullShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.yuil.game.entity.attribute.AttributeType;
 import com.yuil.game.entity.attribute.GameObjectTypeAttribute;
@@ -16,6 +23,7 @@ import com.yuil.game.entity.gameobject.GameObjectType;
 
 public class PhysicsWorldBuilder {
 	public BtObjectFactory btObjectFactory;
+	ModelLoader loader = new ObjLoader();
 	Vector3 tempVector = new Vector3();
 	
 	public PhysicsWorldBuilder(boolean haveDefaultModel) {
@@ -39,6 +47,12 @@ public class PhysicsWorldBuilder {
 	}
 
 	public BtObject createDefaultGround(){
+		
+		/*Model model = loader.loadModel(new FileHandle("assets/data/ship.obj"));
+		
+		btConvexHullShape chs=new btConvexHullShape(model.nodes.get(0).parts.first().meshPart.mesh.getVerticesBuffer());
+		chs.recalcLocalAabb();
+		btCollisionShape collisionShape = chs;*/
 		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
 
 		float r =200;
@@ -53,7 +67,11 @@ public class PhysicsWorldBuilder {
 		return btObject;
 	}
 	public RenderableBtObject createDefaultRenderableGround(){
-
+		/*Model model = loader.loadModel(Gdx.files.internal("data/ship.obj"));
+		
+		btConvexHullShape chs=new btConvexHullShape(model.nodes.get(0).parts.first().meshPart.mesh.getVerticesBuffer());
+		chs.recalcLocalAabb();
+		btCollisionShape collisionShape = chs;*/
 		btCollisionShape collisionShape = new btBoxShape(tempVector.set(20, 0, 200));
 		float r =200;
 		//btCollisionShape collisionShape = new btSphereShape(r);

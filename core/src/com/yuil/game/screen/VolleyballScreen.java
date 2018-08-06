@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -19,15 +20,18 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btConvexHullShape;
 import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
@@ -120,6 +124,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 	Matrix4 tempMatrix4 = new Matrix4();
 	Vector3 tempVector3 = new Vector3();
+	Quaternion tempQuaternion=new Quaternion();
 
 	UPDATE_BTOBJECT_MOTIONSTATE message_update_rigidbody;
 	UPDATE_LINEAR_VELOCITY message_update_liner_velocity = new UPDATE_LINEAR_VELOCITY();
@@ -228,6 +233,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 
 		@Override
 		public void onContactStarted(btCollisionObject colObj0, btCollisionObject colObj1) {
+			System.out.println("onContactStarted");
 			if (colObj0 instanceof btRigidBody && colObj1 instanceof btRigidBody) {
 				BtObject btObject0 = (BtObject) (((btRigidBody) colObj0).userData);
 				BtObject btObject1 = (BtObject) (((btRigidBody) colObj1).userData);
@@ -370,6 +376,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			}
 		} else {
 			// System.out.println("x:"+playerObject.getPosition().x);
+			
+			//playerObject.getRigidBody().getWorldTransform().getRotation(tempQuaternion);
+			//System.out.println(tempQuaternion.getAngleAround(Vector3.Y));
 			try {
 				// camera.translate(playerObject.getPosition(tempMatrix4).sub(playerPrePosition));
 				camera.translate(playerObject.getRigidBody().getWorldTransform().getTranslation(tempVector3)
@@ -1499,7 +1508,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			@Override
 			public void Num0JustUppedAction() {
 				// TODO Auto-generated method stub
-
+				test();
 			}
 
 			@Override
@@ -1510,4 +1519,21 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 		};
 	}
 
+	public void test(){
+		/*btConvexHullShape chs=new btConvexHullShape(physicsWorldBuilder.btObjectFactory.defaultGroundModel.nodes.get(0).parts.first().meshPart.mesh.getVerticesBuffer());
+		chs.recalcLocalAabb();*/
+		//System.out.println(physicsWorldBuilder.btObjectFactory.defaultGroundModel.nodes.get(0).parts.first().meshPart.mesh.getNumIndices());
+/*		float[] vertices=new float[physicsWorldBuilder.btObjectFactory.defaultGroundModel.nodes.get(0).parts.first().meshPart.mesh.getNumVertices()*3];
+		System.out.println(physicsWorldBuilder.btObjectFactory.defaultGroundModel.nodes.get(0).parts.first().meshPart.mesh.getVertices(vertices));
+		for(float v :vertices){
+			System.out.println(v);
+		}
+*/
+		ModelLoader loader = new ObjLoader();
+		Model model = loader.loadModel(Gdx.files.internal("data/ship.obj"));
+		
+		btConvexHullShape chs=new btConvexHullShape(model.nodes.get(0).parts.first().meshPart.mesh.getVerticesBuffer());
+		chs.recalcLocalAabb();
+		
+	}
 }

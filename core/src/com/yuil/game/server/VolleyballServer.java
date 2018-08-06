@@ -310,8 +310,7 @@ public class VolleyballServer implements MessageListener {
 			nextUpdateTime = System.currentTimeMillis();
 			while (true) {
 				if (System.currentTimeMillis() >= nextUpdateTime) {// 更新世界
-					
-					
+									
 					while(!readyVolleyballCourtQueue.isEmpty()){
 						VolleyballCourt volleyballCourt=readyVolleyballCourtQueue.poll();
 						startGame(volleyballCourt);
@@ -379,47 +378,7 @@ public class VolleyballServer implements MessageListener {
 					physicsWorld.update(interval / 1000f);// 更新物理世界
 
 					// 向连接的客户端发送btObjectMotionstate同步消息
-					//if (updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length){
-					if (updateBtObjectMotionStateBroadCastQueue.size()>1){
-						int length=updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length?update_BTRIGIDBODY_array.length:updateBtObjectMotionStateBroadCastQueue.size();
-						
-						for (int i = 0; i < length; i++) {
-							
-							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
-							if (btObject.transformChanged&&btObject.getRigidBody() != null) {
-
-								btObject.setTransformChanged(false);
-								update_BTRIGIDBODY_array[i].set(btObject);
-								 //System.out.println("btId:"+update_BTRIGIDBODY_array[i].getId());
-
-							}
-						}
-						multi_message.set(length,update_BTRIGIDBODY_array);
-						multi_message.messageNum=(byte)length;
-						broadCastor.broadCast_MESSAGE_ARRAY(multi_message, false);
-
-					}else{
-						for (int i = 0; i < updateBtObjectMotionStateBroadCastQueue.size(); i++) {
-							BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
-							if (btObject.transformChanged&&btObject.getRigidBody() != null) {
-								 //System.out.println("btId:"+btObject.getId());
-								// System.out.println("send up
-								// velocity:"+btObject.getRigidBody().getLinearVelocity());
-								// System.out.println("update");
-								btObject.setTransformChanged(false);
-								update_BTRIGIDBODY.set(btObject);
-								// System.out.println(update_BTRIGIDBODY.toString());
-								broadCastor.broadCast_SINGLE_MESSAGE(update_BTRIGIDBODY, false);
-							}
-						}
-					}
-					
-					
-					
-					if (recentPlayerObjectId != 0) {
-						// System.out.println(physicsWorld.getPhysicsObjects().get(recentPlayerObjectId).getPosition());
-					}
-					// broadCastor.broadCast_GAME_MESSAGE(data, false);
+					broadCastMotionState();
 				} else {
 					try {
 						Thread.sleep(nextUpdateTime - System.currentTimeMillis());
@@ -430,10 +389,45 @@ public class VolleyballServer implements MessageListener {
 				}
 			}
 		}
+		
+		public void broadCastMotionState(){
+			if (updateBtObjectMotionStateBroadCastQueue.size()>1){
+				int length=updateBtObjectMotionStateBroadCastQueue.size()>update_BTRIGIDBODY_array.length?update_BTRIGIDBODY_array.length:updateBtObjectMotionStateBroadCastQueue.size();
+				
+				for (int i = 0; i < length; i++) {
+					
+					BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
+					if (btObject.transformChanged&&btObject.getRigidBody() != null) {
 
+						btObject.setTransformChanged(false);
+						update_BTRIGIDBODY_array[i].set(btObject);
+						 //System.out.println("btId:"+update_BTRIGIDBODY_array[i].getId());
 
+					}
+				}
+				multi_message.set(length,update_BTRIGIDBODY_array);
+				multi_message.messageNum=(byte)length;
+				broadCastor.broadCast_MESSAGE_ARRAY(multi_message, false);
 
-
+			}else{
+				for (int i = 0; i < updateBtObjectMotionStateBroadCastQueue.size(); i++) {
+					BtObject btObject = updateBtObjectMotionStateBroadCastQueue.poll();
+					if (btObject.transformChanged&&btObject.getRigidBody() != null) {
+						 //System.out.println("btId:"+btObject.getId());
+						// System.out.println("send up
+						// velocity:"+btObject.getRigidBody().getLinearVelocity());
+						// System.out.println("update");
+						btObject.setTransformChanged(false);
+						update_BTRIGIDBODY.set(btObject);
+						// System.out.println(update_BTRIGIDBODY.toString());
+						broadCastor.broadCast_SINGLE_MESSAGE(update_BTRIGIDBODY, false);
+					}
+				}
+			}
+		}
+		
+		
+		
 	}
 
 	class MessageProcessor extends com.yuil.game.net.MessageProcessor {
@@ -442,6 +436,7 @@ public class VolleyballServer implements MessageListener {
 				C2S_ADD_PLAYER message = new C2S_ADD_PLAYER();
 				S2C_ADD_PLAYER s2c_ADD_PLAYER_message = new S2C_ADD_PLAYER();
 				Vector3 temV3=new Vector3();
+				Matrix4 tempMatrix4=new Matrix4();
 				@Override
 				public void handle(ByteBuf src) {
 					message.set(src);
@@ -450,7 +445,7 @@ public class VolleyballServer implements MessageListener {
 					//System.out.println("server, playerObjectId:"+objectId);
 					
 					
-					temV3.set(19, 10, random.nextInt(30)+100);
+					temV3.set(19, 10, random.nextInt(30));
 					BtObject btObject = physicsWorldBuilder.createDefaultBall(temV3.x,temV3.y,temV3.z);
 					btObject.setBehavior(new Behavior(btObject) {
 						Matrix4 tempMatrix4=new Matrix4();
@@ -458,11 +453,10 @@ public class VolleyballServer implements MessageListener {
 						public void update(float delta) {
 							// TODO Auto-generated method stub
 							behaviorObject.getRigidBody().getWorldTransform(this.tempMatrix4);
-							tempMatrix4.rotate(Vector3.Y, 1);
+							tempMatrix4.rotate(Vector3.Y, 6);
 							behaviorObject.getRigidBody().setWorldTransform(tempMatrix4);
 						}
 					});
-					
 					btObject.setId(objectId);
 					btObject.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(),
 							new GameObjectTypeAttribute(GameObjectType.PLAYER.ordinal()));
