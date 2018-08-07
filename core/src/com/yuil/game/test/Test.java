@@ -32,10 +32,10 @@ public class Test {
 		Gdx.files=new LwjglFiles();
 		FileHandleResolver resolver=new InternalFileHandleResolver();
 		G3dModelLoader loader=new G3dModelLoader(new JsonReader(), resolver);
-		ModelData md=loader.loadModelData(Gdx.files.internal("assets/data/cube_half.g3dj"));
-		System.out.println(md.meshes.first().vertices);
+		ModelData md=loader.loadModelData(Gdx.files.internal("assets/data/groundShape.g3dj"));
+		System.out.println(md.nodes.first().scale);
 		
-		btConvexHullShape btchs=new btConvexHullShape();
+		//btConvexHullShape btchs=new btConvexHullShape();
 	}
 
 }

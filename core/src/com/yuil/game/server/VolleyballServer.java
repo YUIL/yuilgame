@@ -187,6 +187,7 @@ public class VolleyballServer implements MessageListener {
 		}
 		@Override
 		public void onContactStarted(btCollisionObject colObj0, btCollisionObject colObj1) {
+			System.out.println("onContactStarted");
 			if (colObj0 instanceof btRigidBody && colObj1 instanceof btRigidBody) {
 				BtObject btObject0 = (BtObject) (((btRigidBody) colObj0).userData);
 				BtObject btObject1 = (BtObject) (((btRigidBody) colObj1).userData);
@@ -445,7 +446,7 @@ public class VolleyballServer implements MessageListener {
 					//System.out.println("server, playerObjectId:"+objectId);
 					
 					
-					temV3.set(19, 10, random.nextInt(30));
+					temV3.set(0, 50, random.nextInt(3));
 					BtObject btObject = physicsWorldBuilder.createDefaultBall(temV3.x,temV3.y,temV3.z);
 					btObject.setBehavior(new Behavior(btObject) {
 						Matrix4 tempMatrix4=new Matrix4();
