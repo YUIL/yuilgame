@@ -1,5 +1,7 @@
 package com.yuil.game.test;
 
+import java.nio.FloatBuffer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -9,7 +11,9 @@ import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.collision.btConvexHullShape;
+import com.badlogic.gdx.physics.bullet.collision.btHeightfieldTerrainShape;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.badlogic.gdx.utils.JsonReader;
 
@@ -33,7 +37,13 @@ public class Test {
 		FileHandleResolver resolver=new InternalFileHandleResolver();
 		G3dModelLoader loader=new G3dModelLoader(new JsonReader(), resolver);
 		ModelData md=loader.loadModelData(Gdx.files.internal("assets/data/groundShape.g3dj"));
-		System.out.println(md.nodes.first().scale);
+		
+		System.out.println(md.meshes.get(0).vertices.length);
+		
+		FloatBuffer fb=FloatBuffer.allocate(128);
+		//btHeightfieldTerrainShape hts=new btHeightfieldTerrainShape(heightStickWidth, heightStickLength, heightfieldData, heightScale, minHeight, maxHeight, upAxis, flipQuadEdges)
+		
+		//btBvhTriangleMeshShape btms=new btBvhTriangleMeshShape(md.nodes.first().parts);
 		
 		//btConvexHullShape btchs=new btConvexHullShape();
 	}

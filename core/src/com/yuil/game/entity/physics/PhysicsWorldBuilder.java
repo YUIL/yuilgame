@@ -58,11 +58,12 @@ public class PhysicsWorldBuilder {
 	}
 
 	void addPoint(btConvexHullShape collisionShape,float[] vertices){
-		int pointNum=vertices.length/3;
+		int pointNum=vertices.length/6;
+		System.out.println("pointNum:"+pointNum);
 		int offset=0;
 		for (int i = 0; i < pointNum; i++) {
-			collisionShape.addPoint(tempVector.set(vertices[offset],vertices[offset+1],vertices[offset+2]));
-			offset+=3;
+			collisionShape.addPoint(tempVector.set(vertices[offset],vertices[offset+2],-1*vertices[offset+1]));
+			offset+=6;
 		}
 	}
 	
@@ -72,8 +73,8 @@ public class PhysicsWorldBuilder {
 		//ModelData md=loader.loadModelData(Gdx.files.internal("assets/data/cube_half.g3dj"));
 		System.out.println(md.meshes.first().vertices);
 		addPoint(collisionShape, md.meshes.first().vertices);
-		collisionShape.setLocalScaling(md.nodes.first().scale);
-		//collisionShape.setLocalScaling(tempVector.set(100,100,100));
+		//collisionShape.setLocalScaling(md.nodes.first().scale);
+		collisionShape.setLocalScaling(tempVector.set(md.nodes.first().scale.x,md.nodes.first().scale.z,md.nodes.first().scale.y));
 
 		collisionShape.recalcLocalAabb();
 		collisionShape.calculateLocalInertia(1, tempVector.set(0, 0, 0));

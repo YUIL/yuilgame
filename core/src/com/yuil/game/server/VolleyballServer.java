@@ -356,7 +356,7 @@ public class VolleyballServer implements MessageListener {
 							btObject.getRigidBody().activate();
 						}
 						btObject.getRigidBody().getWorldTransform().getTranslation(tempVector3);
-						if (tempVector3.y < -20) {// 所有物体的死亡高度判断
+						if (tempVector3.y < -80) {// 所有物体的死亡高度判断
 
 							if (btObject.getAttributes().get(AttributeType.PLAYER.ordinal()) != null) {
 								System.out.println("remove a player!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -446,7 +446,7 @@ public class VolleyballServer implements MessageListener {
 					//System.out.println("server, playerObjectId:"+objectId);
 					
 					
-					temV3.set(0, 50, random.nextInt(3));
+					temV3.set(0, 20, 0);
 					BtObject btObject = physicsWorldBuilder.createDefaultBall(temV3.x,temV3.y,temV3.z);
 					btObject.setBehavior(new Behavior(btObject) {
 						Matrix4 tempMatrix4=new Matrix4();
