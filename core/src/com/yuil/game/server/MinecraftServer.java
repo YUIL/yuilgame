@@ -1,6 +1,7 @@
 package com.yuil.game.server;
 
 import com.yuil.game.net.MessageListener;
+import com.yuil.game.net.NetSocket;
 import com.yuil.game.net.Session;
 
 import io.netty.buffer.ByteBuf;
@@ -14,7 +15,7 @@ public class MinecraftServer implements MessageListener {
 	}
 
 	@Override
-	public void removeSession(long sessionId) {
+	public void sendFailure(NetSocket netSocket, long sessionId) {
 		// TODO Auto-generated method stub
 		
 	}

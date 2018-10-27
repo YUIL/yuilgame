@@ -349,8 +349,8 @@ public class UdpSocket implements NetSocket {
 
 			while (UdpMessage.getSequenceId(message) == session.lastSendSequenceId + 1) {// 如果对方还没收到这条消息
 				if (session.resendTimes > session.maxResendTimes) {// 如果单条消息重发次数超过maxResendTimes，删掉session
-					messageListener.removeSession(session.getId());
-					removeSession(session);
+					messageListener.sendFailure(UdpSocket.this, session.getId());
+					//removeSession(session);
 
 					isSendSuccess = false;
 					System.err.println("send_______________________________timeOutMultiple:" + session.resendTimes);

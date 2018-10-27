@@ -811,9 +811,10 @@ public class VolleyballServer implements MessageListener {
 	}
 
 	@Override
-	public void removeSession(long sessionId) {
+	public void sendFailure(NetSocket netSocket, long sessionId) {
 		// TODO Auto-generated method stub
 		removeSessionQueue.add(sessionId);
+		netSocket.removeSession(sessionId);
 	}
 	
 	

@@ -64,6 +64,7 @@ import com.yuil.game.input.InputDeviceListener;
 import com.yuil.game.input.InputManager;
 import com.yuil.game.input.InputDeviceStatus;
 import com.yuil.game.net.MessageListener;
+import com.yuil.game.net.NetSocket;
 import com.yuil.game.net.Session;
 import com.yuil.game.net.message.MULTI_MESSAGE;
 import com.yuil.game.net.message.Message;
@@ -923,9 +924,9 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	}
 
 	@Override
-	public void removeSession(long sessionId) {
+	public void sendFailure(NetSocket netSocket, long sessionId) {
 		// TODO Auto-generated method stub
-
+		netSocket.removeSession(sessionId);
 	}
 
 	public InputDeviceListener createDeviceInputListener() {

@@ -56,4 +56,6 @@ public interface NetSocket extends Closeable {
 	 * @return 创建的会话
 	 */
 	public Session createSession(long sessionId, InetSocketAddress address);
+	
+	public void removeSession(long sessionId);
 }
