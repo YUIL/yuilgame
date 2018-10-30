@@ -1,6 +1,7 @@
 package com.yuil.game.entity.gameobject;
 
 public enum GameObjectType {
+	STATIC,
 	GROUND,
 	PLAYER,
 	OBSTACLE,

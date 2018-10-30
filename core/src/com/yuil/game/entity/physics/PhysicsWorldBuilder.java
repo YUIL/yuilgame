@@ -74,8 +74,10 @@ public class PhysicsWorldBuilder {
 		System.out.println(md.meshes.first().vertices);
 		addPoint(collisionShape, md.meshes.first().vertices);
 		//collisionShape.setLocalScaling(md.nodes.first().scale);
+		System.out.println(collisionShape+"asdad:"+md.nodes.first().scale);
+		if(md.nodes.first().scale!=null){
 		collisionShape.setLocalScaling(tempVector.set(md.nodes.first().scale.x,md.nodes.first().scale.z,md.nodes.first().scale.y));
-
+		}
 		collisionShape.recalcLocalAabb();
 		collisionShape.calculateLocalInertia(1, tempVector.set(0, 0, 0));
 		

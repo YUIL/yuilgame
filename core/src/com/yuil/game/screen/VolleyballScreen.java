@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
@@ -30,6 +31,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btConvexHullShape;
 import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
@@ -93,7 +95,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	PhysicsWorld physicsWorld;
 	Environment lights;
 	BtObject groundBtObject;
-	
+	public RenderableBtObject space;
 
 	ContactListener contactListener;
 
@@ -133,6 +135,10 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	MOVE_DIRECTION message_move_direction=new MOVE_DIRECTION();
 	
 	boolean isLogin = false;
+	
+	
+	float lastYaw;
+	
 
 	public VolleyballScreen(MyGame game) {
 		super(game);
@@ -184,7 +190,14 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	}
 	void loadAssets(){
 		assets.load("data/cube_half.g3dj", Model.class);
+		assets.load("data/spacesphere.obj", Model.class);
 		assets.finishLoading();
+		space=physicsWorldBuilder.getBtObjectFactory().createRenderableBtObject(new ModelInstance(assets.get("data/spacesphere.obj", Model.class)), new btBoxShape(new Vector3().set(20, 0, 20)), 0, 0, 0, 0);
+		
+		space.getAttributes().put(AttributeType.GMAE_OBJECT_TYPE.ordinal(), new GameObjectTypeAttribute(GameObjectType.STATIC.ordinal()));
+		
+		space.getRigidBody().setWorldTransform(space.getRigidBody().getWorldTransform().rotate(Vector3.X, 180));
+		physicsWorld.addPhysicsObject(space);
 	}
 
 	void playAnimation(){
@@ -307,6 +320,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 	public void render(float delta) {
 		//System.out.println("btObject num:"+((BtWorld)physicsWorld).getCollisionWorld().getNumCollisionObjects());
 		// checkKeyBoardStatus();
+	
 		deviceInputHandler.checkDeviceInput();
 		if(!previousCameraDirection.equals(camera.direction)){
 			if(Gdx.input.isKeyPressed(Keys.A)||Gdx.input.isKeyPressed(Keys.D)||Gdx.input.isKeyPressed(Keys.S)||Gdx.input.isKeyPressed(Keys.W)){
@@ -376,6 +390,7 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 				playerObject = (RenderableBtObject) physicsWorld.getPhysicsObjects().get(playerId);
 			}
 		} else {
+			//test();
 			// System.out.println("x:"+playerObject.getPosition().x);
 			
 			//playerObject.getRigidBody().getWorldTransform().getRotation(tempQuaternion);
@@ -1031,6 +1046,18 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			public void uJustUppedAction() {
 				// TODO Auto-generated method stub
 
+				Quaternion rotation =playerObject.getRigidBody().getWorldTransform().getRotation(new Quaternion());
+				
+				Vector3 direction =new Vector3();
+				direction.z=1;
+				
+				direction.rotate(Vector3.Y, rotation.getYaw());
+				
+				
+				
+				groundBtObject.getRigidBody().getWorldTransform(tempMatrix4);
+				groundBtObject.getRigidBody().setWorldTransform(tempMatrix4);
+				
 			}
 
 			@Override
@@ -1530,11 +1557,24 @@ public class VolleyballScreen extends Screen2D implements MessageListener {
 			System.out.println(v);
 		}
 */
-		ModelLoader loader = new ObjLoader();
+		/*ModelLoader loader = new ObjLoader();
 		Model model = loader.loadModel(Gdx.files.internal("data/ship.obj"));
 		
 		btConvexHullShape chs=new btConvexHullShape(model.nodes.get(0).parts.first().meshPart.mesh.getVerticesBuffer());
-		chs.recalcLocalAabb();
+		chs.recalcLocalAabb();*/
 		
+		Quaternion rotation =playerObject.getRigidBody().getWorldTransform().getRotation(new Quaternion());
+		
+		Vector3 direction =new Vector3();
+		direction.z=1;
+		
+		direction.rotate(Vector3.Y, rotation.getYaw());
+		System.out.println(direction);
+		
+		groundBtObject.getRigidBody().getWorldTransform(tempMatrix4);
+		tempMatrix4.rotate(Vector3.Y,rotation.getYaw()-lastYaw);
+		groundBtObject.getRigidBody().setWorldTransform(tempMatrix4);
+		
+		lastYaw=rotation.getYaw();
 	}
 }

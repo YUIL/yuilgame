@@ -105,17 +105,22 @@ public class BtObjectFactory {
 
 	public RenderableBtObject createRenderableBtObject(Model model, btCollisionShape collisionShape, float mass, float x, float y,
 			float z) {
+		return createRenderableBtObject(new ModelInstance(model), collisionShape, mass, x, y, z);
+
+	}
+
+	public RenderableBtObject createRenderableBtObject(ModelInstance instance, btCollisionShape collisionShape, float mass, float x, float y,
+			float z) {
 
 		RenderableBtObject btObject = new RenderableBtObject();
 		initBtObject(btObject, collisionShape, mass, x, y, z);
 		
-		ModelInstance instance = new ModelInstance(model);
 		btObject.setInstance(instance);;
-
+		
 		return btObject;
 
 	}
-
+	
 	public void initBtObject(BtObject btObject, btCollisionShape collisionShape, float mass, float x, float y,float z){
 		Vector3 inertia = new Vector3();
 
